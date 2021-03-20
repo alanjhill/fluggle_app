@@ -1,8 +1,8 @@
 import 'package:fluggle_app/constants.dart';
 import 'package:fluggle_app/models/grid_item.dart';
 import 'package:fluggle_app/models/row_col.dart';
-import 'package:fluggle_app/widgets/grid_cell.dart';
-import 'package:fluggle_app/widgets/letter_cube.dart';
+import 'package:fluggle_app/widgets/game/grid_cell.dart';
+import 'package:fluggle_app/widgets/game/letter_cube.dart';
 import 'package:flutter/material.dart';
 
 class GridItemWidget extends StatefulWidget {
@@ -34,14 +34,14 @@ class _GridItemWidgetState extends State<GridItemWidget> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6.0),
-              color: kFluggleCubeColor,
-              boxShadow: [
+              color: Colors.red, //kFluggleCubeColor,
+/*              boxShadow: [
                 BoxShadow(
-                  color: Colors.black26,
+                  color: kFluggleLetterColor,
                   blurRadius: 8.0,
                   spreadRadius: 2.0,
                 ),
-              ],
+              ],*/
             ),
             child: GridTile(
               child: _buildGridItem(

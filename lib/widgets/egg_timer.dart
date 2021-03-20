@@ -31,7 +31,7 @@ class _EggTimerState extends State<EggTimer> {
   void didUpdateWidget(EggTimer oldEggTimer) {
     super.didUpdateWidget(oldEggTimer);
     if (widget.gameStarted && !oldEggTimer.gameStarted) {
-      endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 180;
+      endTime = DateTime.now().millisecondsSinceEpoch + 1000 * kGAME_TIME;
       controller = CountdownTimerController(endTime: endTime, onEnd: onEnd);
       controller.start();
     } else if (!widget.gameStarted && oldEggTimer.gameStarted) {

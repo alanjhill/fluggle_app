@@ -1,11 +1,11 @@
 import 'package:fluggle_app/constants.dart';
 import 'package:flutter/material.dart';
 
-class GameBoardBottomBar extends StatelessWidget {
+class GameBottomWidget extends StatelessWidget {
   final bool gameStarted;
   final Function startButtonPressed;
 
-  GameBoardBottomBar({this.gameStarted, this.startButtonPressed});
+  GameBottomWidget({this.gameStarted, this.startButtonPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +15,7 @@ class GameBoardBottomBar extends StatelessWidget {
         child: Center(
           child: ButtonTheme(
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: KFlugglePrimaryColor,
-                //padding: EdgeInsets.all(10.0),
-              ),
+              style: kElevatedButtonStyle,
               child: Text('Start'),
               onPressed: gameStarted ? null : startButtonPressed,
             ),

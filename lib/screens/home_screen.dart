@@ -1,3 +1,4 @@
+import 'package:fluggle_app/constants.dart';
 import 'package:fluggle_app/screens/game_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kFlugglePrimaryColor,
         title: const Text('Fluggle'),
       ),
       body: Center(

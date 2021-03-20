@@ -1,27 +1,25 @@
 import 'package:fluggle_app/constants.dart';
 import 'package:fluggle_app/models/grid_item.dart';
 import 'package:fluggle_app/models/row_col.dart';
-import 'package:fluggle_app/widgets/grid_cell.dart';
-import 'package:fluggle_app/widgets/grid_item_widget.dart';
-import 'package:fluggle_app/widgets/letter_cube.dart';
-import 'package:fluggle_app/widgets/swipe_lines.dart';
+import 'package:fluggle_app/widgets/game/grid_cell.dart';
+import 'package:fluggle_app/widgets/game/grid_item_widget.dart';
+import 'package:fluggle_app/widgets/game/swipe_lines.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class GameBoard extends StatefulWidget {
+class GameBoardWidget extends StatefulWidget {
   final bool gameStarted;
   final List<String> letters;
   final List<List<GridItem>> gridItems;
   final List<String> addedWords;
-
   final Function addSwipedGridItem;
   final Function isSwipedGridItem;
   final Function getSwipedGridItems;
   final Function resetSwipedItems;
   final Function addWord;
 
-  GameBoard({
+  GameBoardWidget({
     this.gameStarted,
     this.letters,
     this.gridItems,
@@ -34,10 +32,10 @@ class GameBoard extends StatefulWidget {
   });
 
   @override
-  _GameBoardState createState() => _GameBoardState();
+  _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
-class _GameBoardState extends State<GameBoard> {
+class _GameBoardWidgetState extends State<GameBoardWidget> {
   GlobalKey gridKey = new GlobalKey();
   GridItem currentGridItem;
 
@@ -55,12 +53,12 @@ class _GameBoardState extends State<GameBoard> {
     double gridSize = mediaQuery.size.width - kGAME_BOARD_PADDING / 2;
 
     return Container(
-      margin: EdgeInsets.all(kGAME_BOARD_PADDING / 2),
+      margin: EdgeInsets.symmetric(horizontal: kGAME_BOARD_PADDING / 2),
       decoration: BoxDecoration(
-        color: kFluggleBoardBackgroundColor,
+        //color: kFluggleBoardBackgroundColor,
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
-          color: kFluggleBoardColor,
+          color: kFluggleBoardBorderColor,
           width: kFLUGGLE_BOARD_BORDER_WIDTH,
         ),
       ),
@@ -111,7 +109,7 @@ class _GameBoardState extends State<GameBoard> {
 
   BoxDecoration _getGridItemBoxDecoration(int row, int col) {
     BoxDecoration boxDecoration = BoxDecoration(
-      border: Border.all(color: kFluggleBoardColor, width: kFLUGGLE_BOARD_BORDER_WIDTH, style: BorderStyle.solid),
+      border: Border.all(color: kFluggleBoardBorderColor, width: kFLUGGLE_BOARD_BORDER_WIDTH, style: BorderStyle.solid),
       borderRadius: _getGridItemBorderRadius(row, col),
     );
 
@@ -163,32 +161,35 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   void endSelectItem(PointerEvent event) {
-    debugPrint('>>> endSelectItem');
-    setState(() {
-      currentGridItem = null;
-      widget.addWord();
-      widget.resetSwipedItems();
-    });
+    if (widget.gameStarted) {
+      setState(() {
+        currentGridItem = null;
+        widget.addWord();
+        widget.resetSwipedItems();
+      });
+    }
   }
 
   void selectItem(PointerEvent event) {
-    RenderBox box = gridKey.currentContext.findRenderObject();
-    BoxHitTestResult result = BoxHitTestResult();
-    Offset local = box.globalToLocal(event.position);
-    if (box.hitTest(result, position: local)) {
-      for (HitTestEntry hit in result.path) {
-        HitTestTarget target = hit.target;
-        if (target is GridCellRenderObject) {
-          RowCol rowCol = (target as GridCellRenderObject).rowCol;
-          GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
-          setState(() {
-            if (widget.addSwipedGridItem(gridItem)) {
-              gridItem.swiped = true;
-              currentGridItem = gridItem;
-            } else {
-              currentGridItem = null;
-            }
-          });
+    if (widget.gameStarted) {
+      RenderBox box = gridKey.currentContext.findRenderObject();
+      BoxHitTestResult result = BoxHitTestResult();
+      Offset local = box.globalToLocal(event.position);
+      if (box.hitTest(result, position: local)) {
+        for (HitTestEntry hit in result.path) {
+          HitTestTarget target = hit.target;
+          if (target is GridCellRenderObject) {
+            RowCol rowCol = (target as GridCellRenderObject).rowCol;
+            GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
+            setState(() {
+              if (widget.addSwipedGridItem(gridItem)) {
+                gridItem.swiped = true;
+                currentGridItem = gridItem;
+              } else {
+                currentGridItem = null;
+              }
+            });
+          }
         }
       }
     }

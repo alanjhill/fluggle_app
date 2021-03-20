@@ -16,3 +16,5 @@ var GAME_LETTERS = [
   ['H', 'I', 'M', 'N', 'U', 'Qu'],
   ['H', 'L', 'N', 'N', 'R', 'Z'],
 ];
+
+const AZ_LETTERS = 'ABCDEFGHIJKLMNOPQRST';

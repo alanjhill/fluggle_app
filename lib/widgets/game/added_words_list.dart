@@ -1,5 +1,5 @@
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/widgets/added_word_item.dart';
+import 'package:fluggle_app/widgets/game/added_word_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -33,20 +33,38 @@ class _AddedWordsListState extends State<AddedWordsList> {
       debugPrint('callback');
       _scrollToTop();
     });
+
+    return Container(
+      // padding: EdgeInsets.symmetric(
+      //   vertical: 5,
+      //   horizontal: 50,
+      // ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: kFluggleBoardBorderColor,
+          width: kFLUGGLE_BOARD_BORDER_WIDTH * 2,
+          style: BorderStyle.solid,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[_getThing()],
+      ),
+    );
+  }
+
+  _getThing() {
     return widget.addedWords.isEmpty
         ? LayoutBuilder(builder: (ctx, constraints) {
             return Column(
               children: <Widget>[
-                Text('Start finding words...'),
+                Text(''),
               ],
             );
           })
-        : Center(
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: kGAME_BOARD_PADDING) / 2,
-              color: Colors.red,
-              //width: 150,
-              height: 48,
+        : Expanded(
+            child: Center(
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,

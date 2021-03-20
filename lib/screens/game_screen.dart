@@ -1,10 +1,15 @@
+import 'dart:io';
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:fluggle_app/constants.dart';
 import 'package:fluggle_app/models/game_letters.dart';
 import 'package:fluggle_app/models/grid_item.dart';
+import 'package:fluggle_app/screens/scores_screen.dart';
 import 'package:fluggle_app/widgets/egg_timer.dart';
-import 'package:fluggle_app/widgets/game_board.dart';
-import 'package:fluggle_app/widgets/game_board_bottom_bar.dart';
-import 'package:fluggle_app/widgets/game_top_panel.dart';
+import 'package:fluggle_app/widgets/game/game_board_widget.dart';
+import 'package:fluggle_app/widgets/game/game_bottom_widget.dart';
+import 'package:fluggle_app/widgets/game/game_top_widget.dart';
 import 'package:flutter/material.dart';
 
 class GameScreen extends StatefulWidget {
@@ -19,6 +24,7 @@ class _GameScreenState extends State<GameScreen> {
   List<List<GridItem>> gridItems;
   List<GridItem> swipedGridItems = [];
   List<String> addedWords = [];
+  String currentWord;
   bool gameStarted = false;
 
   @override
@@ -32,35 +38,25 @@ class _GameScreenState extends State<GameScreen> {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    final PreferredSizeWidget appBar = _buildAppBar(quitGame);
-    final availableHeight = (screenHeight - appBar.preferredSize.height - screenWidth - mediaQuery.padding.top - kSTATUS_BAR_HEIGHT);
+    final PreferredSizeWidget appBar = _buildAppBar(context, quitGame);
+
+    final appBarHeight = appBar.preferredSize.height;
+    final gameBoardHeight = screenWidth - kGAME_BOARD_PADDING;
+    final remainingHeight = screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
+    final topPanelHeight = remainingHeight / 4 * 3;
 
     // Top Panel for entered words, number of words, timer etc
-    final gameTopPanel = Container(
-      color: Colors.white,
-      height: availableHeight,
-      child: GameTopPanel(gameStarted: gameStarted, swipedGridItems: swipedGridItems, addedWords: _addedWords),
-    );
+    final gameTopPanel = _buildGameTopPanel(topPanelHeight);
 
     // Game Board for the grid and letters
-    final gameBoard = Container(
-      /*padding: EdgeInsets.all(GAME_BOARD_PADDING),*/
-      height: screenWidth,
-      child: GameBoard(
-          gameStarted: gameStarted,
-          letters: letters,
-          gridItems: gridItems,
-          addSwipedGridItem: _addSwipedGridItem,
-          isSwipedGridItem: _isSwipedGridItem,
-          getSwipedGridItems: _getSwipedGridItems,
-          resetSwipedItems: _resetSwipedItems,
-          addWord: _addWord),
-    );
+    final gameBoard = _buildGameBoard(screenWidth - kGAME_BOARD_PADDING);
 
-    // Status Bar (which we might not need)
-    final gameBoardBottomBar = GameBoardBottomBar(
-      gameStarted: gameStarted,
-      startButtonPressed: startGame,
+    // Bottom Bar
+    final gameBoardBottomBar = Container(
+      child: GameBottomWidget(
+        gameStarted: gameStarted,
+        startButtonPressed: startGame,
+      ),
     );
 
     return Scaffold(
@@ -91,7 +87,9 @@ class _GameScreenState extends State<GameScreen> {
   bool _addSwipedGridItem(GridItem gridItem) {
     bool added = false;
     setState(() {
-      if (!swipedGridItems.contains(gridItem) && (_isAdjacent(gridItem) || _isFirstItem())) {
+      currentWord = null;
+      GridItem lastAddedGridItem = swipedGridItems.isNotEmpty ? swipedGridItems.last : null;
+      if (!swipedGridItems.contains(gridItem) && (gridItem.isAdjacent(lastAddedGridItem) || _isFirstItem())) {
         swipedGridItems.add(gridItem);
         added = true;
       }
@@ -135,12 +133,15 @@ class _GameScreenState extends State<GameScreen> {
       setState(() {
         debugPrint('addWord: ${word}');
         addedWords.add(word);
+        debugPrint('currentWord: ${currentWord}');
         debugPrint('words: ${addedWords}');
       });
     }
 
     // Reset the swiped items
     _resetGridItems();
+
+    currentWord = word;
   }
 
   void _resetGridItems() {
@@ -157,29 +158,91 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
-  void timerEnded() {
+  void _timerEnded(BuildContext context) {
     debugPrint('timerEnded');
+    // Go to scoreboard
+    Navigator.of(context).pop(null);
+    Navigator.of(context).pushNamed(ScoresScreen.routeName);
   }
 
-  Widget _buildAppBar(Function quitGame) {
+  void _confirmQuit(BuildContext context) {
+    debugPrint('confirmQuit');
+    Navigator.pop(context);
+    quitGame(context);
+  }
+
+  void _cancelQuit(BuildContext context) {
+    debugPrint('cancelQuit');
+    Navigator.pop(context);
+  }
+
+  void _showQuitGameDialog(BuildContext context) {
+    showGeneralDialog(
+        barrierLabel: 'x',
+        barrierDismissible: true,
+        context: context,
+        transitionDuration: Duration(milliseconds: 300),
+        pageBuilder: (context, anim1, anim2) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              backgroundColor: kFluggleCubeColor,
+              title: Text(
+                'Quit?',
+                style: TextStyle(
+                  color: kFluggleLetterColor,
+                ),
+              ),
+              content: Text('Are you sure you want to quit?'),
+              actions: [
+                TextButton(
+                  child: Text('Yes'),
+                  onPressed: () {
+                    _confirmQuit(context);
+                  },
+                ),
+                TextButton(
+                  child: Text('No'),
+                  onPressed: () {
+                    _cancelQuit(context);
+                  },
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  Widget _buildAppBar(BuildContext context, Function quitGame) {
     return AppBar(
+        backgroundColor: kFlugglePrimaryColor,
         automaticallyImplyLeading: true,
-        leading: Center(child: EggTimer(gameStarted: gameStarted, timerEndedCallback: timerEnded)),
-        leadingWidth: 12git`0,
+        leading: Center(
+          child: EggTimer(
+            gameStarted: gameStarted,
+            timerEndedCallback: () {
+              _timerEnded(context);
+            },
+          ),
+        ),
+        leadingWidth: 120,
         title: const Text('Fluggle'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ButtonTheme(
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: KFlugglePrimaryColor,
-                  padding: EdgeInsets.all(0.0),
-                ),
+                style: kElevatedButtonStyle,
                 child: Text('Quit'),
                 onPressed: () {
-                  quitGame();
-                  Navigator.of(context).pop(null);
+                  _showQuitGameDialog(context);
+                  //quitGame();
+                  //Navigator.of(context).pop(null);
                 },
               ),
             ),
@@ -187,27 +250,85 @@ class _GameScreenState extends State<GameScreen> {
         ]);
   }
 
+  Widget _buildGameTopPanel(double topPanelHeight) {
+    return Container(
+      height: topPanelHeight,
+      child: GameTopWidget(
+        gameStarted: gameStarted,
+        swipedGridItems: swipedGridItems,
+        addedWords: _addedWords,
+        currentWord: currentWord,
+      ),
+    );
+  }
+
+  Widget _buildGameBoard(double height) {
+    return Container(
+      //color: Colors.black26,
+      /*padding: EdgeInsets.all(GAME_BOARD_PADDING),*/
+      height: height,
+      child: GameBoardWidget(
+          gameStarted: gameStarted,
+          letters: letters,
+          gridItems: gridItems,
+          addSwipedGridItem: _addSwipedGridItem,
+          isSwipedGridItem: _isSwipedGridItem,
+          getSwipedGridItems: _getSwipedGridItems,
+          resetSwipedItems: _resetSwipedItems,
+          addWord: _addWord),
+    );
+  }
+
   void setupGame() {
-    debugPrint('Start Game');
-    _shuffleGameLetters();
+    debugPrint('setupGame');
+    _setEmptyLetters();
     _updateGridData();
     _resetWords();
   }
 
-  void startGame() {
-    debugPrint('Start Game');
+  void startGame() async {
+    debugPrint('startGame');
+    await _animateLetters();
+    _shuffleLetters();
+    _updateGridData();
+    _resetWords();
     setState(() {
       gameStarted = true;
     });
   }
 
-  void quitGame() {
+  void quitGame(BuildContext context) {
     setState(() {
       gameStarted = false;
     });
+    Navigator.of(context).pop(null);
   }
 
-  void _shuffleGameLetters() {
+  void _setEmptyLetters() {
+    List<String> emptyLetters = [];
+    GAME_LETTERS.forEach((cube) => emptyLetters.add('?'));
+    setState(() {
+      letters = emptyLetters;
+      swipedGridItems = [];
+    });
+  }
+
+  Future _animateLetters() async {
+    Random rnd = new Random(new DateTime.now().millisecondsSinceEpoch);
+    for (int i = 0; i < 50; i++) {
+      for (int l = 0; l < 16; l++) {
+        await Future.delayed(const Duration(microseconds: 1));
+        setState(() {
+          letters[l] = AZ_LETTERS[rnd.nextInt(AZ_LETTERS.length)];
+        });
+        _updateGridData();
+      }
+    }
+
+    return;
+  }
+
+  void _shuffleLetters() {
     for (var letterCube in GAME_LETTERS) {
       letterCube.shuffle();
     }
@@ -218,7 +339,6 @@ class _GameScreenState extends State<GameScreen> {
     debugPrint('shuffledLetters: ${shuffledLetters}');
     setState(() {
       letters = shuffledLetters;
-      swipedGridItems = [];
     });
   }
 
