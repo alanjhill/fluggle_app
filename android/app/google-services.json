@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "645489800545",
+    "project_id": "fluggle",
+    "storage_bucket": "fluggle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645489800545:android:315e6eaa50eec86ef4c120",
+        "android_client_info": {
+          "package_name": "com.octopology.fluggle_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645489800545-ig64f7lre04is8ls9gocfg33ahd6eqjh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHOwN0RBFUxzhHJFmbjTz9mWsh3_VzvxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645489800545-ig64f7lre04is8ls9gocfg33ahd6eqjh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,8 @@
 class RowCol {
-  int row;
-  int col;
+  final int row;
+  final int col;
 
-  RowCol({this.row, this.col});
+  RowCol({this.row = -1, this.col = -1});
 
   @override
   String toString() {

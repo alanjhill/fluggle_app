@@ -4,9 +4,9 @@ class GridItem {
   String letter;
   bool swiped;
 
-  GridItem({this.row, this.col, this.letter, this.swiped = false});
+  GridItem({this.row = 0, this.col = 0, this.letter = '', this.swiped = false});
 
-  bool isAdjacent(GridItem otherGridItem) {
+  bool isAdjacent(GridItem? otherGridItem) {
     bool adjacent = false;
     if (otherGridItem != null) {
       int cols = (otherGridItem.col - this.col).abs();

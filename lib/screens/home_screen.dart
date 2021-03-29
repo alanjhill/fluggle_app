@@ -1,12 +1,33 @@
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/screens/game_screen.dart';
+import 'package:fluggle_app/screens/friends/friends_screen.dart';
+import 'package:fluggle_app/screens/game/game_screen.dart';
+import 'package:fluggle_app/screens/login_screen.dart';
+import 'package:fluggle_app/screens/new_game_screen.dart';
+import 'package:fluggle_app/screens/previous_games_screen.dart';
+import 'package:fluggle_app/sign_in/sign_in_page.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  static const String routeName = "/";
+  static const String routeName = "home";
 
-  void playGame(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(GameScreen.routeName);
+  void newGame(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(NewGameScreen.routeName);
+  }
+
+  void friendsList(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(FriendsScreen.routeName);
+  }
+
+  void previousGames(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(PreviousGamesScreen.routeName);
+  }
+
+  void login(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(LoginScreen.routeName);
+  }
+
+  void signIn(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(SignInPageBuilder.routeName);
   }
 
   @override
@@ -19,10 +40,23 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: <Widget>[
-            Text('Welcome to Fluggle, a Boggle like word game written with Flutter.'),
+            Text('Welcome to Fluggle', style: TextStyle()),
+            Text('A Boggle like word game written with Flutter.', style: TextStyle()),
             ElevatedButton(
               child: Text('Play'),
-              onPressed: () => playGame(context),
+              onPressed: () => newGame(context),
+            ),
+            ElevatedButton(
+              child: Text('Friends'),
+              onPressed: () => friendsList(context),
+            ),
+            ElevatedButton(
+              child: Text('Previous Games'),
+              onPressed: () => previousGames(context),
+            ),
+            ElevatedButton(
+              child: Text('Login'),
+              onPressed: () => signIn(context),
             ),
           ],
         ),
