@@ -1,23 +1,26 @@
+import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/user.dart';
-import 'package:fluggle_app/models/friend.dart';
-import 'package:fluggle_app/services/firestore_database.dart';
+import 'package:fluggle_app/constants/strings.dart';
+import 'package:fluggle_app/services/auth/firebase_auth_service.dart';
+import 'package:fluggle_app/services/database/firestore_database.dart';
 import 'package:fluggle_app/screens/friends/friends_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class FriendsScreen extends StatelessWidget {
-  static const String routeName = "/friends";
+  static const String routeName = "friends";
 
   @override
   Widget build(BuildContext context) {
-    final PreferredSizeWidget? appBar = _buildAppBar(context);
-    final database = Provider.of<FirestoreDatabase>(context, listen: false);
-    return Provider<FirestoreDatabase>(
-      create: (context) => database,
-      child: Scaffold(
-        appBar: appBar,
-        body: SafeArea(
+    return Scaffold(
+      appBar: customAppBar(
+        title: Strings.friendsPage,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -26,14 +29,12 @@ class FriendsScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget? _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: kFlugglePrimaryColor,
-      leadingWidth: 120,
-      title: const Text('Fluggle'),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: kFluggleSecondaryColor,
+        foregroundColor: kFlugglePrimaryColor,
+        child: Icon(Icons.add),
+        onPressed: () => null,
+      ),
     );
   }
 }

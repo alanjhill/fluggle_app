@@ -1,4 +1,4 @@
-import 'package:fluggle_app/models/row_col.dart';
+import 'package:fluggle_app/models/game_board/row_col.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 

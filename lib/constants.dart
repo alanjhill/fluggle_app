@@ -24,7 +24,7 @@ const Color kFluggleSwipeLineColor = kFluggleSecondaryColor; //kFluggleLetterHig
 const double kSwipeLineWidth = 8.0;
 
 const kEggTimerTextStyle = TextStyle(
-  fontSize: 36.0,
+  fontSize: 24.0,
   fontWeight: FontWeight.bold,
   letterSpacing: 1.5,
   color: Color.fromRGBO(69, 209, 253, 1),
@@ -51,3 +51,26 @@ const kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
+
+/*const kAppThemeData = ThemeData(
+  //primarySwatch: kFlugglePrimaryColor,
+  //accentColor: kFluggleSecondaryColor,
+  brightness: Brightness.dark,
+//        primaryColor: Colors.lightBlue[800],
+//        accentColor: Colors.cyan[600],
+  canvasColor: kFlugglePrimaryColor,
+  textTheme: ThemeData.light().textTheme.copyWith(
+        bodyText1: TextStyle(
+            //color: Color.fromRGBO(20, 51, 51, 1),
+            ),
+        bodyText2: TextStyle(
+            //color: Color.fromRGBO(20, 51, 51, 1),
+            ),
+        headline6: TextStyle(
+            //fontSize: 20,
+            //fontFamily: 'RobotoCondensed',
+            //fontWeight: FontWeight.bold,
+            //color: Color.fromRGBO(20, 51, 51, 1),
+            ),
+      ),
+);*/

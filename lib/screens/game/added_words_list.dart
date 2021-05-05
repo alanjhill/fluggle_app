@@ -1,11 +1,16 @@
+import 'dart:collection';
+
 import 'package:fluggle_app/constants.dart';
+import 'package:fluggle_app/models/game/game_word.dart';
+import 'package:fluggle_app/models/game/player_word.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/screens/game/added_word_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class AddedWordsList extends StatefulWidget {
-  final List<String>? addedWords;
+  final LinkedHashMap<String, PlayerWord>? addedWords;
 
   AddedWordsList({this.addedWords});
 
@@ -70,7 +75,8 @@ class _AddedWordsListState extends State<AddedWordsList> {
                 shrinkWrap: true,
                 controller: _scrollController,
                 itemBuilder: (ctx, index) {
-                  return AddedWordItem(addedWord: widget.addedWords![index]);
+                  String word = widget.addedWords!.keys.toList()[index];
+                  return AddedWordItem(addedWord: widget.addedWords![word]);
                 },
                 itemCount: widget.addedWords!.length,
                 reverse: false,

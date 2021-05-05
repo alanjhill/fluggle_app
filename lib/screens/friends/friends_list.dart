@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluggle_app/models/friend_list_view_model.dart';
-import 'package:fluggle_app/models/user_friend.dart';
-import 'package:fluggle_app/services/firestore_database.dart';
+import 'package:fluggle_app/models/user/friend_list_view_model.dart';
+import 'package:fluggle_app/models/user/user_friend.dart';
+import 'package:fluggle_app/screens/friends/friend_item.dart';
+import 'package:fluggle_app/services/database/firestore_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,14 +19,14 @@ class FriendsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         child: SafeArea(
-      child: _buildFriendList(context),
+      child: _build(context),
     ));
   }
 
   @override
-  Widget _buildFriendList(BuildContext context) {
+  Widget _build(BuildContext context) {
     final viewModel = Provider.of<FriendListViewModel>(context, listen: false);
-    return StreamBuilder<List<UserFriend>>(
+    return StreamBuilder<List<UserFriend?>>(
       stream: viewModel.userFriendsStream(),
       builder: (_, snapshot) {
         if (snapshot.hasError) {
@@ -41,7 +42,7 @@ class FriendsList extends StatelessWidget {
           if (userFriends == null) {
             return Text('You have no friends', style: Theme.of(context).textTheme.headline6);
           }
-          return _buildList(context, snapshot.data);
+          return _buildFriendList(context, snapshot.data);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -59,7 +60,7 @@ class FriendsList extends StatelessWidget {
     );
   }
 
-  Widget _buildList(BuildContext context, fluggleUserFriends) {
+  Widget _buildFriendList(BuildContext context, fluggleUserFriends) {
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.only(top: 20.0),
@@ -72,19 +73,7 @@ class FriendsList extends StatelessWidget {
   }
 
   Widget _buildListItem(BuildContext context, UserFriend userFriend) {
-    return Padding(
-      key: ValueKey(userFriend.friend.id),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        child: ListTile(
-          trailing: Text(userFriend.user!.displayName),
-        ),
-      ),
-    );
+    return FriendItem(friend: userFriend.user);
   }
 }
 

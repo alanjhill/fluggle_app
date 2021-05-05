@@ -1,31 +1,48 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/game_letters.dart';
-import 'package:fluggle_app/models/grid_item.dart';
-import 'package:fluggle_app/screens/scores_screen.dart';
+import 'package:fluggle_app/models/game/game.dart';
+import 'package:fluggle_app/models/game/game_word.dart';
+import 'package:fluggle_app/models/game/player.dart';
+import 'package:fluggle_app/models/game/player_word.dart';
+import 'package:fluggle_app/models/game_board/game_letters.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
+import 'package:fluggle_app/models/user/fluggle_user.dart';
+import 'package:fluggle_app/screens/scores/scores_screen.dart';
+import 'package:fluggle_app/services/auth/firebase_auth_service.dart';
+import 'package:fluggle_app/services/database/firestore_database.dart';
+import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/widgets/egg_timer.dart';
 import 'package:fluggle_app/screens/game/game_board_widget.dart';
 import 'package:fluggle_app/screens/game/game_bottom_widget.dart';
 import 'package:fluggle_app/screens/game/game_top_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GameScreen extends StatefulWidget {
-  static const String routeName = "/game";
+  static const String routeName = "game";
+  final Game game;
+
+  GameScreen({required this.game});
 
   @override
   _GameScreenState createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
+  final GameService gameService = GameService();
   List<String> letters = [];
+  List<String> shuffledLetters = [];
+  List<String> emptyLetters = [];
   List<List<GridItem>> gridItems = [];
   List<GridItem> swipedGridItems = [];
-  List<String> addedWords = [];
+  LinkedHashMap<String, PlayerWord> addedWords = LinkedHashMap<String, PlayerWord>();
   String currentWord = "";
   bool gameStarted = false;
+  FluggleUser? user;
 
   @override
   void initState() {
@@ -38,7 +55,7 @@ class _GameScreenState extends State<GameScreen> {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    final PreferredSizeWidget appBar = _buildAppBar(context, quitGame);
+    final PreferredSizeWidget appBar = _buildAppBar(context, quitGame, gameStarted);
 
     final appBarHeight = appBar.preferredSize.height;
     final gameBoardHeight = screenWidth - kGAME_BOARD_PADDING;
@@ -72,7 +89,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  List<String> get _addedWords {
+  LinkedHashMap<String, PlayerWord> get _addedWords {
     return addedWords;
   }
 
@@ -114,20 +131,32 @@ class _GameScreenState extends State<GameScreen> {
       word += gridItem.letter;
     }
 
+    currentWord = word;
+
     // Add the word to the list of words if it does not exist
-    if (word.length >= 3 && !addedWords.contains(word)) {
+    if (word.length >= 3 && !addedWords.containsKey(word)) {
       setState(() {
         debugPrint('addWord: ${word}');
-        addedWords.add(word);
+        addedWords[word] = PlayerWord(gameWord: GameWord(word: word), gridItems: swipedGridItems);
         debugPrint('currentWord: ${currentWord}');
         debugPrint('words: ${addedWords}');
+        currentWord = word;
       });
+    } else {
+      currentWord = '';
     }
 
     // Reset the swiped items
     _resetGridItems();
+  }
 
-    currentWord = word;
+  void _updateCurrentWord() {
+    for (GridItem gridItem in swipedGridItems) {
+      setState(() {
+        currentWord += gridItem.letter;
+        debugPrint('currentWord: ${currentWord}');
+      });
+    }
   }
 
   void _resetGridItems() {
@@ -160,11 +189,31 @@ class _GameScreenState extends State<GameScreen> {
     });
   }*/
 
-  void _timerEnded(BuildContext context) {
+  Future<FluggleUser> _timerEnded(BuildContext context) async {
     debugPrint('timerEnded');
+    final FirebaseAuthService auth = Provider.of<FirebaseAuthService>(context, listen: false);
+    final database = Provider.of<FirestoreDatabase>(context, listen: false);
+
+    // Get the current user
+    FluggleUser user = await auth.currentUser();
+
+    // Get Player
+    Player player = await database.getGamePlayer(gameId: widget.game.gameId!, playerUid: user.uid);
+
+    // Set the words for this player
+    player.words = addedWords;
+
+    // Set the status of the player to finished
+    player.status = PlayerStatus.finished;
+
+    // Save Player
+    await database.saveGamePlayer(game: widget.game, player: player);
+
     // Go to scoreboard
     Navigator.of(context).pop(null);
-    Navigator.of(context).pushNamed(ScoresScreen.routeName);
+    Navigator.of(context).pushNamed(ScoresScreen.routeName, arguments: widget.game);
+
+    return user;
   }
 
   void _confirmQuit(BuildContext context) {
@@ -193,26 +242,32 @@ class _GameScreenState extends State<GameScreen> {
                   Radius.circular(10),
                 ),
               ),
-              backgroundColor: kFluggleCubeColor,
+              backgroundColor: kFlugglePrimaryColor,
               title: Text(
                 'Quit?',
                 style: TextStyle(
-                  color: kFluggleLetterColor,
-                ),
+                    //color: kFluggleLetterColor,
+                    ),
               ),
               content: Text('Are you sure you want to quit?'),
               actions: [
-                TextButton(
-                  child: Text('Yes'),
-                  onPressed: () {
-                    _confirmQuit(context);
-                  },
+                ButtonTheme(
+                  child: ElevatedButton(
+                    style: kElevatedButtonStyle,
+                    child: Text('Yes'),
+                    onPressed: () {
+                      _confirmQuit(context);
+                    },
+                  ),
                 ),
-                TextButton(
-                  child: Text('No'),
-                  onPressed: () {
-                    _cancelQuit(context);
-                  },
+                ButtonTheme(
+                  child: ElevatedButton(
+                    style: kElevatedButtonStyle,
+                    child: Text('No'),
+                    onPressed: () {
+                      _cancelQuit(context);
+                    },
+                  ),
                 )
               ],
             ),
@@ -220,21 +275,49 @@ class _GameScreenState extends State<GameScreen> {
         });
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, Function quitGame) {
+  Text _getTitle() {
+    if (widget.game.gameStatus == GameStatus.practise) {
+      return const Text('Practise');
+    } else {
+      return const Text('Playing');
+    }
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context, Function quitGame, bool gameStarted) {
     return AppBar(
-      backgroundColor: kFlugglePrimaryColor,
-      automaticallyImplyLeading: true,
-      leading: Center(
-        child: EggTimer(
-          gameStarted: gameStarted,
-          timerEndedCallback: () {
-            _timerEnded(context);
-          },
+        backgroundColor: kFlugglePrimaryColor,
+/*        automaticallyImplyLeading: true,
+        leading: Center(
+          child: EggTimer(
+            gameStarted: gameStarted,
+            timerEndedCallback: () {
+              _timerEnded(context);
+            },
+          ),
         ),
-      ),
-      leadingWidth: 120,
-      title: const Text('Fluggle'),
-      actions: <Widget>[
+        leadingWidth: 120,*/
+        leading: new IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (gameStarted) {
+                _showQuitGameDialog(context);
+              } else {
+                Navigator.of(context).pop();
+              }
+            }),
+        title: _getTitle(),
+        centerTitle: true,
+        actions: <Widget>[
+          Center(
+            child: EggTimer(
+              gameStarted: gameStarted,
+              timerEndedCallback: () async {
+                await _timerEnded(context);
+              },
+            ),
+          ),
+        ]
+/*      actions: <Widget>[
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ButtonTheme(
@@ -249,8 +332,8 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
         ),
-      ],
-    );
+      ],*/
+        );
   }
 
   Widget _buildGameTopPanel(double topPanelHeight) {
@@ -267,10 +350,10 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildGameBoard(double height) {
     return Container(
-      //color: Colors.black26,
-      /*padding: EdgeInsets.all(GAME_BOARD_PADDING),*/
-      height: height,
-      child: GameBoardWidget(
+        //color: Colors.black26,
+        /*padding: EdgeInsets.all(GAME_BOARD_PADDING),*/
+        height: height,
+        child: GameBoardWidget(
           gameStarted: gameStarted,
           letters: letters,
           gridItems: gridItems,
@@ -278,12 +361,14 @@ class _GameScreenState extends State<GameScreen> {
           isSwipedGridItem: _isSwipedGridItem,
           getSwipedGridItems: _getSwipedGridItems,
           resetSwipedItems: _resetSwipedItems,
-          addWord: _addWord),
-    );
+          addWord: _addWord,
+          updateCurrentWord: _updateCurrentWord,
+        ));
   }
 
   void setupGame() {
     debugPrint('setupGame');
+    shuffledLetters = widget.game.letters;
     _setEmptyLetters();
     _updateGridData();
     _resetWords();
@@ -292,7 +377,7 @@ class _GameScreenState extends State<GameScreen> {
   void startGame() async {
     debugPrint('startGame');
     await _animateLetters();
-    _shuffleLetters();
+    letters = shuffledLetters;
     _updateGridData();
     _resetWords();
     setState(() {
@@ -309,7 +394,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _setEmptyLetters() {
     List<String> emptyLetters = [];
-    GAME_LETTERS.forEach((cube) => emptyLetters.add('?'));
+    shuffledLetters.forEach((cube) => emptyLetters.add('?'));
     setState(() {
       letters = emptyLetters;
       swipedGridItems = [];
@@ -339,7 +424,7 @@ class _GameScreenState extends State<GameScreen> {
     return;
   }
 
-  void _shuffleLetters() {
+/*  void _shuffleLetters() {
     for (var letterCube in GAME_LETTERS) {
       letterCube.shuffle();
     }
@@ -351,7 +436,7 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       letters = shuffledLetters;
     });
-  }
+  }*/
 
   void _updateGridData() {
     List<List<GridItem>> localGridItems = [];

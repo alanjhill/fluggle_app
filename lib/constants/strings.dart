@@ -1,4 +1,6 @@
 class Strings {
+  static const String appName = 'Fluggle';
+
   // Generic strings
   static const String ok = 'OK';
   static const String cancel = 'Cancel';
@@ -25,9 +27,12 @@ class Strings {
   static const String createAnAccount = 'Create an account';
   static const String needAnAccount = 'Need an account? Register';
   static const String haveAnAccount = 'Have an account? Sign in';
+
   static const String signInFailed = 'Sign in failed';
   static const String registrationFailed = 'Registration failed';
   static const String passwordResetFailed = 'Password reset failed';
+  static const String signOutFailed = 'Sign outfailed';
+
   static const String sendResetLink = 'Send Reset Link';
   static const String backToSignIn = 'Back to sign in';
   static const String resetLinkSentTitle = 'Reset link sent';
@@ -54,6 +59,21 @@ class Strings {
 
   // Home page
   static const String homePage = 'Home Page';
+
+  // Friends
+  static const String friendsPage = "Friends";
+
+  // Play game
+  static const String playGame = 'Play Game';
+
+  // Start game
+  static const String startGame = 'New Game';
+
+  // Scores
+  static const String scores = 'Scores';
+
+  // Previous Games
+  static const String previousGames = 'Previous Games';
 
   // Developer menu
   static const String developerMenu = 'Developer menu';

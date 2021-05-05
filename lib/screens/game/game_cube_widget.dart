@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/grid_item.dart';
-import 'package:fluggle_app/models/row_col.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
+import 'package:fluggle_app/models/game_board/row_col.dart';
 import 'package:fluggle_app/screens/game/grid_cell.dart';
 import 'package:flutter/material.dart';
 

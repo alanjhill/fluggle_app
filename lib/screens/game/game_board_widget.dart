@@ -1,6 +1,6 @@
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/grid_item.dart';
-import 'package:fluggle_app/models/row_col.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
+import 'package:fluggle_app/models/game_board/row_col.dart';
 import 'package:fluggle_app/screens/game/grid_cell.dart';
 import 'package:fluggle_app/screens/game/game_cube_widget.dart';
 import 'package:fluggle_app/screens/game/swipe_lines.dart';
@@ -18,6 +18,7 @@ class GameBoardWidget extends StatefulWidget {
   final Function? getSwipedGridItems;
   final Function? resetSwipedItems;
   final Function? addWord;
+  final Function? updateCurrentWord;
 
   GameBoardWidget({
     this.gameStarted = false,
@@ -29,6 +30,7 @@ class GameBoardWidget extends StatefulWidget {
     this.getSwipedGridItems,
     this.resetSwipedItems,
     this.addWord,
+    this.updateCurrentWord,
   });
 
   @override
@@ -163,16 +165,6 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     );
   }
 
-  void endSelectItem(PointerEvent event) {
-    if (widget.gameStarted) {
-      setState(() {
-        currentGridItem = null;
-        widget.addWord!();
-        widget.resetSwipedItems!();
-      });
-    }
-  }
-
   void selectItem(PointerEvent event) {
     if (widget.gameStarted) {
       RenderBox box = gridKey!.currentContext!.findRenderObject() as RenderBox;
@@ -191,10 +183,21 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               } else {
                 currentGridItem = null;
               }
+              widget.updateCurrentWord!();
             });
           }
         }
       }
+    }
+  }
+
+  void endSelectItem(PointerEvent event) {
+    if (widget.gameStarted) {
+      setState(() {
+        currentGridItem = null;
+        widget.addWord!();
+        widget.resetSwipedItems!();
+      });
     }
   }
 }

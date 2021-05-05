@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/grid_item.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:flutter/material.dart';
 
 class CurrentWord extends StatelessWidget {

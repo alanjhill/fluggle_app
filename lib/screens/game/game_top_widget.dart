@@ -1,5 +1,9 @@
+import 'dart:collection';
+
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/grid_item.dart';
+import 'package:fluggle_app/models/game/game_word.dart';
+import 'package:fluggle_app/models/game/player_word.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/screens/game/added_words_list.dart';
 import 'package:fluggle_app/screens/game/current_word.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +12,14 @@ class GameTopWidget extends StatefulWidget {
   final bool gameStarted;
   final List<GridItem> swipedGridItems;
   final String currentWord;
-  final List<String> addedWords;
+  final LinkedHashMap<String, PlayerWord>? addedWords;
 
-  GameTopWidget({this.gameStarted = false, this.swipedGridItems = const [], this.currentWord = "", this.addedWords = const []});
+  GameTopWidget({
+    this.gameStarted = false,
+    this.swipedGridItems = const [],
+    this.currentWord = "",
+    this.addedWords,
+  });
 
   @override
   _GameTopWidgetState createState() => _GameTopWidgetState();

@@ -1,5 +1,5 @@
 import 'package:fluggle_app/constants.dart';
-import 'package:fluggle_app/models/grid_item.dart';
+import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:flutter/material.dart';
 
 class SwipeLines extends StatefulWidget {
