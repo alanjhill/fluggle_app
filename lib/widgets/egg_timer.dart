@@ -1,4 +1,4 @@
-import 'package:fluggle_app/constants.dart';
+import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_countdown_timer/index.dart';
@@ -49,15 +49,19 @@ class _EggTimerState extends State<EggTimer> {
         onEnd: onEnd,
         endTime: endTime,
         widgetBuilder: (_, CurrentRemainingTime? time) {
+          if (time == null) {
+            time = CurrentRemainingTime(sec: kGAME_TIME);
+          }
           return Text(
-            time == null ? '3:00' : '${time.min != null ? time.min.toString().padLeft(1, "0") : "0"}:${time.sec.toString().padLeft(2, "0")}',
+            '${time.min != null ? time.min.toString().padLeft(1, "0") : "0"}:${time.sec.toString().padLeft(2, "0")}',
             style: kEggTimerTextStyle,
           );
         },
       );
     } else {
+      CurrentRemainingTime time = CurrentRemainingTime(sec: kGAME_TIME);
       return Text(
-        '3:00',
+        '${time.min != null ? time.min.toString().padLeft(1, "0") : "0"}:${time.sec.toString().padLeft(2, "0")}',
         style: kEggTimerTextStyle,
       );
     }

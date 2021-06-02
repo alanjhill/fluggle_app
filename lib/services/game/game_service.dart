@@ -1,30 +1,53 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluggle_app/models/game/game.dart';
-import 'package:fluggle_app/models/game/game_word.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/game_letters.dart';
-import 'package:fluggle_app/models/game_board/grid_item.dart';
-import 'package:fluggle_app/models/user/fluggle_user.dart';
-import 'package:fluggle_app/services/auth/auth_service.dart';
-import 'package:fluggle_app/services/database/firestore_database.dart';
+import 'package:fluggle_app/models/user/app_user.dart';
+import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameService {
-  Future<Game> createGame(BuildContext context, {required GameStatus gameStatus, List<FluggleUser>? players, bool? persist = true}) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final firestoreDatabase = Provider.of<FirestoreDatabase>(context, listen: false);
-
-    final user = await authService.currentUser();
+  Game createPracticeGame(BuildContext context) {
+    final firebaseAuth = context.read(firebaseAuthProvider);
+    final user = firebaseAuth.currentUser!;
     final String uid = user.uid;
 
     List<Player> gamePlayers = [Player(uid: uid)];
-    List<String> playerUids = [uid];
-    players?.forEach((FluggleUser user) {
-      gamePlayers.add(Player(uid: user.uid, status: PlayerStatus.invited));
-      playerUids.add(user.uid);
+    Map<String, PlayerStatus> playerUids = {};
+    playerUids[uid] = PlayerStatus.accepted;
+
+    Game game = Game(
+      creatorId: uid,
+      created: Timestamp.now(),
+      gameStatus: GameStatus.created,
+      practise: true,
+      playerUids: playerUids,
+      players: gamePlayers,
+      letters: _getShuffledLetters(),
+    );
+
+    return game;
+  }
+
+  Future<Game> createGame(BuildContext context, {required GameStatus gameStatus, List<AppUser>? players, bool? persist = true}) async {
+    final firestoreDatabase = context.read(databaseProvider);
+    final firebaseAuth = context.read(firebaseAuthProvider);
+    final user = firebaseAuth.currentUser!;
+    final String uid = user.uid;
+
+    //final FluggleUser fluggleUser = firebaseAuthService.fluggleUser!;
+    //final String uid = fluggleUser.uid;
+
+    List<Player> gamePlayers = [Player(uid: uid)];
+    Map<String, PlayerStatus> playerUids = {};
+    playerUids[uid] = PlayerStatus.invited;
+    players?.forEach((AppUser user) {
+      gamePlayers.add(Player(uid: user.uid));
+      playerUids[user.uid] = PlayerStatus.invited;
     });
+
     Game game = Game(
       creatorId: uid,
       created: Timestamp.now(),
@@ -43,14 +66,22 @@ class GameService {
   }
 
   void listGames(BuildContext context, {required String uid}) async {
-    //final authService = Provider.of<AuthService>(context, listen: false);
-    final firestoreGameDatabase = Provider.of<FirestoreDatabase>(context, listen: false);
-
-    firestoreGameDatabase.myPendingGamesStream();
+    final firestoreDatabase = context.read(databaseProvider);
+    firestoreDatabase.myPendingGamesStream;
   }
 
-  void processWords(BuildContext context, {required String gameId, required List<Player> playerList, required Map<String, int> wordTally}) async {
-    final firestoreDatabase = Provider.of<FirestoreDatabase>(context, listen: false);
+  void processWords(
+    BuildContext context, {
+    required Game game,
+    required List<Player> creator,
+    required List<Player> players,
+    required Map<String, int> wordTally,
+  }) async {
+    final firestoreDatabase = context.read(databaseProvider);
+
+    List<Player> playerList = [];
+    playerList.addAll(creator);
+    playerList.addAll(players);
 
     // Establish if all players have finished and scores have been uploaded
     List<bool> playersFinished = [];
@@ -58,15 +89,14 @@ class GameService {
       if (player.creator) {
         playersFinished.add(true);
         // Already have the scores
-      } else if (player.status == PlayerStatus.accepted) {
+      } else if (player.playerStatus == PlayerStatus.accepted) {
         // Waiting for score from this player
         playersFinished.add(false);
-      } else if (player.status == PlayerStatus.finished) {
+      } else if (player.playerStatus == PlayerStatus.finished) {
         playersFinished.add(true);
       }
     });
 
-    // Tally of words and word count
     playerList.forEach((Player player) {
       player.words!.forEach((String word, PlayerWord playerWord) {
         if (wordTally.containsKey(word)) {
@@ -77,13 +107,11 @@ class GameService {
       });
     });
 
-    Game game = await firestoreDatabase.getGame(gameId: gameId);
-    debugPrint('gameStatus: ${game.gameStatus.toString()}');
-
+    // If all players have finished....
     if (!playersFinished.contains(false)) {
       if (game.gameStatus != GameStatus.finished) {
         // Now iterate through each players words and update
-        playerList.forEach((Player player) async {
+        playerList.forEach((Player player) {
           int playerScore = 0;
           player.words!.forEach((String word, PlayerWord playerWord) {
             int? count = wordTally[word];
@@ -99,11 +127,11 @@ class GameService {
           player.score = playerScore;
 
           // Save Player
-          await firestoreDatabase.saveGamePlayer(game: game, player: player);
+          firestoreDatabase.saveGamePlayer(game: game, player: player);
         });
 
-        game.gameStatus = GameStatus.finished;
-        await firestoreDatabase.saveGame(game: game);
+/*        game.gameStatus = GameStatus.finished;
+        firestoreDatabase.saveGame(game: game);*/
         // Player Scores have been updated
       }
     }

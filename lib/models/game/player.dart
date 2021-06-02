@@ -1,42 +1,35 @@
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
-import 'package:fluggle_app/models/user/fluggle_user.dart';
+import 'package:fluggle_app/models/user/app_user.dart';
+import 'package:flutter/material.dart';
 
 enum PlayerStatus { invited, accepted, declined, resigned, finished }
 
 class Player {
   final String uid;
-  FluggleUser? user;
+  AppUser? user;
   bool creator;
-  PlayerStatus? status;
   LinkedHashMap<String, PlayerWord>? words;
+  PlayerStatus? playerStatus;
   int score;
 
-  Player({required this.uid, this.user, this.creator = false, this.status, this.words, this.score = 0});
+  Player({required this.uid, this.user, this.creator = false, this.words, this.score = 0});
 
   factory Player.fromMap(Map<String, dynamic>? map, String documentId) {
     var thing = map!['words'];
-
     var wordsMap;
-
     if (thing != null) {
       wordsMap = LinkedHashMap.from(thing);
     }
-
     LinkedHashMap<String, PlayerWord> playerWords = LinkedHashMap<String, PlayerWord>();
     if (wordsMap != null) {
       wordsMap.forEach((dynamic word, dynamic data) {
         playerWords[word] = PlayerWord.fromMap(data);
       });
     }
-    debugPrint('Player, status: ${map["status"].toString()}');
     return Player(
       uid: documentId,
-      status: PlayerStatus.values.firstWhere(
-        (status) => status.toString() == map['status'],
-      ),
       score: map['score'] ?? 0,
       words: playerWords,
     );
@@ -50,18 +43,25 @@ class Player {
       });
     }
     debugPrint(wordMap.toString());
-    return {'uid': uid, 'status': status.toString(), 'words': wordMap, 'score': score};
+    return {'uid': uid, 'words': wordMap, 'score': score};
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is Player && runtimeType == other.runtimeType && uid == other.uid && status == other.status && words == other.words;
+      identical(this, other) ||
+      other is Player &&
+          runtimeType == other.runtimeType &&
+          uid == other.uid &&
+          user == other.user &&
+          creator == other.creator &&
+          words == other.words &&
+          score == other.score;
 
   @override
-  int get hashCode => uid.hashCode ^ status.hashCode;
+  int get hashCode => uid.hashCode ^ user.hashCode ^ creator.hashCode ^ words.hashCode ^ score.hashCode;
 
   @override
   String toString() {
-    return 'Player{uid: $uid, user: $user, status: $status, words: $words, score: $score}';
+    return 'Player{uid: $uid, user: $user, creator: $creator, words: $words, score: $score}';
   }
 }

@@ -16,7 +16,7 @@ class Strings {
   static const String signInWithEmailLink = 'Sign in with email link';
   static const String signInWithFacebook = 'Sign in with Facebook';
   static const String signInWithGoogle = 'Sign in with Google';
-  static const String goAnonymous = 'Go anonymous';
+  static const String goAnonymous = 'Continue as Guest';
   static const String or = 'or';
   static const String signOut = 'Sign out';
 
@@ -63,21 +63,34 @@ class Strings {
   // Friends
   static const String friendsPage = "Friends";
 
+  // Find Friends
+  static const String findFriendsPage = "Find Friends";
+
   // Play game
-  static const String playGame = 'Play Game';
+  static const String playGamePage = 'Play Game';
 
   // Start game
-  static const String startGame = 'New Game';
+  static const String startGamePage = 'New Game';
 
   // Scores
-  static const String scores = 'Scores';
+  static const String scoresPage = 'Scores';
 
   // Previous Games
-  static const String previousGames = 'Previous Games';
+  static const String previousGamesPage = 'Previous Games';
 
   // Developer menu
   static const String developerMenu = 'Developer menu';
   static const String authenticationType = 'Authentication type';
   static const String firebase = 'Firebase';
   static const String mock = 'Mock';
+
+  // Jobs page
+  static const String jobs = 'Jobs';
+
+  // Entries page
+  static const String entries = 'Entries';
+
+  // Account page
+  static const String account = 'Account';
+  static const String accountPage = 'Account Page';
 }

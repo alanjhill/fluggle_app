@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:fluggle_app/models/user/fluggle_user.dart';
+import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/services/auth/auth_service.dart';
 import 'package:flutter/services.dart';
-
 import 'package:random_string/random_string.dart' as random;
 
 /// Mock authentication service to be used for testing the UI
@@ -22,20 +21,20 @@ class MockAuthService implements AuthService {
 
   final Map<String, _UserData> _usersStore = <String, _UserData>{};
 
-  FluggleUser? _currentUser;
+  AppUser? _currentUser;
 
-  final StreamController<FluggleUser> _onAuthStateChangedController = StreamController<FluggleUser>();
+  final StreamController<AppUser> _onAuthStateChangedController = StreamController<AppUser>();
   @override
-  Stream<FluggleUser> get onAuthStateChanged => _onAuthStateChangedController.stream;
+  Stream<AppUser> get onAuthStateChanged => _onAuthStateChangedController.stream;
 
   @override
-  Future<FluggleUser> currentUser() async {
+  Future<AppUser> currentUser() async {
     await Future<void>.delayed(startupTime!);
     return _currentUser!;
   }
 
   @override
-  Future<FluggleUser> createUserWithEmailAndPassword(String email, String password) async {
+  Future<AppUser> createUserWithEmailAndPassword({required String email, required String password}) async {
     await Future<void>.delayed(responseTime!);
     if (_usersStore.keys.contains(email)) {
       throw PlatformException(
@@ -43,14 +42,14 @@ class MockAuthService implements AuthService {
         message: 'The email address is already registered. Sign in instead?',
       );
     }
-    final FluggleUser user = FluggleUser(uid: random.randomAlphaNumeric(32), displayName: 'Fluggle User', email: email);
+    final AppUser user = AppUser(uid: random.randomAlphaNumeric(32), displayName: 'Fluggle User', email: email);
     _usersStore[email] = _UserData(password: password, user: user);
     _add(user);
     return user;
   }
 
   @override
-  Future<FluggleUser> signInWithEmailAndPassword(String email, String password) async {
+  Future<AppUser> signInWithEmailAndPassword({required String email, required String password}) async {
     await Future<void>.delayed(responseTime!);
     if (!_usersStore.keys.contains(email)) {
       throw PlatformException(
@@ -70,7 +69,7 @@ class MockAuthService implements AuthService {
   }
 
   @override
-  Future<void> sendPasswordResetEmail(String email) async {}
+  Future<void> sendPasswordResetEmail({required String email}) async {}
 
   @override
   bool isSignedIn() {
@@ -82,7 +81,7 @@ class MockAuthService implements AuthService {
     _add(null);
   }
 
-  void _add(FluggleUser? user) {
+  void _add(AppUser? user) {
     _currentUser = user;
     _onAuthStateChangedController.add(user!);
   }
@@ -96,5 +95,5 @@ class MockAuthService implements AuthService {
 class _UserData {
   _UserData({required this.password, required this.user});
   final String password;
-  final FluggleUser user;
+  final AppUser user;
 }
