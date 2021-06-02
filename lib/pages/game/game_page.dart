@@ -12,7 +12,6 @@ import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/game_letters.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
-import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/pages/game/game_board_widget.dart';
 import 'package:fluggle_app/pages/game/game_bottom_widget.dart';
 import 'package:fluggle_app/pages/game/game_top_widget.dart';
@@ -54,7 +53,6 @@ class _GamePageWidgetState extends State<GamePageWidget> {
   String currentWord = "";
   Dictionary? dictionary;
   bool gameStarted = false;
-  //AppUser? user;
 
   @override
   void initState() {
@@ -64,8 +62,6 @@ class _GamePageWidgetState extends State<GamePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    //final user = firebaseAuth.currentUser!;
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
@@ -464,20 +460,6 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     debugPrint('<<< finished <<<');
     return;
   }
-
-/*  void _shuffleLetters() {
-    for (var letterCube in GAME_LETTERS) {
-      letterCube.shuffle();
-    }
-    GAME_LETTERS.shuffle();
-
-    List<String> shuffledLetters = [];
-    GAME_LETTERS.forEach((cube) => shuffledLetters.add(cube[0]));
-    debugPrint('shuffledLetters: ${shuffledLetters}');
-    setState(() {
-      letters = shuffledLetters;
-    });
-  }*/
 
   void _updateGridData() {
     List<List<GridItem>> localGridItems = [];

@@ -18,7 +18,6 @@ class _EggTimerState extends State<EggTimer> {
   int? endTime;
 
   void onEnd() {
-    debugPrint('ended');
     widget.timerEndedCallback!();
   }
 
@@ -59,9 +58,9 @@ class _EggTimerState extends State<EggTimer> {
         },
       );
     } else {
-      CurrentRemainingTime time = CurrentRemainingTime(sec: kGAME_TIME);
+      CurrentRemainingTime startTime = CurrentRemainingTime(min: (kGAME_TIME / 60).toInt(), sec: (kGAME_TIME % 60).toInt());
       return Text(
-        '${time.min != null ? time.min.toString().padLeft(1, "0") : "0"}:${time.sec.toString().padLeft(2, "0")}',
+        '${startTime.min != null ? startTime.min.toString().padLeft(1, "0") : "0"}:${startTime.sec.toString().padLeft(2, "0")}',
         style: kEggTimerTextStyle,
       );
     }
