@@ -55,7 +55,7 @@ class PlayGamePage extends ConsumerWidget {
           ),
           SizedBox(height: 8.0),
           CustomRaisedButton(
-            child: Text('Practice'),
+            child: Text('Practise'),
             onPressed: () => practise(context),
           ),
         ],

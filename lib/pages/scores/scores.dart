@@ -4,6 +4,7 @@ import 'package:fluggle_app/models/game/game_word.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/pages/scores/scores_item.dart';
+import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 import 'package:flutter/material.dart';
 
 class Scores extends StatelessWidget {
@@ -107,9 +108,10 @@ class Scores extends StatelessWidget {
               );
             },
           ),
-          onNotification: (scrollEnd) => _scrollEndNotification(
+          onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
             scrollMetrics: scrollEnd.metrics,
             width: width,
+            horizontalScrollControllers: horizontalScrollControllers,
             horizontalScrollerIndex: horizontalScrollerIndex,
           ),
         ),
@@ -120,13 +122,13 @@ class Scores extends StatelessWidget {
   Widget _buildPlayerScoresList(
     BuildContext context, {
     required Game game,
-    List<Player>? creator,
-    List<Player>? players,
     required int playerIndex,
     required int verticalScrollerIndex,
     required Map<String, int> wordTally,
     required bool switched,
     required List<ScrollController> scrollControllers,
+    List<Player>? creator,
+    List<Player>? players,
   }) {
     final mediaQuery = MediaQuery.of(context);
     final double width = mediaQuery.size.width;
@@ -143,7 +145,7 @@ class Scores extends StatelessWidget {
     }
 
     final Player player = playerList[playerIndex];
-    final PlayerStatus playerStatus = game.playerUids![player.uid] as PlayerStatus;
+    final PlayerStatus playerStatus = game.playerUids![player.playerId] as PlayerStatus;
 
     if (true || playerStatus == PlayerStatus.finished) {
       return LayoutBuilder(
@@ -172,30 +174,5 @@ class Scores extends StatelessWidget {
         ),
       );
     }
-  }
-
-  double _getNearestPosition({required double width, required double position}) {
-    debugPrint('(width / 2) - position: ${(width / 2) - position}, position: ${position}');
-    if ((width / 2) - position > position) {
-      return 0;
-    } else {
-      return (width / 2);
-    }
-  }
-
-  bool _scrollEndNotification({required ScrollMetrics scrollMetrics, required double width, required int horizontalScrollerIndex}) {
-    print('>>> _scrollEndNotification, axisDirection: ${scrollMetrics.axisDirection}');
-    Future.delayed(Duration(milliseconds: 0), () {
-      if (scrollMetrics.axisDirection == AxisDirection.left || scrollMetrics.axisDirection == AxisDirection.right) {
-        double _position = _getNearestPosition(width: width, position: scrollMetrics.pixels);
-        horizontalScrollControllers.asMap().forEach((int index, ScrollController scrollController) {
-          if (index != horizontalScrollerIndex) {
-            scrollController.animateTo(_position, duration: Duration(milliseconds: 1000), curve: Curves.decelerate);
-          }
-        });
-      }
-      return true;
-    });
-    return false;
   }
 }

@@ -5,6 +5,7 @@ import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/pages/game/added_words_list.dart';
 import 'package:fluggle_app/pages/game/current_word.dart';
+import 'package:fluggle_app/pages/game/word_count.dart';
 import 'package:flutter/material.dart';
 
 class GameTopWidget extends StatefulWidget {
@@ -42,27 +43,33 @@ class _GameTopWidgetState extends State<GameTopWidget> {
     //debugPrint('rb: ${rb?.size ?? Size.zero}');
     //final height = rb.size.height;
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: kGAME_BOARD_PADDING / 2, vertical: kGAME_BOARD_PADDING / 2),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          //EggTimer(gameStarted: widget.gameStarted, timerEndedCallback: timerEnded),
-          Expanded(
-            child: AddedWordsList(
-              addedWords: widget.addedWords,
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: kGAME_BOARD_PADDING / 2, vertical: kGAME_BOARD_PADDING / 2),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            //EggTimer(gameStarted: widget.gameStarted, timerEndedCallback: timerEnded),
+/*            Expanded(
+              child: AddedWordsList(
+                addedWords: widget.addedWords,
+              ),
+            ),*/
+            Expanded(
+                child: WordCount(
+              count: widget.addedWords!.length,
+            )),
+            SizedBox(height: kGAME_BOARD_PADDING / 2),
+            Expanded(
+              child: CurrentWord(
+                swipedGridItems: widget.swipedGridItems,
+                currentWord: widget.currentWord,
+              ),
             ),
-          ),
-          SizedBox(height: kGAME_BOARD_PADDING / 2),
-          Expanded(
-            child: CurrentWord(
-              swipedGridItems: widget.swipedGridItems,
-              currentWord: widget.currentWord,
-            ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   void timerEnded() {

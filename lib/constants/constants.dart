@@ -10,7 +10,7 @@ const double kGAME_BOARD_PADDING = 40.0;
 const double kCUBE_PADDING = 8.0;
 const double kCUBE_SELECTED_PADDING = 5.0;
 const double kLETTER_PADDING = 12.0;
-const double kFLUGGLE_BOARD_BORDER_WIDTH = 1.0;
+const double kFLUGGLE_BOARD_BORDER_WIDTH = 2.0;
 const double kSTATUS_BAR_HEIGHT = 48;
 
 const int kGridCount = 4;

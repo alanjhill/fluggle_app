@@ -215,16 +215,13 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       // Set the words for this player
       Player player = widget.game.players![0];
       player.words = addedWords;
-      widget.game.playerUids![player.uid] = PlayerStatus.finished;
+      widget.game.playerUids![player.playerId] = PlayerStatus.finished;
 
       Navigator.of(context).pop(null);
       Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: widget.game);
     } else {
       // Real game, go to the scores page, passing the game object
       final database = context.read(databaseProvider);
-
-      // Get the current user
-      //FluggleUser fluggleUser = firebaseAuthService.fluggleUser!;
 
       // Get Player
       Player player = await database.getGamePlayer(gameId: widget.game.gameId!, playerUid: user.uid);

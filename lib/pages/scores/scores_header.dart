@@ -1,5 +1,6 @@
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
+import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 import 'package:flutter/material.dart';
 
 class ScoresHeader extends StatelessWidget {
@@ -88,45 +89,13 @@ class ScoresHeader extends StatelessWidget {
                 );
               },
             ),
-            onNotification: (scrollEnd) => _scrollEndNotification(
+            onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
               scrollMetrics: scrollEnd.metrics,
               width: width,
+              horizontalScrollControllers: horizontalScrollControllers,
               horizontalScrollerIndex: horizontalScrollerIndex,
             ),
           )),
     );
-  }
-
-  bool _scrollEndNotification({
-    required ScrollMetrics scrollMetrics,
-    required double width,
-    required int horizontalScrollerIndex,
-  }) {
-    Future.delayed(Duration(milliseconds: 0), () {
-      double _position = getNearestPosition(width: width, position: scrollMetrics.pixels);
-      horizontalScrollControllers.asMap().forEach((int index, ScrollController scrollController) {
-        if (index != horizontalScrollerIndex) {
-          scrollController.animateTo(_position, duration: Duration(milliseconds: 500), curve: Curves.ease);
-        }
-        double _getNearestPosition({required double width, required double position}) {
-          debugPrint('(width / 2) - position: ${(width / 2) - position}, position: ${position}');
-          if ((width / 2) - position > position) {
-            return 0;
-          } else {
-            return (width / 2);
-          }
-        }
-      });
-    });
-    return true;
-  }
-
-  double getNearestPosition({required double width, required double position}) {
-    debugPrint('(width / 2) - position: ${(width / 2) - position}, position: ${position}');
-    if ((width / 2) - position > position) {
-      return 0;
-    } else {
-      return (width / 2);
-    }
   }
 }

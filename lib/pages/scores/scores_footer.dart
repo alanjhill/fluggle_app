@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
+import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 import 'package:flutter/material.dart';
 
 class ScoresFooter extends StatelessWidget {
@@ -89,8 +90,11 @@ class ScoresFooter extends StatelessWidget {
                 );
               },
             ),
-            onNotification: (scrollEnd) =>
-                _scrollEndNotification(scrollMetrics: scrollEnd.metrics, width: width, horizontalScrollerIndex: horizontalScrollerIndex)),
+            onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
+                scrollMetrics: scrollEnd.metrics,
+                width: width,
+                horizontalScrollControllers: horizontalScrollControllers,
+                horizontalScrollerIndex: horizontalScrollerIndex)),
       ),
     );
   }
@@ -160,30 +164,5 @@ class ScoresFooter extends StatelessWidget {
       );
     }
     return rows;
-  }
-
-  double _getNearestPosition({required double width, required double position}) {
-    debugPrint('(width / 2) - position: ${(width / 2) - position}, position: ${position}');
-    if ((width / 2) - position > position) {
-      return 0;
-    } else {
-      return (width / 2);
-    }
-  }
-
-  bool _scrollEndNotification({required ScrollMetrics scrollMetrics, required double width, required int horizontalScrollerIndex}) {
-    print('>>> _scrollEndNotification, axisDirection: ${scrollMetrics.axisDirection}');
-    Future.delayed(Duration(milliseconds: 0), () {
-      if (scrollMetrics.axisDirection == AxisDirection.left || scrollMetrics.axisDirection == AxisDirection.right) {
-        double _position = _getNearestPosition(width: width, position: scrollMetrics.pixels);
-        horizontalScrollControllers.asMap().forEach((int index, ScrollController scrollController) {
-          if (index != horizontalScrollerIndex) {
-            scrollController.animateTo(_position, duration: Duration(milliseconds: 1000), curve: Curves.decelerate);
-          }
-        });
-      }
-      return true;
-    });
-    return false;
   }
 }

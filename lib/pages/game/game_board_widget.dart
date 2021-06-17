@@ -85,7 +85,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
           color: kFluggleBoardBorderColor,
-          width: kFLUGGLE_BOARD_BORDER_WIDTH,
+          width: kFLUGGLE_BOARD_BORDER_WIDTH / 2.0,
         ),
       ),
       child: Listener(
@@ -113,7 +113,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   BoxDecoration _getGridItemBoxDecoration(RowCol rowCol) {
     BoxDecoration boxDecoration = BoxDecoration(
-      border: Border.all(color: kFluggleBoardBorderColor, width: kFLUGGLE_BOARD_BORDER_WIDTH, style: BorderStyle.solid),
+      border: Border.all(color: kFluggleBoardBorderColor, width: kFLUGGLE_BOARD_BORDER_WIDTH / 2.0, style: BorderStyle.solid),
       borderRadius: _getGridItemBorderRadius(rowCol),
     );
 

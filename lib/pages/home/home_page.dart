@@ -1,18 +1,27 @@
 import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
+import 'package:fluggle_app/models/user/app_user.dart';
+import 'package:fluggle_app/models/user/user_view_model.dart';
 import 'package:fluggle_app/pages/onboarding/onboarding_view_model.dart';
 import 'package:fluggle_app/routing/app_router.dart';
 import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatelessWidget {
+final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
+  final firestoreDatabase = ref.watch(databaseProvider);
+  final vm = UserViewModel(database: firestoreDatabase);
+  return vm.findUserByUid(uid: uid);
+});
+
+class HomePage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
     final bool isSignedIn = user != null;
+    AppUser appUser = watch(userStreamProvider(user!.uid)).data?.value as AppUser;
 
     return Scaffold(
       appBar: customAppBar(
@@ -54,12 +63,14 @@ class HomePage extends StatelessWidget {
                         onPressed: () => accountPage(context),
                       ),
                 SizedBox(height: 8.0),
-                CustomRaisedButton(
-                  child: Text('Onboarding Incomplete'),
-                  onPressed: () async {
-                    await onboardingIncomplete(context);
-                  },
-                ),
+                appUser.admin == true
+                    ? CustomRaisedButton(
+                        child: Text('Onboarding Incomplete'),
+                        onPressed: () async {
+                          await onboardingIncomplete(context);
+                        },
+                      )
+                    : Container(),
               ],
             ),
           ),

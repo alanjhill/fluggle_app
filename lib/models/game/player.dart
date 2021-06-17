@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 enum PlayerStatus { invited, accepted, declined, resigned, finished }
 
 class Player {
-  final String uid;
+  final String playerId;
   AppUser? user;
   bool creator;
   LinkedHashMap<String, PlayerWord>? words;
   PlayerStatus? playerStatus;
   int score;
 
-  Player({required this.uid, this.user, this.creator = false, this.words, this.score = 0});
+  Player({required this.playerId, this.user, this.creator = false, this.words, this.score = 0});
 
   factory Player.fromMap(Map<String, dynamic>? map, String documentId) {
     var thing = map!['words'];
@@ -29,7 +29,7 @@ class Player {
       });
     }
     return Player(
-      uid: documentId,
+      playerId: documentId,
       score: map['score'] ?? 0,
       words: playerWords,
     );
@@ -43,7 +43,7 @@ class Player {
       });
     }
     debugPrint(wordMap.toString());
-    return {'uid': uid, 'words': wordMap, 'score': score};
+    return {'words': wordMap, 'score': score};
   }
 
   @override
@@ -51,17 +51,17 @@ class Player {
       identical(this, other) ||
       other is Player &&
           runtimeType == other.runtimeType &&
-          uid == other.uid &&
+          playerId == other.playerId &&
           user == other.user &&
           creator == other.creator &&
           words == other.words &&
           score == other.score;
 
   @override
-  int get hashCode => uid.hashCode ^ user.hashCode ^ creator.hashCode ^ words.hashCode ^ score.hashCode;
+  int get hashCode => playerId.hashCode ^ user.hashCode ^ creator.hashCode ^ words.hashCode ^ score.hashCode;
 
   @override
   String toString() {
-    return 'Player{uid: $uid, user: $user, creator: $creator, words: $words, score: $score}';
+    return 'Player{playerId: $playerId, user: $user, creator: $creator, words: $words, score: $score}';
   }
 }

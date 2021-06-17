@@ -64,7 +64,7 @@ class Strings {
   static const String friendsPage = "Friends";
 
   // Find Friends
-  static const String findFriendsPage = "Find Friends";
+  static const String addFriendPage = "Add Friend";
 
   // Play game
   static const String playGamePage = 'Play Game';

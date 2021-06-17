@@ -14,7 +14,7 @@ class GameService {
     final user = firebaseAuth.currentUser!;
     final String uid = user.uid;
 
-    List<Player> gamePlayers = [Player(uid: uid)];
+    List<Player> gamePlayers = [Player(playerId: uid)];
     Map<String, PlayerStatus> playerUids = {};
     playerUids[uid] = PlayerStatus.accepted;
 
@@ -37,14 +37,11 @@ class GameService {
     final user = firebaseAuth.currentUser!;
     final String uid = user.uid;
 
-    //final FluggleUser fluggleUser = firebaseAuthService.fluggleUser!;
-    //final String uid = fluggleUser.uid;
-
-    List<Player> gamePlayers = [Player(uid: uid)];
+    List<Player> gamePlayers = [Player(playerId: uid)];
     Map<String, PlayerStatus> playerUids = {};
     playerUids[uid] = PlayerStatus.invited;
     players?.forEach((AppUser user) {
-      gamePlayers.add(Player(uid: user.uid));
+      gamePlayers.add(Player(playerId: user.uid));
       playerUids[user.uid] = PlayerStatus.invited;
     });
 
@@ -59,7 +56,7 @@ class GameService {
 
     // Only save if persist is true (by default).  Practise games are not saved
     if (persist!) {
-      await firestoreDatabase.createGameWithTransaction(game);
+      await firestoreDatabase.createGameWithTransaction(game: game);
     }
 
     return game;
@@ -126,8 +123,11 @@ class GameService {
           });
           player.score = playerScore;
 
-          // Save Player
-          firestoreDatabase.saveGamePlayer(game: game, player: player);
+          // If this is a real game (i.e. not practise) then save
+          if (game.practise == false) {
+            // Save Player
+            firestoreDatabase.saveGamePlayer(game: game, player: player);
+          }
         });
 
 /*        game.gameStatus = GameStatus.finished;

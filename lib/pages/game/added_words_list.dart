@@ -40,7 +40,7 @@ class _AddedWordsListState extends State<AddedWordsList> {
       decoration: BoxDecoration(
         border: Border.all(
           color: kFluggleBoardBorderColor,
-          width: kFLUGGLE_BOARD_BORDER_WIDTH * 2,
+          width: kFLUGGLE_BOARD_BORDER_WIDTH,
           style: BorderStyle.solid,
         ),
         borderRadius: BorderRadius.circular(10),

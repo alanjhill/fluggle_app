@@ -23,6 +23,7 @@ class GameViewModel {
   Stream<List<Game>> get myPreviousGamesStream => database.myPreviousGamesStream;
 
   Stream<List<Player>> gamePlayersStream({required String gameId, bool includeSelf = false}) {
+    debugPrint('>>> gamePlayersStream >>>');
     Stream<List<Player>> playerStream = database.gamePlayerStream(gameId: gameId, includeSelf: includeSelf).map((List<Player> players) {
       return players;
     });
@@ -33,7 +34,7 @@ class GameViewModel {
 
     var playerList = Rx.combineLatest2(playerStream, userStream, (List<Player> players, List<AppUser> users) {
       return players.map((player) {
-        final AppUser? fluggleUser = users.firstWhereOrNull((user) => user.uid == player.uid);
+        final AppUser? fluggleUser = users.firstWhereOrNull((user) => user.uid == player.playerId);
         player.user = fluggleUser;
         return player;
       }).toList();

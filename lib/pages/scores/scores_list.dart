@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
+import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 
 // ignore: must_be_immutable
 class ScoresList extends StatefulWidget {
@@ -93,7 +94,7 @@ class _ScoresListState extends State<ScoresList> {
           int index = 0;
           while (it.moveNext()) {
             Player player = it.current;
-            player.playerStatus = game.playerUids![player.uid] as PlayerStatus;
+            player.playerStatus = game.playerUids![player.playerId] as PlayerStatus;
             if (index == 0) {
               creator.add(player);
             }
@@ -136,7 +137,7 @@ class _ScoresListState extends State<ScoresList> {
           int index = 0;
           while (it.moveNext()) {
             Player player = it.current;
-            player.playerStatus = game.playerUids![player.uid] as PlayerStatus;
+            player.playerStatus = game.playerUids![player.playerId] as PlayerStatus;
             if (index == 0) {
               creator.add(player);
             } else {
@@ -157,7 +158,6 @@ class _ScoresListState extends State<ScoresList> {
             width: 1,
           ),
           borderRadius: BorderRadius.circular(8.0),
-          //boxShadow: [const BoxShadow(color: Colors.black, spreadRadius: -2, blurRadius: 2)],
         ),
         child: game != null
             ? _buildScores(
