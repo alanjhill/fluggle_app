@@ -28,7 +28,7 @@ class FriendsSearchPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = customAppBar(title: Strings.addFriendPage, centerTitle: true);
+    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.addFriendPage));
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
     final friendsSearchAsyncValue = watch(userViewModelStreamProvider(email));

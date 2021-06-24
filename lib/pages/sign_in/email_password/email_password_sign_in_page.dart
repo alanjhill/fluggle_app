@@ -99,7 +99,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
   Widget _buildDisplayNameField() {
     return TextFormField(
       key: const Key('displayName'),
-      style: TextStyle(color: Colors.grey),
+      style: TextStyle(color: Colors.white),
       controller: _displayNameController,
       decoration: InputDecoration(
         labelText: EmailPasswordSignInStrings.displayNameLabel,
@@ -118,7 +118,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
   Widget _buildEmailField() {
     return TextFormField(
       key: const Key('email'),
-      style: TextStyle(color: Colors.grey),
+      style: TextStyle(color: Colors.white),
       controller: _emailController,
       decoration: InputDecoration(
         labelText: EmailPasswordSignInStrings.emailLabel,
@@ -140,7 +140,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
   Widget _buildPasswordField() {
     return TextFormField(
       key: const Key('password'),
-      style: TextStyle(color: Colors.grey),
+      style: TextStyle(color: Colors.white),
       controller: _passwordController,
       decoration: InputDecoration(
         labelText: model.passwordLabelText,
@@ -201,9 +201,8 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(
-        title: model.title,
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: Text(model.title),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -213,7 +212,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
               padding: const EdgeInsets.all(16.0),
               child: Card(
                 elevation: 2.0,
-                color: kFluggleCubeColor,
+                color: kFlugglePrimaryColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: _buildContent(),

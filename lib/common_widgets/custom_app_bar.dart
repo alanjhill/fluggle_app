@@ -1,19 +1,25 @@
-import 'package:fluggle_app/common_widgets/word_cubes.dart';
-import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 
-PreferredSizeWidget customAppBar({required String title, bool centerTitle = false, bool backButton = true, List<Widget>? actions = const []}) {
-  return AppBar(
-    leading: !backButton ? Container() : null,
-    elevation: 2.0,
-    title: Text(
-      title.toUpperCase(),
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
+class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+  @override
+  final Size preferredSize;
+  final Text title;
+  final Widget? leading;
+  final List<Widget>? actions;
+
+  CustomAppBar({Key? key, required this.title, this.leading, this.actions})
+      : preferredSize = Size.fromHeight(50.0),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(
+        title.data.toString().toUpperCase(),
       ),
-    ),
-    centerTitle: centerTitle,
-    backgroundColor: kFlugglePrimaryColor,
-    actions: actions,
-  );
+      centerTitle: true,
+      leading: this.leading ?? null,
+      actions: this.actions ?? null,
+    );
+  }
 }

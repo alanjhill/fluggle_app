@@ -1,3 +1,4 @@
+import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/pages/scores/scroll_utils.dart';
@@ -68,6 +69,12 @@ class ScoresHeader extends StatelessWidget {
     required bool first,
     required horizontalScrollerIndex,
   }) {
+    final bool singlePlayer = game.practise!;
+    if (singlePlayer) {
+      width = width - 4;
+    } else {
+      width = width / 2 - 8;
+    }
     return Expanded(
       child: Container(
           height: height,
@@ -79,8 +86,9 @@ class ScoresHeader extends StatelessWidget {
               itemBuilder: (context, index) {
                 Player player = players[index];
                 return Container(
-                  margin: EdgeInsets.only(left: 4, right: 4),
-                  width: width / 2 - 8,
+                  margin: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING),
+                  padding: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING),
+                  width: width,
                   child: Text(
                     '${player.user!.displayName}',
                     textAlign: TextAlign.center,
@@ -91,7 +99,8 @@ class ScoresHeader extends StatelessWidget {
             ),
             onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
               scrollMetrics: scrollEnd.metrics,
-              width: width,
+              width: width + (2 * kSCORES_COLUMN_PADDING),
+              itemCount: players.length,
               horizontalScrollControllers: horizontalScrollControllers,
               horizontalScrollerIndex: horizontalScrollerIndex,
             ),

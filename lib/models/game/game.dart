@@ -41,7 +41,7 @@ class Game {
         gameStatus: GameStatus.values.firstWhere(
           (status) => status.toString() == map['gameStatus'],
         ),
-        practise: map['practise'],
+        practise: map['practice'],
         playerUids: playerUids,
         players: [],
         letters: List<String>.from(map['letters']));
@@ -52,7 +52,7 @@ class Game {
       'creatorId': creatorId,
       'created': created,
       'gameStatus': gameStatus.toString(),
-      'practise': practise,
+      'practice': practise,
       'letters': letters.toList(),
     };
     Map<String, dynamic> playerUidsMap = {};

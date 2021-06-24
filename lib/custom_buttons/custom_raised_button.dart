@@ -40,6 +40,14 @@ class CustomRaisedButton extends StatelessWidget {
       height: height,
       child: ElevatedButton(
         child: loading ? buildSpinner(context) : child,
+/*        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.disabled)) {
+              return kFluggleSecondaryColor; // Disabled color
+            }
+            return kFlugglePrimaryColor; // Regular color
+          }),
+        ),*/
         onPressed: onPressed,
       ),
     );

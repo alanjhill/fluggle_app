@@ -58,9 +58,8 @@ class SignInPageContents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(
-        title: title,
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: Text(title),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -106,8 +105,8 @@ class SignInPageContents extends StatelessWidget {
                   textColor: Colors.white,
                   onPressed: viewModel.isLoading
                       ? null
-                      : () {
-                          viewModel.signInAnonymously();
+                      : () async {
+                          await viewModel.signInAnonymously();
                           Navigator.of(context).pushReplacementNamed(AppRoutes.homePage);
                         }),
             ],

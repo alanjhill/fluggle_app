@@ -4,6 +4,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
@@ -12,9 +14,9 @@ import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/game_letters.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
-import 'package:fluggle_app/pages/game/game_board_widget.dart';
-import 'package:fluggle_app/pages/game/game_bottom_widget.dart';
-import 'package:fluggle_app/pages/game/game_top_widget.dart';
+import 'package:fluggle_app/pages/game/game_board.dart';
+import 'package:fluggle_app/pages/game/game_bottom_panel.dart';
+import 'package:fluggle_app/pages/game/game_top_panel.dart';
 import 'package:fluggle_app/pages/scores/scores_page.dart';
 import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/top_level_providers.dart';
@@ -57,7 +59,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
   @override
   void initState() {
     super.initState();
-    setupGame();
+    _setupGame();
   }
 
   @override
@@ -65,12 +67,12 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    final PreferredSizeWidget appBar = _buildAppBar(context, quitGame, gameStarted);
+    final PreferredSizeWidget appBar = _buildAppBar(context, _quitGame, gameStarted);
 
     final appBarHeight = appBar.preferredSize.height;
     final gameBoardHeight = screenWidth - kGAME_BOARD_PADDING;
     final remainingHeight = screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
-    final topPanelHeight = remainingHeight / 4 * 3;
+    final topPanelHeight = remainingHeight / 3 * 2;
 
     // Top Panel for entered words, number of words, timer etc
     final gameTopPanel = _buildGameTopPanel(topPanelHeight);
@@ -78,13 +80,10 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     // Game Board for the grid and letters
     final gameBoard = _buildGameBoard(screenWidth - kGAME_BOARD_PADDING);
 
+    // Bottom panel / button bar
+    final gameBottomPanel = _buildGameBottomPanel(kBOTTOM_BAR_HEIGHT);
+
     // Bottom Bar
-    final gameBoardBottomBar = Container(
-      child: GameBottomWidget(
-        gameStarted: gameStarted,
-        startButtonPressed: startGame,
-      ),
-    );
 
     return Scaffold(
       appBar: appBar,
@@ -93,7 +92,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
         children: <Widget>[
           gameTopPanel,
           gameBoard,
-          gameBoardBottomBar,
+          gameBottomPanel,
         ],
       ),
     );
@@ -148,14 +147,14 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       // Check if word exists in dictionary
       if (dictionary!.exists(currentWord)) {
         setState(() {
-          debugPrint('addWord: ${word}');
+          //debugPrint('addWord: ${word}');
           addedWords[word] = PlayerWord(gameWord: GameWord(word: word), gridItems: swipedGridItems);
-          debugPrint('currentWord: ${currentWord}');
-          debugPrint('words: ${addedWords}');
+          //debugPrint('currentWord: ${currentWord}');
+          //debugPrint('words: ${addedWords}');
           currentWord = word;
         });
       } else {
-        debugPrint('Word does not exist');
+        //debugPrint('Word does not exist');
         currentWord = '';
       }
     } else {
@@ -189,28 +188,12 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     });
   }
 
-/*  void _swipeAllItems() {
-    gridItems.forEach((List<GridItem> gridItemList) {
-      gridItemList.forEach((GridItem gridItem) {
-        gridItem.swiped = true;
-      });
-    });
-  }
-
-  void _unswipeAllItems() {
-    gridItem.forEach((List<GridItem> gridItemList) {
-      gridItemList.forEach((GridItem gridItem) {
-        gridItem.swiped = false;
-      });
-    });
-  }*/
-
-  Future<User?> _timerEnded(BuildContext context) async {
+  Future<void> _timerEnded(BuildContext context) async {
     debugPrint('timerEnded');
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
-    // If practise mode, we don't save anything, just redirect to the scores page, passing the game object
+    // If practice mode, we don't save anything, just redirect to the scores page, passing the game object
     if (widget.game.practise == true) {
       // Set the words for this player
       Player player = widget.game.players![0];
@@ -232,23 +215,24 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       // Set the status of the player to finished
       //player.status = PlayerStatus.finished;
 
-      // TODO: Save the game status of this player
+      // TODO: Use batch/transaction
+      // Save the game status of this player
+      widget.game.playerUids![user.uid] = PlayerStatus.finished;
+      await database.saveGame(game: widget.game);
 
-      // Save Player
-      await database.saveGamePlayer(game: widget.game, player: player);
+      // Save Game and Player
+      await database.saveGameAndPlayer(game: widget.game, player: player);
 
       // Go to scoreboard
       Navigator.of(context).pop(null);
       Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: widget.game);
     }
-
-    return user;
   }
 
   void _confirmQuit(BuildContext context) {
     debugPrint('confirmQuit');
     Navigator.pop(context);
-    quitGame(context);
+    _quitGame(context);
   }
 
   void _cancelQuit(BuildContext context) {
@@ -304,69 +288,41 @@ class _GamePageWidgetState extends State<GamePageWidget> {
 
   Text _getTitle() {
     if (widget.game.practise == true) {
-      return const Text('Practise');
+      return const Text(Strings.practise);
     } else {
-      return const Text('Playing');
+      return const Text(Strings.playing);
     }
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context, Function quitGame, bool gameStarted) {
-    return AppBar(
-        backgroundColor: kFlugglePrimaryColor,
-/*        automaticallyImplyLeading: true,
-        leading: Center(
+    return CustomAppBar(
+      leading: new IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            if (gameStarted) {
+              _showQuitGameDialog(context);
+            } else {
+              Navigator.of(context).pop();
+            }
+          }),
+      title: _getTitle(),
+      actions: <Widget>[
+        Center(
           child: EggTimer(
             gameStarted: gameStarted,
-            timerEndedCallback: () {
-              _timerEnded(context);
+            timerEndedCallback: () async {
+              await _timerEnded(context);
             },
           ),
         ),
-        leadingWidth: 120,*/
-        leading: new IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              if (gameStarted) {
-                _showQuitGameDialog(context);
-              } else {
-                Navigator.of(context).pop();
-              }
-            }),
-        title: _getTitle(),
-        centerTitle: true,
-        actions: <Widget>[
-          Center(
-            child: EggTimer(
-              gameStarted: gameStarted,
-              timerEndedCallback: () async {
-                await _timerEnded(context);
-              },
-            ),
-          ),
-        ]
-/*      actions: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ButtonTheme(
-            child: ElevatedButton(
-              style: kElevatedButtonStyle,
-              child: Text('Quit'),
-              onPressed: () {
-                _showQuitGameDialog(context);
-                //quitGame();
-                //Navigator.of(context).pop(null);
-              },
-            ),
-          ),
-        ),
-      ],*/
-        );
+      ],
+    );
   }
 
   Widget _buildGameTopPanel(double topPanelHeight) {
     return Container(
       height: topPanelHeight,
-      child: GameTopWidget(
+      child: GameTopPanel(
         gameStarted: gameStarted,
         swipedGridItems: swipedGridItems,
         addedWords: _addedWords,
@@ -380,7 +336,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
         //color: Colors.black26,
         /*padding: EdgeInsets.all(GAME_BOARD_PADDING),*/
         height: height,
-        child: GameBoardWidget(
+        child: GameBoard(
           gameStarted: gameStarted,
           letters: letters,
           gridItems: gridItems,
@@ -393,7 +349,15 @@ class _GamePageWidgetState extends State<GamePageWidget> {
         ));
   }
 
-  void setupGame() {
+  Widget _buildGameBottomPanel(double bottomPanelHeight) {
+    return GameBottomPanel(
+      gameStarted: gameStarted,
+      startButtonPressed: _startGame,
+      height: bottomPanelHeight,
+    );
+  }
+
+  void _setupGame() {
     debugPrint('setupGame');
     shuffledLetters = widget.game.letters;
 
@@ -408,7 +372,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     _resetWords();
   }
 
-  void startGame() async {
+  void _startGame() async {
     debugPrint('startGame');
     await _animateLetters();
     letters = shuffledLetters;
@@ -419,10 +383,15 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     });
   }
 
-  void quitGame(BuildContext context) {
+  void _quitGame(BuildContext context) {
     setState(() {
       gameStarted = false;
     });
+    // Update the Game status for this player
+    final firebaseAuth = context.read(firebaseAuthProvider);
+    final user = firebaseAuth.currentUser!;
+    widget.game.playerUids![user.uid] = PlayerStatus.resigned;
+    gameService.saveGame(context, game: widget.game);
     Navigator.of(context).pop(null);
   }
 

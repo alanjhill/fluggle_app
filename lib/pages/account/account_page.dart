@@ -26,9 +26,8 @@ class AccountPage extends ConsumerWidget {
     if (user != null) {
       final appUserAsyncValue = watch(appUserProvider(user.uid));
       return Scaffold(
-        appBar: customAppBar(
-          title: Strings.accountPage,
-          centerTitle: true,
+        appBar: CustomAppBar(
+          title: Text(Strings.accountPage),
         ),
         body: SafeArea(
           child: SingleChildScrollView(

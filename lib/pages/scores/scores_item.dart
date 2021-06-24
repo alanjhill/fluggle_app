@@ -71,10 +71,7 @@ class _ScoresItemState extends State<ScoresItem> {
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(
-          fontSize: 12.0,
           fontWeight: FontWeight.w500,
-          decoration: TextDecoration.lineThrough,
-          color: Colors.white,
         ),
       );
     } else {
@@ -83,8 +80,9 @@ class _ScoresItemState extends State<ScoresItem> {
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(
-          color: Colors.blueGrey,
           fontWeight: FontWeight.w500,
+          decoration: TextDecoration.lineThrough,
+          color: Colors.blueGrey,
         ),
       );
     }

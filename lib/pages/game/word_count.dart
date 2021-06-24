@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,23 @@ class WordCount extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Words: ${count}'),
+            count > 0
+                ? Text(
+                    'WORDS: ',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 36),
+                  )
+                : Text(''),
+            count > 0
+                ? Container(
+                    width: 48,
+                    child: AutoSizeText(
+                      '$count',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 36),
+                    ),
+                  )
+                : Text(''),
           ],
         ),
       );

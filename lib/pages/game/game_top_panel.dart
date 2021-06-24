@@ -3,18 +3,17 @@ import 'dart:collection';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
-import 'package:fluggle_app/pages/game/added_words_list.dart';
 import 'package:fluggle_app/pages/game/current_word.dart';
 import 'package:fluggle_app/pages/game/word_count.dart';
 import 'package:flutter/material.dart';
 
-class GameTopWidget extends StatefulWidget {
+class GameTopPanel extends StatefulWidget {
   final bool gameStarted;
   final List<GridItem> swipedGridItems;
   final String currentWord;
   final LinkedHashMap<String, PlayerWord>? addedWords;
 
-  GameTopWidget({
+  GameTopPanel({
     this.gameStarted = false,
     this.swipedGridItems = const [],
     this.currentWord = "",
@@ -22,10 +21,10 @@ class GameTopWidget extends StatefulWidget {
   });
 
   @override
-  _GameTopWidgetState createState() => _GameTopWidgetState();
+  _GameTopPanelState createState() => _GameTopPanelState();
 }
 
-class _GameTopWidgetState extends State<GameTopWidget> {
+class _GameTopPanelState extends State<GameTopPanel> {
   void startEggTimer() {
     setState(() {
       //widget.gameStarted = true;
@@ -49,12 +48,6 @@ class _GameTopWidgetState extends State<GameTopWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //EggTimer(gameStarted: widget.gameStarted, timerEndedCallback: timerEnded),
-/*            Expanded(
-              child: AddedWordsList(
-                addedWords: widget.addedWords,
-              ),
-            ),*/
             Expanded(
                 child: WordCount(
               count: widget.addedWords!.length,

@@ -24,7 +24,7 @@ class FriendsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = customAppBar(title: Strings.friendsPage, centerTitle: true);
+    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.friendsPage));
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
     final firebaseAuth = context.read(firebaseAuthProvider);

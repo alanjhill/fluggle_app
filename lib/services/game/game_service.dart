@@ -54,12 +54,23 @@ class GameService {
       letters: _getShuffledLetters(),
     );
 
-    // Only save if persist is true (by default).  Practise games are not saved
+    // Only save if persist is true (by default).  practice games are not saved
     if (persist!) {
-      await firestoreDatabase.createGameWithTransaction(game: game);
+      await firestoreDatabase.createGame(game: game);
     }
 
     return game;
+  }
+
+  Future<void> saveGame(BuildContext context, {required Game game}) async {
+    final firestoreDatabase = context.read(databaseProvider);
+    final firebaseAuth = context.read(firebaseAuthProvider);
+    final user = firebaseAuth.currentUser!;
+    final String uid = user.uid;
+
+    await firestoreDatabase.saveGame(game: game);
+
+    return;
   }
 
   void listGames(BuildContext context, {required String uid}) async {
@@ -81,19 +92,9 @@ class GameService {
     playerList.addAll(players);
 
     // Establish if all players have finished and scores have been uploaded
-    List<bool> playersFinished = [];
-    playerList.forEach((Player player) {
-      if (player.creator) {
-        playersFinished.add(true);
-        // Already have the scores
-      } else if (player.playerStatus == PlayerStatus.accepted) {
-        // Waiting for score from this player
-        playersFinished.add(false);
-      } else if (player.playerStatus == PlayerStatus.finished) {
-        playersFinished.add(true);
-      }
-    });
+    List<bool> playersFinished = _allPlayersFinished(playerList);
 
+    // Update word tallys
     playerList.forEach((Player player) {
       player.words!.forEach((String word, PlayerWord playerWord) {
         if (wordTally.containsKey(word)) {
@@ -123,18 +124,33 @@ class GameService {
           });
           player.score = playerScore;
 
-          // If this is a real game (i.e. not practise) then save
+          // If this is a real game (i.e. not practice) then save the game and player
+          // TODO: Potentially make this a transaction to read data first to check status of each player...?
           if (game.practise == false) {
-            // Save Player
-            firestoreDatabase.saveGamePlayer(game: game, player: player);
+            // Update game status to finished
+            game.gameStatus = GameStatus.finished;
+            // Save Game and Player
+            firestoreDatabase.saveGameAndPlayer(game: game, player: player);
           }
         });
-
-/*        game.gameStatus = GameStatus.finished;
-        firestoreDatabase.saveGame(game: game);*/
-        // Player Scores have been updated
       }
     }
+  }
+
+  List<bool> _allPlayersFinished(List<Player> playerList) {
+    List<bool> playersFinished = [];
+    playerList.forEach((Player player) {
+      if (player.creator) {
+        playersFinished.add(true);
+        // Already have the scores
+      } else if (player.playerStatus == PlayerStatus.accepted) {
+        // Waiting for score from this player
+        playersFinished.add(false);
+      } else if (player.playerStatus == PlayerStatus.finished) {
+        playersFinished.add(true);
+      }
+    });
+    return playersFinished;
   }
 
   /// Get the score based on the word length

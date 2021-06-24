@@ -32,6 +32,7 @@ class Scores extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final multiPlayer = game.practise == false;
     return Container(
       padding: EdgeInsets.all(0),
       child: LayoutBuilder(
@@ -50,15 +51,17 @@ class Scores extends StatelessWidget {
                 horizontalScrollerIndex: horizontalScrollerIndex,
                 first: true,
               ),
-              _buildPlayersScoresContent(
-                game: game,
-                players: players,
-                height: height,
-                width: maxWidth,
-                wordTally: wordTally,
-                horizontalScrollerIndex: horizontalScrollerIndex,
-                first: false,
-              ),
+              multiPlayer
+                  ? _buildPlayersScoresContent(
+                      game: game,
+                      players: players,
+                      height: height,
+                      width: maxWidth,
+                      wordTally: wordTally,
+                      horizontalScrollerIndex: horizontalScrollerIndex,
+                      first: false,
+                    )
+                  : Container(),
             ],
           );
         },
@@ -75,6 +78,12 @@ class Scores extends StatelessWidget {
     required bool first,
     required int horizontalScrollerIndex,
   }) {
+    final bool singlePlayer = game.practise!;
+    if (singlePlayer) {
+      width = width - 4;
+    } else {
+      width = width / 2 - 8;
+    }
     return Expanded(
       child: Container(
         height: height,
@@ -87,9 +96,9 @@ class Scores extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 height: height,
-                margin: EdgeInsets.only(left: 4, right: 4, bottom: 4),
-                padding: EdgeInsets.only(bottom: 2),
-                width: width / 2 - 8,
+                margin: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING, bottom: kSCORES_COLUMN_PADDING),
+                padding: EdgeInsets.only(left: 0.0, right: 0.0, bottom: kSCORES_COLUMN_PADDING),
+                width: width,
                 decoration: BoxDecoration(
                   color: kFluggleBoardBackgroundColor,
                   border: Border.all(width: 2.0, color: Colors.white),
@@ -104,13 +113,15 @@ class Scores extends StatelessWidget {
                   wordTally: wordTally,
                   switched: false,
                   scrollControllers: verticalScrollControllers,
+                  first: first,
                 ),
               );
             },
           ),
           onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
             scrollMetrics: scrollEnd.metrics,
-            width: width,
+            width: width + (2 * kSCORES_COLUMN_PADDING),
+            itemCount: players.length,
             horizontalScrollControllers: horizontalScrollControllers,
             horizontalScrollerIndex: horizontalScrollerIndex,
           ),
@@ -127,6 +138,7 @@ class Scores extends StatelessWidget {
     required Map<String, int> wordTally,
     required bool switched,
     required List<ScrollController> scrollControllers,
+    required bool first,
     List<Player>? creator,
     List<Player>? players,
   }) {
@@ -151,17 +163,23 @@ class Scores extends StatelessWidget {
       return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Container(
-            child: ListView.builder(
-              controller: verticalScrollControllers[verticalScrollerIndex],
-              itemCount: wordTally.length,
-              itemBuilder: (context, index) {
-                String word = wordTally.keys.elementAt(index);
-                if (player.words![word] != null) {
-                  return ScoresItem(playerWord: player.words![word]!, switched: switched);
-                } else {
-                  return ScoresItem(playerWord: PlayerWord(gameWord: GameWord(word: word, score: 0, unique: null), gridItems: []), switched: switched);
-                }
-              },
+            child: RawScrollbar(
+              thumbColor: Colors.white,
+              radius: Radius.circular(8.0),
+              thickness: first || game.practise == true ? 0.0 : 8.0,
+              isAlwaysShown: false,
+              child: ListView.builder(
+                controller: verticalScrollControllers[verticalScrollerIndex],
+                itemCount: wordTally.length,
+                itemBuilder: (context, index) {
+                  String word = wordTally.keys.elementAt(index);
+                  if (player.words![word] != null) {
+                    return ScoresItem(playerWord: player.words![word]!, switched: switched);
+                  } else {
+                    return ScoresItem(playerWord: PlayerWord(gameWord: GameWord(word: word, score: 0, unique: null), gridItems: []), switched: switched);
+                  }
+                },
+              ),
             ),
           );
         },

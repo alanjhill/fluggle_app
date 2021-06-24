@@ -68,6 +68,10 @@ class Strings {
 
   // Play game
   static const String playGamePage = 'Play Game';
+  // Practise / Playing
+  static const String practise = 'Practise';
+  static const String playing = 'Playing';
+  static const String playFriend = 'Play Friend';
 
   // Start game
   static const String startGamePage = 'New Game';
@@ -91,6 +95,5 @@ class Strings {
   static const String entries = 'Entries';
 
   // Account page
-  static const String account = 'Account';
-  static const String accountPage = 'Account Page';
+  static const String accountPage = 'Your Account';
 }

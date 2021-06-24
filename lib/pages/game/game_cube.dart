@@ -5,18 +5,18 @@ import 'package:fluggle_app/models/game_board/row_col.dart';
 import 'package:fluggle_app/pages/game/grid_cell.dart';
 import 'package:flutter/material.dart';
 
-class GameCubeWidget extends StatefulWidget {
+class GameCube extends StatefulWidget {
   final RowCol rowCol;
   final List<List<GridItem>> gridItems;
   final String letter;
 
-  GameCubeWidget({required this.rowCol, this.letter = "", this.gridItems = const []});
+  GameCube({required this.rowCol, this.letter = "", this.gridItems = const []});
 
   @override
-  _GameCubeWidgetState createState() => _GameCubeWidgetState();
+  _GameCubeState createState() => _GameCubeState();
 }
 
-class _GameCubeWidgetState extends State<GameCubeWidget> {
+class _GameCubeState extends State<GameCube> {
   @override
   Widget build(BuildContext context) {
     return Container(

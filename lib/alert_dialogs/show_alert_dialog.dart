@@ -11,16 +11,16 @@ Future<bool?> showAlertDialog({
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        contentTextStyle: TextStyle(color: Colors.grey),
-        title: Text(title, style: TextStyle(color: Colors.grey)),
+        contentTextStyle: TextStyle(color: Colors.white),
+        title: Text(title, style: TextStyle(color: Colors.white)),
         content: Text(content),
         actions: <Widget>[
           if (cancelActionText != null)
-            FlatButton(
+            TextButton(
               child: Text(cancelActionText),
               onPressed: () => Navigator.of(context).pop(false),
             ),
-          FlatButton(
+          TextButton(
             child: Text(defaultActionText),
             onPressed: () => Navigator.of(context).pop(true),
           ),

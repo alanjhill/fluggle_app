@@ -1,4 +1,5 @@
 import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/game_view_model.dart';
@@ -33,7 +34,7 @@ class PreviousGamesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = customAppBar(title: Strings.previousGamesPage, centerTitle: true);
+    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.previousGamesPage));
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
     final firebaseAuth = context.read(firebaseAuthProvider);
@@ -56,7 +57,7 @@ class PreviousGamesPage extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+            padding: EdgeInsets.only(top: kPAGE_PADDING, left: kPAGE_PADDING, right: kPAGE_PADDING),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,

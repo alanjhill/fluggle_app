@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
@@ -26,6 +27,7 @@ class ScoresFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final multiPlayer = game.practise == false;
     List<Player> playerList = [];
     playerList.addAll(creator);
     playerList.addAll(players);
@@ -45,13 +47,15 @@ class ScoresFooter extends StatelessWidget {
                 horizontalScrollerIndex: horizontalScrollerIndex,
                 first: true,
               ),
-              _buildPlayersScoresFooterContent(
-                height: height,
-                width: maxWidth,
-                players: players,
-                horizontalScrollerIndex: horizontalScrollerIndex,
-                first: false,
-              ),
+              multiPlayer
+                  ? _buildPlayersScoresFooterContent(
+                      height: height,
+                      width: maxWidth,
+                      players: players,
+                      horizontalScrollerIndex: horizontalScrollerIndex,
+                      first: false,
+                    )
+                  : Container(),
             ],
           );
         },
@@ -66,6 +70,12 @@ class ScoresFooter extends StatelessWidget {
     required bool first,
     required horizontalScrollerIndex,
   }) {
+    final bool singlePlayer = game.practise!;
+    if (singlePlayer) {
+      width = width - 4;
+    } else {
+      width = width / 2 - 8;
+    }
     return Expanded(
       child: Container(
         height: height,
@@ -76,10 +86,10 @@ class ScoresFooter extends StatelessWidget {
               itemCount: players.length,
               itemBuilder: (context, index) {
                 return Container(
-                  margin: EdgeInsets.only(left: 4, right: 4),
-                  padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                  margin: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING),
+                  padding: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING),
                   height: 100,
-                  width: width / 2 - 8,
+                  width: width,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
@@ -92,7 +102,8 @@ class ScoresFooter extends StatelessWidget {
             ),
             onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
                 scrollMetrics: scrollEnd.metrics,
-                width: width,
+                width: width + (2 * kSCORES_COLUMN_PADDING),
+                itemCount: players.length,
                 horizontalScrollControllers: horizontalScrollControllers,
                 horizontalScrollerIndex: horizontalScrollerIndex)),
       ),

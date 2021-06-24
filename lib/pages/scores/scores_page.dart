@@ -1,4 +1,5 @@
 import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/game_view_model.dart';
@@ -49,7 +50,7 @@ class ScoresPage extends ConsumerWidget {
     final user = firebaseAuth.currentUser!;
 
     if (game.practise == true) {
-      // Single Player / Practise
+      // Single Player / practice
       final gameAsyncValue = AsyncValue.data(game);
       AppUser appUser = watch(userStreamProvider(user.uid)).data?.value as AppUser;
       List<Player>? players = game.players;
@@ -69,7 +70,7 @@ class ScoresPage extends ConsumerWidget {
 
   Widget _buildScores(BuildContext context, {required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData}) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = customAppBar(title: Strings.scoresPage, centerTitle: true);
+    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.scoresPage));
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
@@ -77,7 +78,6 @@ class ScoresPage extends ConsumerWidget {
     // Scores List Widget
     Widget _buildScoresListWidget(BuildContext context) {
       return Container(
-        padding: EdgeInsets.all(16.0),
         height: remainingHeight * 0.8,
         child: ScoresList(
           gameData: gameData,

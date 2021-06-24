@@ -11,7 +11,9 @@ const double kCUBE_PADDING = 8.0;
 const double kCUBE_SELECTED_PADDING = 5.0;
 const double kLETTER_PADDING = 12.0;
 const double kFLUGGLE_BOARD_BORDER_WIDTH = 2.0;
-const double kSTATUS_BAR_HEIGHT = 48;
+const double kBOTTOM_BAR_HEIGHT = 64;
+const double kSCORES_COLUMN_PADDING = 4.0;
+const double kPAGE_PADDING = 16.0;
 
 const int kGridCount = 4;
 

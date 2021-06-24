@@ -208,34 +208,31 @@ class FirestoreDatabase {
     );
   }
 
-  Future<String>? createGame(Game game, List<Player> players) async {
-    String? gameId;
+  Future<void> saveGameAndPlayer({required Game game, required Player player}) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    // Create the game and get the game id
-    var documentRef = await _service.createData(
-      path: FirestorePath.games(),
+    await _service.setDataWithBatch(
+      batch: batch,
+      path: FirestorePath.game(game.gameId),
       data: game.toMap(),
+      merge: true,
     );
 
-    // Get the gameId
-    gameId = documentRef.id;
+    await _service.setDataWithBatch(
+      batch: batch,
+      path: FirestorePath.gamePlayer(game.gameId!, player.playerId),
+      data: player.toMap(),
+      merge: true,
+    );
 
-    // If we have a game id, create the Players...
-    if (gameId != null) {
-      // Set Players
-      players.forEach((Player player) async {
-        await _service.createDataWithId(
-          path: FirestorePath.addPlayer(gameId!),
-          data: player.toMap(),
-          id: player.playerId,
-        );
-      });
-    }
+    batch.commit().whenComplete(() {
+      print('Complete');
+    });
 
-    return gameId;
+    return;
   }
 
-  Future<String>? createGameWithTransaction({required Game game}) async {
+  Future<void> createGame({required Game game}) async {
     String? gameId;
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -249,6 +246,7 @@ class FirestoreDatabase {
 
     // Get the gameId
     gameId = documentRef.id;
+    game.gameId = gameId;
 
     // If we have a game id, create the Players...
     if (gameId != null) {
@@ -266,8 +264,6 @@ class FirestoreDatabase {
         print('Complete');
       });
     }
-
-    return gameId;
   }
 }
 

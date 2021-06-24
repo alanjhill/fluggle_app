@@ -24,7 +24,7 @@ class _StartGamePageState extends State<StartGamePage> {
 
   @override
   Widget build(BuildContext context) {
-    final PreferredSizeWidget appBar = customAppBar(title: Strings.startGamePage, centerTitle: true);
+    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.startGamePage));
     final List<AppUser> players = widget.startGameArguments.players;
 
     return Scaffold(

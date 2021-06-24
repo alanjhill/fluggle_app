@@ -1,14 +1,14 @@
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/models/game_board/row_col.dart';
-import 'package:fluggle_app/pages/game/game_cube_widget.dart';
+import 'package:fluggle_app/pages/game/game_cube.dart';
 import 'package:fluggle_app/pages/game/grid_cell.dart';
 import 'package:fluggle_app/pages/game/swipe_lines.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class GameBoardWidget extends StatefulWidget {
+class GameBoard extends StatefulWidget {
   final bool gameStarted;
   final List<String> letters;
   final List<List<GridItem>> gridItems;
@@ -20,7 +20,7 @@ class GameBoardWidget extends StatefulWidget {
   final Function? addWord;
   final Function? updateCurrentWord;
 
-  GameBoardWidget({
+  GameBoard({
     this.gameStarted = false,
     this.letters = const [],
     this.gridItems = const [],
@@ -34,10 +34,10 @@ class GameBoardWidget extends StatefulWidget {
   });
 
   @override
-  _GameBoardWidgetState createState() => _GameBoardWidgetState();
+  _GameBoardState createState() => _GameBoardState();
 }
 
-class _GameBoardWidgetState extends State<GameBoardWidget> {
+class _GameBoardState extends State<GameBoard> {
   GlobalKey? gridKey = new GlobalKey();
   GridItem? currentGridItem;
 
@@ -158,7 +158,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   Widget _buildGameCubes(BuildContext context, int index) {
-    return GameCubeWidget(
+    return GameCube(
       rowCol: _getRowColFromIndex(index),
       gridItems: widget.gridItems,
       letter: widget.letters[index],
