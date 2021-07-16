@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class WordCount extends StatelessWidget {
@@ -11,7 +10,6 @@ class WordCount extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     debugPrint('screen size: ${mediaQuery.size}');
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
-      final width = (viewportConstraints.maxWidth - (kFLUGGLE_BOARD_BORDER_WIDTH * 2));
       return Container(
         padding: EdgeInsets.symmetric(
           vertical: 0,

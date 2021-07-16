@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/list_items_builder.dart';
+import 'package:fluggle_app/common_widgets/empty_content.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
@@ -11,7 +11,11 @@ import 'package:flutter_swipe_action_cell/core/controller.dart';
 
 // ignore: must_be_immutable
 class PreviousGamesItem extends ConsumerWidget {
-  PreviousGamesItem({required this.game, required this.uid, required this.previousGameOnTap});
+  PreviousGamesItem({
+    required this.game,
+    required this.uid,
+    required this.previousGameOnTap,
+  });
   final Game game;
   final String uid;
   final Function previousGameOnTap;
@@ -27,20 +31,38 @@ class PreviousGamesItem extends ConsumerWidget {
 
     final gamePlayersAsyncValue = watch(previousGamesPlayerStreamProvider(game.gameId!));
 
+    List<Player> players = [];
+    return gamePlayersAsyncValue.when(
+      data: (List<Player> items) {
+        if (items.isNotEmpty) {
+          players.addAll(items);
+        }
+        return _buildPreviousGameCard(context, game: game, players: players, uid: uid);
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => EmptyContent(
+        title: 'Something went wrong',
+        message: 'Can\'t load items right now: $error, $stackTrace',
+      ),
+    );
+  }
+
+  Widget _buildPreviousGameCard(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
     return SwipeActionCell(
       key: Key(game.gameId!),
       child: GestureDetector(
         child: ReusableCard(
-          key: Key('${game.gameId}'),
-          cardChild: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              //Text('${widget.game.gameId}'),
-              _getHeadingText(game: game, uid: uid),
-              _buildPlayers(context, data: gamePlayersAsyncValue, game: game, uid: uid),
-              //Text('${DateFormat.E().add_Hm().format(widget.game.created.toDate())}'),
-            ],
+          key: Key(game.gameId!),
+          cardChild: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                _getHeadingText(game: game, players: players, uid: uid),
+                _buildPlayers(context, game: game, players: players, uid: uid),
+                _buildFooterText(context, game: game, players: players, uid: uid),
+              ],
+            ),
           ),
         ),
         onTap: () {
@@ -70,7 +92,7 @@ class PreviousGamesItem extends ConsumerWidget {
     );
   }
 
-  Text _getHeadingText({required Game game, required String uid}) {
+  Text _getHeadingText({required Game game, required List<Player> players, required String uid}) {
     if (game.gameStatus == GameStatus.finished) {
       return Text('You played a game with:', textAlign: TextAlign.left);
     } else if (game.gameStatus == GameStatus.abandoned) {
@@ -83,12 +105,12 @@ class PreviousGamesItem extends ConsumerWidget {
   Widget _getGameWinner({required List<Player> playerList}) {
     int maxScore = 0;
     Map<Player, int> scores = {};
-    playerList.forEach((Player player) {
+    for (var player in playerList) {
       scores[player] = player.score;
       if (player.score > maxScore) {
         maxScore = player.score;
       }
-    });
+    }
 
     List<Player> winningPlayers = [];
     scores.forEach((Player player, int score) {
@@ -97,7 +119,7 @@ class PreviousGamesItem extends ConsumerWidget {
       }
     });
 
-    if (winningPlayers.length == 0) {
+    if (winningPlayers.isEmpty) {
       return Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         Container(
           child: Text(
@@ -130,32 +152,67 @@ class PreviousGamesItem extends ConsumerWidget {
     }
   }
 
-  Widget _buildPlayers(BuildContext context, {required Game game, required data, required String uid}) {
-    return SingleChildScrollView(
-      physics: ScrollPhysics(),
-      child: Column(
+  Widget _buildPlayers(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
+    List<Player> otherPlayers = players.where((player) => player.playerId != uid).toList();
+    return Column(
+      children: <Widget>[
+        ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: otherPlayers.length,
+          itemBuilder: (context, index) => _buildPlayerItem(context, player: otherPlayers[index]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlayerItem(BuildContext context, {required Player player}) {
+    return Container(
+      //height: 128.0,
+      child: Row(
         children: <Widget>[
-          ListItemsBuilder<Player>(
-            data: data,
-            itemBuilder: (context, player) => _buildPlayerItem(context, player: player),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(
+                left: 16.0,
+                top: 8.0,
+                bottom: 8.0,
+              ),
+              child: Text(player.user!.displayName),
+            ),
           ),
+          Expanded(
+            child: Container(
+              child: Text('${player.score}', textAlign: TextAlign.right),
+            ),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildPlayerItem(BuildContext context, {required Player player}) {
-    return Row(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(
-            left: 16.0,
-            top: 8.0,
-            bottom: 8.0,
-          ),
-          child: Text('${player.user?.displayName}'),
-        ),
-      ],
-    );
+  Widget _buildFooterText(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
+    if (players.isNotEmpty) {
+      Player me = players.firstWhere((player) => player.playerId == uid);
+      int myScore = me.score;
+      int highestScore = 0;
+      for (var player in players) {
+        if (player.playerId != uid) {
+          if (player.score > highestScore) {
+            highestScore = player.score;
+          }
+        }
+      }
+
+      if (myScore > highestScore) {
+        return Text('You won with $myScore points');
+      } else if (myScore == highestScore) {
+        return Text('You drew with $myScore points');
+      } else {
+        return Text('You lost with $myScore points');
+      }
+    } else {
+      return const EmptyContent();
+    }
   }
 }

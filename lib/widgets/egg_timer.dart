@@ -30,7 +30,7 @@ class _EggTimerState extends State<EggTimer> {
   void didUpdateWidget(EggTimer oldEggTimer) {
     super.didUpdateWidget(oldEggTimer);
     if (widget.gameStarted! && !oldEggTimer.gameStarted!) {
-      endTime = DateTime.now().millisecondsSinceEpoch + 1000 * kGAME_TIME;
+      endTime = DateTime.now().millisecondsSinceEpoch + 1000 * kGameTime;
       controller = CountdownTimerController(endTime: endTime!, onEnd: onEnd);
       controller!.start();
     } else if (!widget.gameStarted! && oldEggTimer.gameStarted!) {
@@ -48,9 +48,7 @@ class _EggTimerState extends State<EggTimer> {
         onEnd: onEnd,
         endTime: endTime,
         widgetBuilder: (_, CurrentRemainingTime? time) {
-          if (time == null) {
-            time = CurrentRemainingTime(sec: kGAME_TIME);
-          }
+          time ??= CurrentRemainingTime(sec: kGameTime);
           return Text(
             '${time.min != null ? time.min.toString().padLeft(1, "0") : "0"}:${time.sec.toString().padLeft(2, "0")}',
             style: kEggTimerTextStyle,
@@ -58,7 +56,7 @@ class _EggTimerState extends State<EggTimer> {
         },
       );
     } else {
-      CurrentRemainingTime startTime = CurrentRemainingTime(min: (kGAME_TIME / 60).toInt(), sec: (kGAME_TIME % 60).toInt());
+      var startTime = CurrentRemainingTime(min: kGameTime ~/ 60, sec: (kGameTime % 60).toInt());
       return Text(
         '${startTime.min != null ? startTime.min.toString().padLeft(1, "0") : "0"}:${startTime.sec.toString().padLeft(2, "0")}',
         style: kEggTimerTextStyle,

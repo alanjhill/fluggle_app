@@ -24,21 +24,19 @@ class HomePage extends ConsumerWidget {
     bool isSignedIn = user != null;
     bool isAnonymous = true;
     //bool isAdmin = false;
-    AppUser? appUser;
     if (user != null) {
-      appUser = watch(userStreamProvider(user.uid)).data?.value as AppUser;
       isAnonymous = user.isAnonymous;
     }
 
     return Scaffold(
       appBar: CustomAppBar(
         title: Text(Strings.appName),
-        leading: new Container(),
+        leading: Container(),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(kPAGE_PADDING),
+            padding: EdgeInsets.all(kPagePadding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,7 +66,7 @@ class HomePage extends ConsumerWidget {
                         child: Text(Strings.accountPage),
                         onPressed: () => accountPage(context),
                       ),
-                SizedBox(height: 8.0),
+/*                SizedBox(height: 8.0),
                 appUser?.admin == true
                     ? CustomRaisedButton(
                         child: Text('Onboarding Incomplete'),
@@ -76,7 +74,7 @@ class HomePage extends ConsumerWidget {
                           await onboardingIncomplete(context);
                         },
                       )
-                    : Container(),
+                    : Container(),*/
               ],
             ),
           ),

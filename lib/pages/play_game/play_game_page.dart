@@ -42,18 +42,16 @@ class PlayGamePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final mediaQuery = MediaQuery.of(context);
+    //final mediaQuery = MediaQuery.of(context);
+    //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.playGamePage));
-    final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
     final bool isSignedIn = user != null;
     bool isAnonymous = true;
-    AppUser? appUser;
     if (user != null) {
       isAnonymous = user.isAnonymous;
-      appUser = watch(userStreamProvider(user.uid)).data?.value as AppUser;
       //isAdmin = appUser.admin!;
     }
 
@@ -93,7 +91,7 @@ class PlayGamePage extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: 16.0, left: kPAGE_PADDING, right: kPAGE_PADDING),
+            padding: EdgeInsets.only(top: kPagePadding, left: kPagePadding, right: kPagePadding),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,

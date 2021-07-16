@@ -15,7 +15,7 @@ class AppUser {
       displayName: map['displayName'],
       email: map['email'],
       photoURL: map['photoURL'],
-      admin: map['admin'] != null ? map['admin'] : false,
+      admin: map['admin'] ?? false,
     );
   }
 
@@ -34,13 +34,7 @@ class AppUser {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AppUser &&
-          runtimeType == other.runtimeType &&
-          uid == other.uid &&
-          displayName == other.displayName &&
-          email == other.email &&
-          photoURL == other.photoURL &&
-          admin == other.admin;
+      other is AppUser && runtimeType == other.runtimeType && uid == other.uid && displayName == other.displayName && email == other.email && photoURL == other.photoURL && admin == other.admin;
 
   @override
   int get hashCode => uid.hashCode ^ displayName.hashCode ^ email.hashCode ^ photoURL.hashCode ^ admin.hashCode;

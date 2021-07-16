@@ -3,110 +3,61 @@ import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
-import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 import 'package:flutter/material.dart';
 
 class ScoresFooter extends StatelessWidget {
   ScoresFooter({
     required this.context,
     required this.game,
-    required this.creator,
-    required this.players,
+    required this.player,
     required this.height,
-    required this.horizontalScrollerIndex,
-    required this.horizontalScrollControllers,
+    required this.width,
+    required this.index,
+    required this.scrollController,
   });
 
   final BuildContext context;
   final Game game;
-  final List<Player> creator;
-  final List<Player> players;
+  final Player player;
   final double height;
-  final int horizontalScrollerIndex;
-  final List<ScrollController> horizontalScrollControllers;
+  final double width;
+  final int index;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
-    final multiPlayer = game.practise == false;
-    List<Player> playerList = [];
-    playerList.addAll(creator);
-    playerList.addAll(players);
-
     return Container(
-      padding: EdgeInsets.all(0.0),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          double maxWidth = constraints.maxWidth;
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              _buildPlayersScoresFooterContent(
-                height: height,
-                width: maxWidth,
-                players: creator,
-                horizontalScrollerIndex: horizontalScrollerIndex,
-                first: true,
-              ),
-              multiPlayer
-                  ? _buildPlayersScoresFooterContent(
-                      height: height,
-                      width: maxWidth,
-                      players: players,
-                      horizontalScrollerIndex: horizontalScrollerIndex,
-                      first: false,
-                    )
-                  : Container(),
-            ],
-          );
-        },
+      height: height,
+      width: width,
+      padding: EdgeInsets.all(0),
+      child: _buildPlayersScoresFooterContent(
+        height: height,
+        width: width,
+        player: player,
       ),
     );
   }
 
   Widget _buildPlayersScoresFooterContent({
-    required List<Player> players,
+    required Player player,
     required double height,
     required double width,
-    required bool first,
-    required horizontalScrollerIndex,
   }) {
-    final bool singlePlayer = game.practise!;
+    final bool singlePlayer = game.practise;
     if (singlePlayer) {
       width = width - 4;
     } else {
       width = width / 2 - 8;
     }
-    return Expanded(
-      child: Container(
-        height: height,
-        child: NotificationListener<ScrollEndNotification>(
-            child: ListView.builder(
-              controller: first ? null : horizontalScrollControllers[horizontalScrollerIndex],
-              scrollDirection: Axis.horizontal,
-              itemCount: players.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING),
-                  padding: EdgeInsets.only(left: kSCORES_COLUMN_PADDING, right: kSCORES_COLUMN_PADDING),
-                  height: 100,
-                  width: width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      _score(player: players[index]),
-                      ..._wordCounts(player: players[index]),
-                    ],
-                  ),
-                );
-              },
-            ),
-            onNotification: (scrollEnd) => ScrollUtils.scrollEndNotification(
-                scrollMetrics: scrollEnd.metrics,
-                width: width + (2 * kSCORES_COLUMN_PADDING),
-                itemCount: players.length,
-                horizontalScrollControllers: horizontalScrollControllers,
-                horizontalScrollerIndex: horizontalScrollerIndex)),
-      ),
+
+    return Container(
+      height: height,
+      margin: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
+      padding: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <Widget>[
+        _score(player: player),
+        ..._wordCounts(player: player),
+      ]),
     );
   }
 
@@ -153,7 +104,7 @@ class ScoresFooter extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Expanded(child: AutoSizeText('Total words:', maxLines: 1, textAlign: TextAlign.left)),
-            AutoSizeText('${wordCount}', textAlign: TextAlign.right),
+            AutoSizeText('$wordCount', textAlign: TextAlign.right),
           ],
         ),
       ),
@@ -168,7 +119,7 @@ class ScoresFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Expanded(child: AutoSizeText('Unique words:', maxLines: 1, textAlign: TextAlign.left)),
-              AutoSizeText('${uniqueWordCount}', textAlign: TextAlign.right),
+              AutoSizeText('$uniqueWordCount', textAlign: TextAlign.right),
             ],
           ),
         ),

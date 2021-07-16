@@ -22,11 +22,11 @@ class _SwipeLinesState extends State<SwipeLines> {
     List<Offset> offsets = [];
 
     if (widget.swipedGridItems.length > 1) {
-      widget.swipedGridItems.forEach((GridItem swipedGridItem) {
-        double offsetX = (swipedGridItem.col * 2 + 1) * ((widget.gridSize - (kGAME_BOARD_PADDING / 2) - kFLUGGLE_BOARD_BORDER_WIDTH * 2) / 8);
-        double offsetY = (swipedGridItem.row * 2 + 1) * ((widget.gridSize - (kGAME_BOARD_PADDING / 2) - kFLUGGLE_BOARD_BORDER_WIDTH * 2) / 8);
+      for (var swipedGridItem in widget.swipedGridItems) {
+        double offsetX = (swipedGridItem.col * 2 + 1) * ((widget.gridSize - (kGameBoardPadding / 2) - kFluggleBoardBorderWidth * 2) / 8);
+        double offsetY = (swipedGridItem.row * 2 + 1) * ((widget.gridSize - (kGameBoardPadding / 2) - kFluggleBoardBorderWidth * 2) / 8);
         offsets.add(Offset(offsetX, offsetY));
-      });
+      }
     }
 
     for (int i = 0; i < offsets.length - 1; i++) {

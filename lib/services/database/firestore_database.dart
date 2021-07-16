@@ -57,7 +57,7 @@ class FirestoreDatabase {
         builder: (data, documentId) => Game.fromMap(data, documentId),
         queryBuilder: (query) => query
             .where(
-              'playerUids.${uid}',
+              'playerUids.$uid',
               isEqualTo: PlayerStatus.invited.toString(),
             )
             .where(
@@ -72,20 +72,20 @@ class FirestoreDatabase {
         builder: (data, documentId) => Game.fromMap(data, documentId),
         queryBuilder: (query) => query
             .where(
-              'playerUids.${uid}',
+              'playerUids.$uid',
               isEqualTo: PlayerStatus.finished.toString(),
             )
             .where(
               'gameStatus',
               isEqualTo: GameStatus.finished.toString(),
             ),
-        sort: (Game lhs, Game rhs) => rhs.created.compareTo(lhs.created),
+        sort: (Game lhs, Game rhs) => rhs.finished!.compareTo(lhs.finished!),
       );
 
   doSomething(QuerySnapshot snapshot) async {
     var docs = snapshot.docs;
     for (var doc in docs) {
-      print('doc: ${doc}');
+      print('doc: $doc');
     }
   }
 
@@ -251,14 +251,14 @@ class FirestoreDatabase {
     // If we have a game id, create the Players...
     if (gameId != null) {
       // Set Players
-      game.players!.forEach((Player player) async {
+      for (var player in game.players!) {
         _service.createDataWithBatchAndId(
           batch: batch,
-          path: FirestorePath.addPlayer(gameId!),
+          path: FirestorePath.addPlayer(gameId),
           data: player.toMap(),
           id: player.playerId,
         );
-      });
+      }
 
       batch.commit().whenComplete(() {
         print('Complete');

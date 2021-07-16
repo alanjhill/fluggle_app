@@ -17,13 +17,13 @@ class Player {
   Player({required this.playerId, this.user, this.creator = false, this.words, this.score = 0});
 
   factory Player.fromMap(Map<String, dynamic>? map, String documentId) {
-    var thing = map!['words'];
-    var wordsMap;
-    if (thing != null) {
-      wordsMap = LinkedHashMap.from(thing);
+    var words = map!['words'];
+    var wordsMap = <String, dynamic>{};
+    if (words != null) {
+      wordsMap = LinkedHashMap.from(words);
     }
     LinkedHashMap<String, PlayerWord> playerWords = LinkedHashMap<String, PlayerWord>();
-    if (wordsMap != null) {
+    if (wordsMap.isNotEmpty) {
       wordsMap.forEach((dynamic word, dynamic data) {
         playerWords[word] = PlayerWord.fromMap(data);
       });
@@ -49,13 +49,7 @@ class Player {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Player &&
-          runtimeType == other.runtimeType &&
-          playerId == other.playerId &&
-          user == other.user &&
-          creator == other.creator &&
-          words == other.words &&
-          score == other.score;
+      other is Player && runtimeType == other.runtimeType && playerId == other.playerId && user == other.user && creator == other.creator && words == other.words && score == other.score;
 
   @override
   int get hashCode => playerId.hashCode ^ user.hashCode ^ creator.hashCode ^ words.hashCode ^ score.hashCode;

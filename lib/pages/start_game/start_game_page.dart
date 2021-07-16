@@ -99,9 +99,9 @@ class _StartGamePageState extends State<StartGamePage> {
 
   List<Widget> _buildPlayerList(List<AppUser> players) {
     List<Widget> playerList = [];
-    players.forEach((AppUser player) {
+    for (var player in players) {
       playerList.add(_buildPlayerItem(player: player));
-    });
+    }
 
     return playerList;
   }

@@ -23,7 +23,7 @@ final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
 final previousGamesPlayerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
   final vm = GameViewModel(database: database);
-  return vm.gamePlayersStream(gameId: gameId);
+  return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
 /// <<< end Providers
@@ -33,31 +33,24 @@ class PreviousGamesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final mediaQuery = MediaQuery.of(context);
+    //final mediaQuery = MediaQuery.of(context);
+    //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
+    //final firebaseAuth = context.read(firebaseAuthProvider);
+    //final user = firebaseAuth.currentUser;
+    //final bool isSignedIn = user != null;
     final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.previousGamesPage));
-    final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser;
-    final bool isSignedIn = user != null;
 
     /// Previous Games Data
     final previousGamesAsyncValue = watch(gameViewModelStreamProvider);
-
-    Widget _buildPreviousGameListWidget(BuildContext context) {
-      return Container(
-        //padding: EdgeInsets.only(bottom: 16.0),
-        //height: remainingHeight * 0.8,
-        child: PreviousGamesList(data: previousGamesAsyncValue, previousGameOnTap: _previousGameOnTap),
-      );
-    }
 
     return Scaffold(
       appBar: appBar,
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: kPAGE_PADDING, left: kPAGE_PADDING, right: kPAGE_PADDING),
+            scrollDirection: Axis.vertical,
+            physics: ClampingScrollPhysics(),
+            padding: EdgeInsets.only(top: kPagePadding, left: kPagePadding, right: kPagePadding),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -66,7 +59,10 @@ class PreviousGamesPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  _buildPreviousGameListWidget(context),
+                  PreviousGamesList(
+                    data: previousGamesAsyncValue,
+                    previousGameOnTap: _previousGameOnTap,
+                  ),
                 ],
               ),
             ),

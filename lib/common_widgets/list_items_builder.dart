@@ -5,13 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
 class ListItemsBuilder<T> extends StatelessWidget {
-  const ListItemsBuilder({
+  ListItemsBuilder({
     Key? key,
     required this.data,
     required this.itemBuilder,
+    this.physics,
+    this.scrollDirection,
   }) : super(key: key);
   final AsyncValue<List<T>> data;
   final ItemWidgetBuilder<T> itemBuilder;
+  ScrollPhysics? physics;
+  Axis? scrollDirection;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +33,8 @@ class ListItemsBuilder<T> extends StatelessWidget {
   Widget _buildList(List<T> items) {
     return ListView.separated(
       shrinkWrap: true,
+      physics: physics,
+      scrollDirection: scrollDirection ?? Axis.vertical,
       itemCount: items.length + 2,
       separatorBuilder: (context, index) => const Divider(height: 0.5),
       itemBuilder: (context, index) {

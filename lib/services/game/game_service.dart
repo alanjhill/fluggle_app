@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
@@ -40,15 +42,16 @@ class GameService {
     List<Player> gamePlayers = [Player(playerId: uid)];
     Map<String, PlayerStatus> playerUids = {};
     playerUids[uid] = PlayerStatus.invited;
-    players?.forEach((AppUser user) {
+    for (var user in players!) {
       gamePlayers.add(Player(playerId: user.uid));
       playerUids[user.uid] = PlayerStatus.invited;
-    });
+    }
 
     Game game = Game(
       creatorId: uid,
       created: Timestamp.now(),
       gameStatus: gameStatus,
+      practise: false,
       playerUids: playerUids,
       players: gamePlayers,
       letters: _getShuffledLetters(),
@@ -64,12 +67,7 @@ class GameService {
 
   Future<void> saveGame(BuildContext context, {required Game game}) async {
     final firestoreDatabase = context.read(databaseProvider);
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser!;
-    final String uid = user.uid;
-
     await firestoreDatabase.saveGame(game: game);
-
     return;
   }
 
@@ -78,38 +76,27 @@ class GameService {
     firestoreDatabase.myPendingGamesStream;
   }
 
-  void processWords(
+  LinkedHashMap<String, int> processWords(
     BuildContext context, {
     required Game game,
-    required List<Player> creator,
     required List<Player> players,
-    required Map<String, int> wordTally,
-  }) async {
+  }) {
     final firestoreDatabase = context.read(databaseProvider);
 
-    List<Player> playerList = [];
-    playerList.addAll(creator);
-    playerList.addAll(players);
-
     // Establish if all players have finished and scores have been uploaded
-    List<bool> playersFinished = _allPlayersFinished(playerList);
+    List<bool> playersFinished = _allPlayersFinished(players);
 
     // Update word tallys
-    playerList.forEach((Player player) {
-      player.words!.forEach((String word, PlayerWord playerWord) {
-        if (wordTally.containsKey(word)) {
-          wordTally.update(word, (existingValue) => ++existingValue);
-        } else {
-          wordTally.putIfAbsent(word, () => 1);
-        }
-      });
-    });
+    Map<String, int> wordTally = _getWordTally(players);
+
+    // Sort the wordTallyMap
+    LinkedHashMap<String, int> wordTallyMap = _sortWordTally(wordTally);
 
     // If all players have finished....
     if (!playersFinished.contains(false)) {
       if (game.gameStatus != GameStatus.finished) {
         // Now iterate through each players words and update
-        playerList.forEach((Player player) {
+        for (var player in players) {
           int playerScore = 0;
           player.words!.forEach((String word, PlayerWord playerWord) {
             int? count = wordTally[word];
@@ -129,17 +116,81 @@ class GameService {
           if (game.practise == false) {
             // Update game status to finished
             game.gameStatus = GameStatus.finished;
+            game.finished = Timestamp.now();
             // Save Game and Player
-            firestoreDatabase.saveGameAndPlayer(game: game, player: player);
+            for (var player in players) {
+              firestoreDatabase.saveGameAndPlayer(game: game, player: player);
+            }
           }
-        });
+        }
       }
     }
+
+    return wordTallyMap;
+  }
+
+  Map<String, int> _getWordTally(List<Player> players) {
+    Map<String, int> wordTally = {};
+    for (var player in players) {
+      player.words!.forEach((String word, PlayerWord playerWord) {
+        if (wordTally.containsKey(word)) {
+          wordTally.update(word, (existingValue) => ++existingValue);
+        } else {
+          wordTally.putIfAbsent(word, () => 1);
+        }
+      });
+    }
+    return wordTally;
+  }
+
+  /// Sort the words based on;
+  ///   1. Being unique
+  ///   2. Word length
+  ///   3. Alphabetcial ordering
+  LinkedHashMap<String, int> _sortWordTally(Map<String, int> wordTally) {
+    List<Map<String, int>> wordTallyList = [];
+    LinkedHashMap<String, int> wordTallyMap = LinkedHashMap();
+
+    // Add the map of words to a list
+    wordTally.forEach((String word, int value) {
+      wordTallyList.add({word: value});
+    });
+
+    // Sort the words
+    wordTallyList.sort((a, b) {
+      var wordA = a.keys.elementAt(0);
+      var wordALength = wordA.length;
+      var valueA = a.values.elementAt(0);
+
+      var wordB = b.keys.elementAt(0);
+      var wordBLength = wordB.length;
+      var valueB = b.values.elementAt(0);
+
+      //if (valueA == 1) return 1;
+      //if (valueB == 1) return -1;
+      // First sort on the number of points
+      int comparePoints = valueA.compareTo(valueB);
+      if (comparePoints != 0) return comparePoints * -1;
+
+      // Then on word length
+      int compareWordLength = wordALength.compareTo(wordBLength);
+      if (compareWordLength != 0) return compareWordLength;
+
+      // Then, aphabetically, on the word itself
+      return wordA.compareTo(wordB) * -1;
+    });
+
+    // Add the sorted list to the LinkedHashMap
+    for (var wordTally in wordTallyList.reversed) {
+      wordTallyMap.putIfAbsent(wordTally.keys.elementAt(0), () => wordTally.values.elementAt(0));
+    }
+
+    return wordTallyMap;
   }
 
   List<bool> _allPlayersFinished(List<Player> playerList) {
     List<bool> playersFinished = [];
-    playerList.forEach((Player player) {
+    for (var player in playerList) {
       if (player.creator) {
         playersFinished.add(true);
         // Already have the scores
@@ -149,7 +200,7 @@ class GameService {
       } else if (player.playerStatus == PlayerStatus.finished) {
         playersFinished.add(true);
       }
-    });
+    }
     return playersFinished;
   }
 
@@ -173,7 +224,7 @@ class GameService {
   }
 
   List<String> _getShuffledLetters() {
-    List<List<String>> cubes = List.from(GAME_CUBES);
+    List<List<String>> cubes = List.from(kGameCubes);
 
     for (var letterCube in cubes) {
       letterCube.shuffle();
@@ -181,8 +232,9 @@ class GameService {
     cubes.shuffle();
 
     List<String> shuffledLetters = [];
-    cubes.forEach((cube) => shuffledLetters.add(cube[0]));
-    debugPrint('shuffledLetters: ${shuffledLetters}');
+    for (var cube in cubes) {
+      shuffledLetters.add(cube[0]);
+    }
     return shuffledLetters;
   }
 }

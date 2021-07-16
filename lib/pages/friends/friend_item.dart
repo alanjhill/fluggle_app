@@ -67,7 +67,7 @@ class FriendItem extends StatelessWidget {
 
   Widget _buildFriendItem(BuildContext context, {required AppUserFriend appUserFriend}) {
     return ListTile(
-      title: Text('${appUserFriend.appUser.displayName}'),
+      title: Text(appUserFriend.appUser.displayName),
       trailing: Container(
         margin: EdgeInsets.all(0.0),
         padding: EdgeInsets.all(0.0),

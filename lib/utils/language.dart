@@ -51,4 +51,4 @@ class LanguageLoader {
 }
 
 /// Returns a String for the given [languageCode]
-typedef Future<String> Resolver(String languageCode);
+typedef Resolver = Future<String> Function(String languageCode);

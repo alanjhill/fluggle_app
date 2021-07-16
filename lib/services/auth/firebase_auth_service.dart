@@ -22,7 +22,7 @@ class FirebaseAuthService implements AuthService {
     return _firebaseAuth.authStateChanges().map(_userFromFirebase);
   }
 
-  @override
+  //@override
   Future<AppUser> signInAnonymously() async {
     final UserCredential userCredential = await _firebaseAuth.signInAnonymously();
     return _userFromFirebase(userCredential.user);
@@ -52,6 +52,7 @@ class FirebaseAuthService implements AuthService {
     return _userFromFirebase(userCredential.user);
   }
 
+  @override
   Future<void> sendPasswordResetEmail({required String email}) async {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
   }

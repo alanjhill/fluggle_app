@@ -23,13 +23,9 @@ final friendsStreamProvider = StreamProvider.autoDispose<List<AppUserFriend>>(
 class FriendsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final mediaQuery = MediaQuery.of(context);
+    //final mediaQuery = MediaQuery.of(context);
+    //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.friendsPage));
-    final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser;
-
     final friendsListAsyncValue = watch(friendsStreamProvider);
 
     void _addFriend() {

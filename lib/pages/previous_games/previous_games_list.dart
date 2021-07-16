@@ -16,14 +16,14 @@ class PreviousGamesList extends StatelessWidget {
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
-    return SafeArea(
-        child: ListItemsBuilder<Game>(
+    return ListItemsBuilder<Game>(
+      physics: ScrollPhysics(),
       data: data,
       itemBuilder: (context, game) => PreviousGamesItem(
         game: game,
         uid: user.uid,
         previousGameOnTap: previousGameOnTap,
       ),
-    ));
+    );
   }
 }

@@ -1,14 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/constants/constants.dart';
-import 'package:fluggle_app/models/game_board/grid_item.dart';
-import 'package:fluggle_app/models/game_board/row_col.dart';
-import 'package:fluggle_app/pages/game/grid_cell.dart';
 import 'package:flutter/material.dart';
 
 class LetterCube extends StatelessWidget {
-  const LetterCube({Key? key, required this.letter, required this.size}) : super(key: key);
+  const LetterCube({Key? key, required this.letter, required this.size, this.margin = 2}) : super(key: key);
   final String letter;
   final double size;
+  final double margin;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +15,7 @@ class LetterCube extends StatelessWidget {
       height: size,
       alignment: Alignment.center,
       padding: EdgeInsets.all(0.0),
-      margin: EdgeInsets.all(1.0),
+      margin: EdgeInsets.all(margin),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
         color: kFluggleCubeColor,

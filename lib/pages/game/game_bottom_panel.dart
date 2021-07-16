@@ -1,4 +1,3 @@
-import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
 import 'package:flutter/material.dart';
 

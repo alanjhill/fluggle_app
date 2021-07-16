@@ -27,11 +27,11 @@ class FriendsSearchItem extends ConsumerWidget {
               children: <Widget>[
                 ListTile(
                   title: AutoSizeText(
-                    '${appUser.email}',
+                    appUser.email!,
                     wrapWords: false,
                   ),
                   subtitle: AutoSizeText(
-                    '${appUser.displayName}',
+                    appUser.displayName,
                     wrapWords: false,
                   ),
                   trailing: IconButton(
@@ -75,6 +75,5 @@ class FriendsSearchItem extends ConsumerWidget {
         )
       ],
     );
-    ;
   }
 }

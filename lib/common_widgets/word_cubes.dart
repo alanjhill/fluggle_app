@@ -14,7 +14,6 @@ class WordCubes extends StatelessWidget {
     }
     cubeSize -= 2.0;
     debugPrint('cubeSize: $cubeSize}');
-    final List<String> letters = word.split("");
     return Center(
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
         for (String letter in word.split(""))

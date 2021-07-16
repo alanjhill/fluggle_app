@@ -17,13 +17,12 @@ class PlayGameList extends StatelessWidget {
 
     return SafeArea(
       child: ListItemsBuilder<Game>(
+        physics: ScrollPhysics(),
         data: data,
-        itemBuilder: (context, game) => game.include
-            ? PlayGameItem(
-                game: game,
-                uid: user.uid,
-              )
-            : Container(),
+        itemBuilder: (context, game) => PlayGameItem(
+          game: game,
+          uid: user.uid,
+        ),
       ),
     );
   }

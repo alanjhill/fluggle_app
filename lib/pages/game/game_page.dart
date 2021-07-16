@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
@@ -70,7 +69,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     final PreferredSizeWidget appBar = _buildAppBar(context, _quitGame, gameStarted);
 
     final appBarHeight = appBar.preferredSize.height;
-    final gameBoardHeight = screenWidth - kGAME_BOARD_PADDING;
+    final gameBoardHeight = screenWidth - kGameBoardPadding;
     final remainingHeight = screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
     final topPanelHeight = remainingHeight / 3 * 2;
 
@@ -78,10 +77,10 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     final gameTopPanel = _buildGameTopPanel(topPanelHeight);
 
     // Game Board for the grid and letters
-    final gameBoard = _buildGameBoard(screenWidth - kGAME_BOARD_PADDING);
+    final gameBoard = _buildGameBoard(screenWidth - kGameBoardPadding);
 
     // Bottom panel / button bar
-    final gameBottomPanel = _buildGameBottomPanel(kBOTTOM_BAR_HEIGHT);
+    final gameBottomPanel = _buildGameBottomPanel(kBottomBarHeight);
 
     // Bottom Bar
 
@@ -120,7 +119,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
         added = true;
       }
     });
-    debugPrint('_addSwipedGridItem, added; ${added}');
+    debugPrint('_addSwipedGridItem, added; $added');
     return added;
   }
 
@@ -169,17 +168,17 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     for (GridItem gridItem in swipedGridItems) {
       setState(() {
         currentWord += gridItem.letter;
-        debugPrint('currentWord: ${currentWord}');
+        debugPrint('currentWord: $currentWord');
       });
     }
   }
 
   void _resetGridItems() {
-    swipedGridItems.forEach((GridItem gridItem) {
+    for (var gridItem in swipedGridItems) {
       setState(() {
         gridItem.swiped = false;
       });
-    });
+    }
   }
 
   void _resetSwipedItems() {
@@ -296,7 +295,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context, Function quitGame, bool gameStarted) {
     return CustomAppBar(
-      leading: new IconButton(
+      leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             if (gameStarted) {
@@ -397,7 +396,9 @@ class _GamePageWidgetState extends State<GamePageWidget> {
 
   void _setEmptyLetters() {
     List<String> emptyLetters = [];
-    shuffledLetters.forEach((cube) => emptyLetters.add('?'));
+    for (var _ in shuffledLetters) {
+      emptyLetters.add('?');
+    }
     setState(() {
       letters = emptyLetters;
       swipedGridItems = [];
@@ -405,10 +406,10 @@ class _GamePageWidgetState extends State<GamePageWidget> {
   }
 
   Future _animateLetters() async {
-    Random rnd = new Random(new DateTime.now().millisecondsSinceEpoch);
+    Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
     bool running = true;
 
-    Timer(const Duration(milliseconds: 2500), () {
+    Timer(const Duration(milliseconds: 1000), () {
       running = false;
     });
 
@@ -417,7 +418,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       for (int l = 0; l < 16; l++) {
         await Future.delayed(const Duration(microseconds: 1));
         setState(() {
-          letters[l] = AZ_LETTERS[rnd.nextInt(AZ_LETTERS.length)];
+          letters[l] = kAZLetters[rnd.nextInt(kAZLetters.length)];
         });
         _updateGridData();
       }
@@ -443,11 +444,11 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     for (int rowCounter = 0; rowCounter < 4; rowCounter++) {
       String row = "";
       for (int colCounter = 0; colCounter < 4; colCounter++) {
-        row = '${row},${localGridItems[rowCounter][colCounter].letter}';
+        row = '$row,${localGridItems[rowCounter][colCounter].letter}';
       }
-      rows = '${rows}\n${row}';
+      rows = '$rows\n$row';
     }
-    debugPrint('${rows}');
+    debugPrint(rows);
 
     setState(() {
       gridItems = localGridItems;

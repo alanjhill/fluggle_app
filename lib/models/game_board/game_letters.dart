@@ -1,4 +1,4 @@
-var GAME_CUBES = [
+const kGameCubes = [
   ['G', 'H', 'W', 'E', 'N', 'E'],
   ['N', 'R', 'N', 'Z', 'L', 'H'],
   ['B', 'O', 'A', 'J', 'O', 'B'],
@@ -17,4 +17,4 @@ var GAME_CUBES = [
   ['T', 'L', 'R', 'Y', 'E', 'T'],
 ];
 
-const AZ_LETTERS = 'ABCDEFGHIJKLMNOPQRST';
+const kAZLetters = 'ABCDEFGHIJKLMNOPQRST';

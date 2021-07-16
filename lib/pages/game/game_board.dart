@@ -38,7 +38,7 @@ class GameBoard extends StatefulWidget {
 }
 
 class _GameBoardState extends State<GameBoard> {
-  GlobalKey? gridKey = new GlobalKey();
+  GlobalKey? gridKey = GlobalKey();
   GridItem? currentGridItem;
 
   @override
@@ -50,9 +50,9 @@ class _GameBoardState extends State<GameBoard> {
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
 
-    print('kToolbarHeight: ${kToolbarHeight}');
+    print('kToolbarHeight: $kToolbarHeight');
 
-    double gridSize = mediaQuery.size.width - kGAME_BOARD_PADDING / 2;
+    double gridSize = mediaQuery.size.width - kGameBoardPadding / 2;
 
     // Grid Lines - first item in the stack
     final gridLines = GridView.builder(
@@ -80,12 +80,12 @@ class _GameBoardState extends State<GameBoard> {
     );
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: kGAME_BOARD_PADDING / 2),
+      margin: EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
           color: kFluggleBoardBorderColor,
-          width: kFLUGGLE_BOARD_BORDER_WIDTH / 2.0,
+          width: kFluggleBoardBorderWidth / 2.0,
         ),
       ),
       child: Listener(
@@ -113,7 +113,7 @@ class _GameBoardState extends State<GameBoard> {
 
   BoxDecoration _getGridItemBoxDecoration(RowCol rowCol) {
     BoxDecoration boxDecoration = BoxDecoration(
-      border: Border.all(color: kFluggleBoardBorderColor, width: kFLUGGLE_BOARD_BORDER_WIDTH / 2.0, style: BorderStyle.solid),
+      border: Border.all(color: kFluggleBoardBorderColor, width: kFluggleBoardBorderWidth / 2.0, style: BorderStyle.solid),
       borderRadius: _getGridItemBorderRadius(rowCol),
     );
 
@@ -174,7 +174,7 @@ class _GameBoardState extends State<GameBoard> {
         for (HitTestEntry hit in result.path) {
           HitTestTarget? target = hit.target;
           if (target is GridCellRenderObject) {
-            RowCol rowCol = (target as GridCellRenderObject).rowCol;
+            RowCol rowCol = target.rowCol;
             GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
             setState(() {
               if (widget.addSwipedGridItem!(gridItem)) {

@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/common_widgets/word_cubes.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
@@ -13,7 +12,7 @@ class CurrentWord extends StatelessWidget {
   CurrentWord({this.swipedGridItems = const [], this.currentWord = ""});
 
   String _getWord() {
-    String word = "";
+    String? word;
     if (currentWord != null) {
       word = currentWord;
     } else {
@@ -24,7 +23,7 @@ class CurrentWord extends StatelessWidget {
       }
     }
 
-    return word;
+    return word!;
   }
 
   @override
@@ -32,7 +31,7 @@ class CurrentWord extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     debugPrint('screen size: ${mediaQuery.size}');
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
-      final width = (viewportConstraints.maxWidth - (kFLUGGLE_BOARD_BORDER_WIDTH * 2));
+      final width = (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
       return Container(
         padding: EdgeInsets.symmetric(
           vertical: 0,
@@ -41,7 +40,7 @@ class CurrentWord extends StatelessWidget {
 /*        decoration: BoxDecoration(
           border: Border.all(
             color: kFluggleBoardBorderColor,
-            width: kFLUGGLE_BOARD_BORDER_WIDTH,
+            width: kFluggleBoardBorderWidth,
             style: BorderStyle.solid,
           ),
           borderRadius: BorderRadius.circular(10),

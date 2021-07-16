@@ -87,10 +87,11 @@ class FirestoreService {
 
   Stream<List<T>> collectionStream<T>({
     required String path,
-    required T builder(
+    required T Function(
       Map<String, dynamic>? data,
       String documentID,
-    ),
+    )
+        builder,
     Query Function(Query query)? queryBuilder,
     int Function(T lhs, T rhs)? sort,
   }) {
@@ -110,7 +111,7 @@ class FirestoreService {
 
   Stream<T> documentStream<T>({
     required String path,
-    required T builder(Map<String, dynamic>? data, String documentID),
+    required T Function(Map<String, dynamic>? data, String documentID) builder,
   }) {
     final DocumentReference reference = FirebaseFirestore.instance.doc(path);
     final Stream<DocumentSnapshot> snapshots = reference.snapshots();
@@ -119,7 +120,7 @@ class FirestoreService {
 
   Future<T> getData<T>({
     required String path,
-    required T builder(Map<String, dynamic>? data, String documentID),
+    required T Function(Map<String, dynamic>? data, String documentID) builder,
   }) async {
     final DocumentReference reference = FirebaseFirestore.instance.doc(path);
     final DocumentSnapshot snapshot = await reference.get();

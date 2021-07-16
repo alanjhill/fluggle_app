@@ -1,5 +1,4 @@
 import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
-import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/game_view_model.dart';
@@ -75,19 +74,6 @@ class ScoresPage extends ConsumerWidget {
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
-    // Scores List Widget
-    Widget _buildScoresListWidget(BuildContext context) {
-      return Container(
-        height: remainingHeight * 0.8,
-        child: ScoresList(
-          gameData: gameData,
-          playerData: playerData,
-          uid: user.uid,
-          saveGame: saveGame,
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: appBar,
       body: LayoutBuilder(
@@ -102,12 +88,31 @@ class ScoresPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  _buildScoresListWidget(context),
+                  _buildScoresListWidget(
+                    context,
+                    height: remainingHeight * 0.8,
+                    gameData: gameData,
+                    playerData: playerData,
+                    uid: user.uid,
+                  ),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Scores List Widget
+  Widget _buildScoresListWidget(BuildContext context, {required double height, required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData, required String uid}) {
+    return Container(
+      height: height,
+      child: ScoresList(
+        gameData: gameData,
+        playerData: playerData,
+        uid: uid,
+        saveGame: saveGame,
       ),
     );
   }

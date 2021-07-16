@@ -29,7 +29,7 @@ class PlayGameItem extends ConsumerWidget {
       key: Key(game.gameId!),
       child: GestureDetector(
         child: ReusableCard(
-          key: Key('${game.gameId}'),
+          key: Key(game.gameId!),
           cardChild: Container(
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -84,7 +84,7 @@ class PlayGameItem extends ConsumerWidget {
 
   Widget _buildPlayerItem(BuildContext context, {required Game game, required Player player}) {
     return ListTile(
-      title: Text('${player.user?.displayName}'),
+      title: Text(player.user!.displayName),
       trailing: Container(
         margin: EdgeInsets.all(0.0),
         padding: EdgeInsets.all(0.0),
@@ -95,18 +95,13 @@ class PlayGameItem extends ConsumerWidget {
   }
 
   Widget _buildPlayers(BuildContext context, {required Game game, required playerData, required String uid}) {
-    //gamePlayersAsyncValue.whenData((list) => doSomething(list) ? debugPrint('1') : debugPrint('2'));
-
-    return SingleChildScrollView(
-      physics: ScrollPhysics(),
-      child: Column(
-        children: <Widget>[
-          ListItemsBuilder<Player>(
-            data: playerData,
-            itemBuilder: (context, player) => _buildPlayerItem(context, game: game, player: player),
-          ),
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        ListItemsBuilder<Player>(
+          data: playerData,
+          itemBuilder: (context, player) => _buildPlayerItem(context, game: game, player: player),
+        ),
+      ],
     );
   }
 

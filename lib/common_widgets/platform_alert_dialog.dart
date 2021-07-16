@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fluggle_app/constants/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +10,7 @@ class PlatformAlertDialog extends PlatformWidget {
     required this.content,
     this.cancelActionText,
     required this.defaultActionText,
-  })   : assert(title != null),
+  })  : assert(title != null),
         assert(content != null),
         assert(defaultActionText != null);
 
@@ -29,7 +27,6 @@ class PlatformAlertDialog extends PlatformWidget {
     );
   }
 
-  @override
   Widget buildCupertinoWidget(BuildContext context) {
     return CupertinoAlertDialog(
       title: Text(title),

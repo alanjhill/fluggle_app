@@ -13,6 +13,10 @@ class SharedPreferencesService {
     await sharedPreferences.setBool(onboardingCompleteKey, true);
   }
 
+  Future<void> setOnboardingIncomplete() async {
+    await sharedPreferences.setBool(onboardingCompleteKey, false);
+  }
+
   Future<void> clear() async {
     await sharedPreferences.clear();
   }

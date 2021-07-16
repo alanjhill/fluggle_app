@@ -18,8 +18,8 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         title.data.toString().toUpperCase(),
       ),
       centerTitle: true,
-      leading: this.leading ?? null,
-      actions: this.actions ?? null,
+      leading: leading,
+      actions: actions,
     );
   }
 }

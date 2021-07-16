@@ -39,25 +39,32 @@ class _GameCubeState extends State<GameCube> {
 
   double _getPadding(int y, int x) {
     GridItem gridItem = widget.gridItems[y][x];
-    return gridItem.swiped ? kCUBE_SELECTED_PADDING : kCUBE_PADDING;
+    return gridItem.swiped ? kCubeSelectedPadding : kCubePadding;
   }
 
   Widget _buildGameCube(RowCol rowCol) {
     GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
 
+    debugPrint('>>> building game cube >>>');
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.all(kLETTER_PADDING),
+      padding: EdgeInsets.all(kLetterPadding),
       child: GridCell(
         child: Container(
           alignment: Alignment.center,
           color: kFluggleCubeColor,
-          child: AutoSizeText(
-            widget.letter,
-            style: TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: gridItem.swiped ? kFluggleLetterHighlightColor : kFluggleLetterColor,
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 50),
+            switchInCurve: Curves.easeInOutCubic,
+            switchOutCurve: Curves.easeInOutCubic,
+            child: AutoSizeText(
+              widget.letter,
+              key: ValueKey(widget.letter),
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                color: gridItem.swiped ? kFluggleLetterHighlightColor : kFluggleLetterColor,
+              ),
             ),
           ),
         ),

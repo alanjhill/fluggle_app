@@ -5,30 +5,30 @@ enum GameStatus { created, abandoned, finished }
 
 class Game {
   String? gameId;
+  GameStatus? gameStatus;
   final String creatorId;
   final Timestamp created;
-  GameStatus? gameStatus;
-  final bool? practise;
+  final bool practise;
   final List<String> letters;
   final Map<String, PlayerStatus>? playerUids;
-
+  Timestamp? finished;
   // Not persisted
   List<Player>? players = [];
-  bool include = true;
 
   Game({
+    this.gameId,
     required this.creatorId,
     required this.created,
     required this.gameStatus,
+    required this.practise,
     required this.letters,
-    this.practise = false,
-    this.gameId,
+    this.finished,
     this.playerUids,
     this.players,
   });
 
   factory Game.fromMap(Map<String, dynamic>? map, String documentId) {
-    var playerUids = Map<String, PlayerStatus>();
+    var playerUids = <String, PlayerStatus>{};
     (map!['playerUids'] as Map<String, dynamic>).forEach((uid, status) {
       PlayerStatus playerStatus = PlayerStatus.values.firstWhere((s) => s.toString() == status);
       playerUids[uid] = playerStatus;
@@ -38,10 +38,11 @@ class Game {
         gameId: documentId,
         creatorId: map['creatorId'],
         created: map['created'],
+        finished: map['finished'],
         gameStatus: GameStatus.values.firstWhere(
           (status) => status.toString() == map['gameStatus'],
         ),
-        practise: map['practice'],
+        practise: false,
         playerUids: playerUids,
         players: [],
         letters: List<String>.from(map['letters']));
@@ -51,8 +52,8 @@ class Game {
     Map<String, dynamic> map = {
       'creatorId': creatorId,
       'created': created,
+      'finished': finished,
       'gameStatus': gameStatus.toString(),
-      'practice': practise,
       'letters': letters.toList(),
     };
     Map<String, dynamic> playerUidsMap = {};
@@ -66,7 +67,7 @@ class Game {
 
   @override
   String toString() {
-    return 'Game{gameId: $gameId, creatorId: $creatorId, created: $created, gameStatus: $gameStatus, letters: $letters, playerUids: $playerUids, players: $players, include: $include}';
+    return 'Game{gameId: $gameId, creatorId: $creatorId, created: $created, finished: $finished, gameStatus: $gameStatus, letters: $letters, playerUids: $playerUids, players: $players}';
   }
 
   @override
@@ -77,20 +78,11 @@ class Game {
           gameId == other.gameId &&
           creatorId == other.creatorId &&
           created == other.created &&
+          finished == other.finished &&
           gameStatus == other.gameStatus &&
           letters == other.letters &&
           playerUids == other.playerUids &&
-          players == other.players &&
-          include == other.include;
-
+          players == other.players;
   @override
-  int get hashCode =>
-      gameId.hashCode ^
-      creatorId.hashCode ^
-      created.hashCode ^
-      gameStatus.hashCode ^
-      letters.hashCode ^
-      playerUids.hashCode ^
-      players.hashCode ^
-      include.hashCode;
+  int get hashCode => gameId.hashCode ^ creatorId.hashCode ^ created.hashCode ^ gameStatus.hashCode ^ letters.hashCode ^ playerUids.hashCode ^ players.hashCode;
 }

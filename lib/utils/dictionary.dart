@@ -1,8 +1,8 @@
 class Dictionary {
-  List<String> _words;
-  Dictionary(this._words);
+  final List<String> _words;
+  const Dictionary(this._words);
 
   bool exists(String word) {
-    return _words.indexOf(word.toLowerCase()) > -1;
+    return _words.contains(word.toLowerCase());
   }
 }

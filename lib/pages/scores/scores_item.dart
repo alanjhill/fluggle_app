@@ -32,6 +32,7 @@ class _ScoresItemState extends State<ScoresItem> {
     List<Widget> widgets = [];
     widgets.add(
       Expanded(
+        flex: 3,
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: _getWordText(playerWord: widget.playerWord, textAlign: switched ? TextAlign.right : TextAlign.left),
@@ -40,6 +41,7 @@ class _ScoresItemState extends State<ScoresItem> {
     );
     widgets.add(
       Expanded(
+        flex: 1,
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: _getWordScore(playerWord: widget.playerWord, textAlign: switched ? TextAlign.left : TextAlign.right),
@@ -57,7 +59,7 @@ class _ScoresItemState extends State<ScoresItem> {
   AutoSizeText _getWordText({required PlayerWord playerWord, required TextAlign textAlign}) {
     if (playerWord.gameWord.unique == true) {
       return AutoSizeText(
-        '${playerWord.gameWord.word}',
+        playerWord.gameWord.word,
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(
@@ -67,22 +69,23 @@ class _ScoresItemState extends State<ScoresItem> {
       );
     } else if (playerWord.gameWord.unique == false) {
       return AutoSizeText(
-        '${playerWord.gameWord.word}',
+        playerWord.gameWord.word,
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(
           fontWeight: FontWeight.w500,
+          color: kFluggleSecondaryColor.withAlpha(128),
         ),
       );
     } else {
       return AutoSizeText(
-        '${playerWord.gameWord.word}',
+        playerWord.gameWord.word,
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(
           fontWeight: FontWeight.w500,
           decoration: TextDecoration.lineThrough,
-          color: Colors.blueGrey,
+          color: Colors.grey[500],
         ),
       );
     }
@@ -102,13 +105,19 @@ class _ScoresItemState extends State<ScoresItem> {
       return Text(
         '${widget.playerWord.gameWord.score}',
         textAlign: textAlign,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: kFluggleSecondaryColor.withAlpha(128),
+        ),
       );
     } else {
       return Text(
         '-',
         textAlign: textAlign,
         style: TextStyle(
-          color: Colors.grey,
+          fontWeight: FontWeight.w500,
+          decoration: TextDecoration.lineThrough,
+          color: Colors.grey[500],
         ),
       );
     }

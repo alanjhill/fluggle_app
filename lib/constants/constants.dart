@@ -5,15 +5,15 @@ class Constants {
   static const String firebaseProjectURL = 'https://fir-auth-demo-flutter.firebaseapp.com/';
 }
 
-const int kGAME_TIME = 180;
-const double kGAME_BOARD_PADDING = 40.0;
-const double kCUBE_PADDING = 8.0;
-const double kCUBE_SELECTED_PADDING = 5.0;
-const double kLETTER_PADDING = 12.0;
-const double kFLUGGLE_BOARD_BORDER_WIDTH = 2.0;
-const double kBOTTOM_BAR_HEIGHT = 64;
-const double kSCORES_COLUMN_PADDING = 4.0;
-const double kPAGE_PADDING = 16.0;
+const int kGameTime = 180;
+const double kGameBoardPadding = 40.0;
+const double kCubePadding = 8.0;
+const double kCubeSelectedPadding = 5.0;
+const double kLetterPadding = 12.0;
+const double kFluggleBoardBorderWidth = 2.0;
+const double kBottomBarHeight = 64;
+const double kScoresColumnPadding = 4.0;
+const double kPagePadding = 16.0;
 
 const int kGridCount = 4;
 

@@ -1,17 +1,12 @@
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
-import 'package:fluggle_app/pages/scores/scores.dart';
 import 'package:fluggle_app/pages/scores/scores_banner.dart';
-import 'package:fluggle_app/pages/scores/scores_footer.dart';
-import 'package:fluggle_app/pages/scores/scores_header.dart';
+import 'package:fluggle_app/pages/scores/scores_data.dart';
 import 'package:fluggle_app/services/game/game_service.dart';
-import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:linked_scroll_controller/linked_scroll_controller.dart';
-import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 
 // ignore: must_be_immutable
 class ScoresList extends StatefulWidget {
@@ -34,30 +29,17 @@ class ScoresList extends StatefulWidget {
 class _ScoresListState extends State<ScoresList> {
   GameService gameService = GameService();
 
-  static LinkedScrollControllerGroup? _verticalControllersGroup = LinkedScrollControllerGroup();
-  static List<ScrollController> _verticalScrollControllers = [];
-
-  LinkedScrollControllerGroup? _horizontalControllersGroup = LinkedScrollControllerGroup();
-  List<ScrollController> _horizontalScrollControllers = [];
-
   @override
   void initState() {
     super.initState();
-    _horizontalScrollControllers.add(_horizontalControllersGroup!.addAndGet());
-    _horizontalScrollControllers.add(_horizontalControllersGroup!.addAndGet());
-    _horizontalScrollControllers.add(_horizontalControllersGroup!.addAndGet());
   }
 
   @override
   void dispose() {
     super.dispose();
-    _verticalScrollControllers.forEach((ScrollController scrollController) {
+/*    _verticalScrollControllers.forEach((ScrollController scrollController) {
       //scrollController.dispose();
-    });
-
-    _horizontalScrollControllers.forEach((ScrollController scrollController) {
-      //scrollController.dispose();
-    });
+    });*/
   }
 
   @override
@@ -77,16 +59,19 @@ class _ScoresListState extends State<ScoresList> {
       if (game!.practise == true) {
         return _buildSinglePlayerScores(context, game: game!);
       } else {
-        return _buildMultiPlayerScores(context, game: game!);
+        return _buildMultiPlayerScores(context, game: game!, uid: widget.uid);
       }
     } else {
-      return CircularProgressIndicator();
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
   }
 
   Widget _buildSinglePlayerScores(BuildContext context, {required Game game}) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    List<Player> creator = [];
+    List<Player> players = [];
     widget.playerData.when(
         loading: () => {},
         data: (playerList) {
@@ -96,7 +81,7 @@ class _ScoresListState extends State<ScoresList> {
             Player player = it.current;
             player.playerStatus = game.playerUids![player.playerId] as PlayerStatus;
             if (index == 0) {
-              creator.add(player);
+              players.add(player);
             }
             index++;
           }
@@ -118,87 +103,76 @@ class _ScoresListState extends State<ScoresList> {
         child: _buildScores(
           context,
           game: game,
-          creator: creator,
-          players: [],
+          players: players,
+          uid: widget.uid,
         ),
       );
     });
   }
 
-  Widget _buildMultiPlayerScores(BuildContext context, {required Game game}) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser!;
-    List<Player> creator = [];
+  Widget _buildMultiPlayerScores(BuildContext context, {required Game game, required String uid}) {
+    //final firebaseAuth = context.read(firebaseAuthProvider);
+
     List<Player> players = [];
-    widget.playerData.when(
-        loading: () => {},
+
+    return widget.playerData.when(
+        loading: () => CircularProgressIndicator(),
         data: (playerList) {
           Iterator<Player> it = playerList!.iterator;
-          int index = 0;
           while (it.moveNext()) {
             Player player = it.current;
             player.playerStatus = game.playerUids![player.playerId] as PlayerStatus;
-            if (index == 0) {
-              creator.add(player);
-            } else {
-              players.add(player);
-            }
-            index++;
+            players.add(player);
           }
+          return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            return Container(
+              padding: EdgeInsets.all(0.0),
+              margin: EdgeInsets.all(0.0),
+              height: constraints.maxHeight,
+              decoration: BoxDecoration(
+                color: kFlugglePrimaryColor,
+                border: Border.all(
+                  color: kFlugglePrimaryColor,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: game != null
+                  ? _buildScores(
+                      context,
+                      game: game,
+                      players: players,
+                      uid: uid,
+                    )
+                  : CircularProgressIndicator(),
+            );
+          });
         },
-        error: (_, __) => {});
-
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-      return Container(
-        height: constraints.maxHeight,
-        decoration: BoxDecoration(
-          color: kFlugglePrimaryColor,
-          border: Border.all(
-            color: kFlugglePrimaryColor,
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: game != null
-            ? _buildScores(
-                context,
-                game: game,
-                creator: creator,
-                players: players,
-              )
-            : CircularProgressIndicator(),
-      );
-    });
+        error: (_, __) => Text('Error Loading data'));
   }
 
-  Widget _buildScores(BuildContext context, {required Game game, required List<Player> creator, required List<Player> players}) {
-    final mediaQuery = MediaQuery.of(context);
-    // Tally of all words
-    Map<String, int> wordTally = {};
+  Widget _buildScores(
+    BuildContext context, {
+    required Game game,
+    required List<Player> players,
+    required String uid,
+  }) {
+    //final mediaQuery = MediaQuery.of(context);
+    //debugPrint('mediaQuery: ${mediaQuery}');
 
     // Process the scores/words
-    gameService.processWords(context, game: game, creator: creator, players: players, wordTally: wordTally);
+    Map<String, int> wordTally = gameService.processWords(context, game: game, players: players);
 
     // Only if a real game do we save the game state after processing the words
     if (game.practise == false) {
       widget.saveGame(context, game: game);
     }
 
-    // Add two scrollControllers
-    creator.forEach((_) {
-      _verticalScrollControllers.add(_verticalControllersGroup!.addAndGet());
-    });
-    players.forEach((_) {
-      _verticalScrollControllers.add(_verticalControllersGroup!.addAndGet());
-    });
-
     final double bannerHeight = 48.0;
-    final double headerHeight = 36.0;
-    final double footerHeight = 96.0;
-
     return Container(
       color: kFluggleBoardBackgroundColor,
-      padding: EdgeInsets.all(0),
+      //padding: EdgeInsets.all(0.0),
+      //margin: EdgeInsets.all(0.0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           debugPrint('_buildScores, constraints: ${constraints.toString()}');
@@ -208,39 +182,18 @@ class _ScoresListState extends State<ScoresList> {
               ScoresBanner(
                 context: context,
                 game: game,
-                creator: creator,
                 players: players,
                 height: bannerHeight,
               ),
-              ScoresHeader(
+              ScoresData(
                 context: context,
                 game: game,
-                creator: creator,
                 players: players,
-                height: headerHeight,
-                horizontalScrollControllers: _horizontalScrollControllers,
-                horizontalScrollerIndex: 0,
-              ),
-              Scores(
-                context: context,
-                game: game,
-                creator: creator,
-                players: players,
+                uid: uid,
+                height: constraints.maxHeight - bannerHeight,
+                width: constraints.maxWidth,
                 wordTally: wordTally,
-                height: constraints.maxHeight - bannerHeight - headerHeight - footerHeight,
-                horizontalScrollControllers: _horizontalScrollControllers,
-                horizontalScrollerIndex: 1,
-                verticalScrollControllers: _verticalScrollControllers,
-              ),
-              ScoresFooter(
-                context: context,
-                game: game,
-                creator: creator,
-                players: players,
-                height: footerHeight,
-                horizontalScrollControllers: _horizontalScrollControllers,
-                horizontalScrollerIndex: 2,
-              ),
+              )
             ],
           );
         },

@@ -31,7 +31,7 @@ class AppRoutes {
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(BuildContext context, RouteSettings settings, FirebaseAuth auth) {
     final args = settings.arguments;
-    debugPrint('args: ${args}');
+    debugPrint('args: $args');
     switch (settings.name) {
       case AppRoutes.emailPasswordSignInPage:
         return pageTransition(

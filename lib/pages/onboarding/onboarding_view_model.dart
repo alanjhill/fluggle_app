@@ -17,7 +17,7 @@ class OnboardingViewModel extends StateNotifier<bool> {
   }
 
   Future<void> setCompleteOnboardingFalse() async {
-    await sharedPreferencesService.setOnboardingComplete();
+    await sharedPreferencesService.setOnboardingIncomplete();
     state = false;
   }
 

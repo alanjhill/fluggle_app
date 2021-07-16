@@ -44,7 +44,7 @@ class _GameTopPanelState extends State<GameTopPanel> {
 
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
       return Container(
-        margin: EdgeInsets.symmetric(horizontal: kGAME_BOARD_PADDING / 2, vertical: kGAME_BOARD_PADDING / 2),
+        margin: EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2, vertical: kGameBoardPadding / 2),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -52,7 +52,7 @@ class _GameTopPanelState extends State<GameTopPanel> {
                 child: WordCount(
               count: widget.addedWords!.length,
             )),
-            SizedBox(height: kGAME_BOARD_PADDING / 2),
+            SizedBox(height: kGameBoardPadding / 2),
             Expanded(
               child: CurrentWord(
                 swipedGridItems: widget.swipedGridItems,

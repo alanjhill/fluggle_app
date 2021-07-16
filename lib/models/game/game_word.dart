@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class GameWord {
   final String word;
   bool? unique;
@@ -24,8 +22,7 @@ class GameWord {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is GameWord && runtimeType == other.runtimeType && word == other.word && unique == other.unique && score == other.score;
+  bool operator ==(Object other) => identical(this, other) || other is GameWord && runtimeType == other.runtimeType && word == other.word && unique == other.unique && score == other.score;
 
   @override
   int get hashCode => word.hashCode ^ unique.hashCode ^ score.hashCode;

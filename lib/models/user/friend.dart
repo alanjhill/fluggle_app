@@ -31,12 +31,10 @@ class Friend {
   }
 
   @override
-  bool operator ==(dynamic other) {
-    if (identical(this, other)) return true;
-    if (runtimeType != other.runtimeType) return false;
-    final Friend otherFriend = other;
-    return friendId == otherFriend.friendId && friendStatus == otherFriend.friendStatus;
-  }
+  bool operator ==(Object other) => identical(this, other) || other is Friend && runtimeType == other.runtimeType && friendId == other.friendId && friendStatus == other.friendStatus;
+
+  @override
+  int get hashCode => friendId.hashCode ^ friendStatus.hashCode;
 
   @override
   String toString() {

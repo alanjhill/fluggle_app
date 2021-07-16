@@ -10,7 +10,7 @@ class RowCol {
   }
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map<String, dynamic>();
+    Map<String, dynamic> map = <String, dynamic>{};
 
     map['row'] = row;
     map['col'] = col;

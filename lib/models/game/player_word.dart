@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:fluggle_app/models/game/game_word.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 
@@ -10,7 +8,7 @@ class PlayerWord {
   PlayerWord({required this.gameWord, required this.gridItems});
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map<String, dynamic>();
+    Map<String, dynamic> map = <String, dynamic>{};
     map['gameWord'] = gameWord.toMap();
 
     map['gridItems'] = gridItems.map((GridItem gridItem) {

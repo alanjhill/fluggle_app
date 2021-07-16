@@ -9,8 +9,8 @@ class GridItem {
   bool isAdjacent(GridItem? otherGridItem) {
     bool adjacent = false;
     if (otherGridItem != null) {
-      int cols = (otherGridItem.col - this.col).abs();
-      int rows = (otherGridItem.row - this.row).abs();
+      int cols = (otherGridItem.col - col).abs();
+      int rows = (otherGridItem.row - row).abs();
       adjacent = ([0, 1].contains(cols) && [0, 1].contains(rows));
     }
     return adjacent;
@@ -26,7 +26,7 @@ class GridItem {
   }
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map<String, dynamic>();
+    Map<String, dynamic> map = <String, dynamic>{};
     map['row'] = row;
     map['col'] = col;
     map['letter'] = letter;
