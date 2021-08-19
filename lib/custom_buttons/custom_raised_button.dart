@@ -8,7 +8,7 @@ class CustomRaisedButton extends StatelessWidget {
     this.color,
     this.textColor,
     this.height = 50.0,
-    this.borderRadius = 16.0,
+    this.borderRadius = 8.0,
     this.loading = false,
     this.onPressed,
   }) : super(key: key);
@@ -40,14 +40,14 @@ class CustomRaisedButton extends StatelessWidget {
       height: height,
       child: ElevatedButton(
         child: loading ? buildSpinner(context) : child,
-/*        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.disabled)) {
-              return kFluggleSecondaryColor; // Disabled color
-            }
-            return kFlugglePrimaryColor; // Regular color
-          }),
-        ),*/
+        style: ElevatedButton.styleFrom(
+          primary: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(borderRadius),
+            ),
+          ),
+        ),
         onPressed: onPressed,
       ),
     );

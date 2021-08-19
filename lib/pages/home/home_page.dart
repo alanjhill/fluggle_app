@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/word_cubes.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
@@ -21,61 +21,75 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
+    debugPrint('user.displayName: ${user?.displayName}');
     bool isSignedIn = user != null;
     bool isAnonymous = true;
-    //bool isAdmin = false;
     if (user != null) {
       isAnonymous = user.isAnonymous;
     }
 
     return Scaffold(
-      appBar: CustomAppBar(
-        title: Text(Strings.appName),
-        leading: Container(),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(kPagePadding),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                SizedBox(height: 8.0),
-                CustomRaisedButton(
-                  child: Text('Play'),
-                  onPressed: isSignedIn || isAnonymous ? () => playGame(context) : null,
-                ),
-                SizedBox(height: 8.0),
-                CustomRaisedButton(
-                  child: Text('Friends'),
-                  onPressed: isSignedIn && !isAnonymous ? () => friendsList(context) : null,
-                ),
-                SizedBox(height: 8.0),
-                CustomRaisedButton(
-                  child: Text('Previous Games'),
-                  onPressed: isSignedIn && !isAnonymous ? () => previousGames(context) : null,
-                ),
-                SizedBox(height: 8.0),
-                !isSignedIn
-                    ? CustomRaisedButton(
-                        child: Text('Sign In'),
-                        onPressed: () => signIn(context),
-                      )
-                    : CustomRaisedButton(
-                        child: Text(Strings.accountPage),
-                        onPressed: () => accountPage(context),
-                      ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 50.0),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(kPagePadding),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: WordCubes(word: 'FLUGGLE', width: MediaQuery.of(context).size.width - 32, spacing: 1.0),
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    'A BOGGLE like word game\nwritten using Flutter',
+                    style: TextStyle(),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16.0),
+                  CustomRaisedButton(
+                    child: Text('Play'),
+                    onPressed: isSignedIn ? () => playGame(context) : null,
+                  ),
+                  SizedBox(height: 8.0),
+                  CustomRaisedButton(
+                    child: Text('Friends'),
+                    onPressed: isSignedIn && !isAnonymous ? () => friendsList(context) : null,
+                  ),
+                  SizedBox(height: 8.0),
+                  CustomRaisedButton(
+                    child: Text('Previous Games'),
+                    onPressed: isSignedIn && !isAnonymous ? () => previousGames(context) : null,
+                  ),
+                  SizedBox(height: 8.0),
+                  !isSignedIn
+                      ? CustomRaisedButton(
+                          child: Text('Sign In'),
+                          onPressed: () => signIn(context),
+                        )
+                      : CustomRaisedButton(
+                          child: Text(Strings.accountPage),
+                          onPressed: () => accountPage(context),
+                        ),
+                  SizedBox(height: 8.0),
+                  CustomRaisedButton(
+                    child: Text('Help'),
+                    onPressed: () => help(context),
+                  ),
 /*                SizedBox(height: 8.0),
-                appUser?.admin == true
-                    ? CustomRaisedButton(
-                        child: Text('Onboarding Incomplete'),
-                        onPressed: () async {
-                          await onboardingIncomplete(context);
-                        },
-                      )
-                    : Container(),*/
-              ],
+                  appUser?.admin == true
+                      ? CustomRaisedButton(
+                          child: Text('Onboarding Incomplete'),
+                          onPressed: () async {
+                            await onboardingIncomplete(context);
+                          },
+                        )
+                      : Container(),*/
+                ],
+              ),
             ),
           ),
         ),
@@ -102,6 +116,10 @@ class HomePage extends ConsumerWidget {
   void signIn(BuildContext ctx) {
     //Navigator.of(ctx).pushNamed(AppRoutes.emailPasswordSignInPage);
     Navigator.of(ctx).pushNamed(AppRoutes.signInPage);
+  }
+
+  void help(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(AppRoutes.helpPage);
   }
 
   Future<void> onboardingIncomplete(BuildContext context) async {

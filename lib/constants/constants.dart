@@ -5,7 +5,6 @@ class Constants {
   static const String firebaseProjectURL = 'https://fir-auth-demo-flutter.firebaseapp.com/';
 }
 
-const int kGameTime = 180;
 const double kGameBoardPadding = 40.0;
 const double kCubePadding = 8.0;
 const double kCubeSelectedPadding = 5.0;
@@ -14,32 +13,37 @@ const double kFluggleBoardBorderWidth = 2.0;
 const double kBottomBarHeight = 64;
 const double kScoresColumnPadding = 4.0;
 const double kPagePadding = 16.0;
+const double kCurrentWordCubeSpacing = 2.0;
 
 const int kGridCount = 4;
 
-const Color kFlugglePrimaryColor = Color.fromRGBO(0, 89, 157, 1);
-const Color kFluggleSecondaryColor = Color.fromRGBO(69, 209, 253, 1);
+//1a73e8
+const Color kFlugglePrimaryColor = Color(0xFF1A73E8);
+const Color kFluggleLightColor = Color(0xFF69A1FF);
+const Color kFluggleDarkColor = Color(0xFF0049B5);
+const Color kFluggleCanvasColor = kFlugglePrimaryColor;
 
-const Color kFluggleCubeColor = Color(0xfffffdd0);
-const Color kFluggleBoardColor = Color.fromRGBO(9, 89, 157, 1); //Color.fromRGBO(69, 209, 253, 1);
-const Color kFluggleBoardBackgroundColor = Color.fromRGBO(9, 89, 157, 0.2); //Colors.white; //Color.fromRGBO(9, 89, 157, 0.5);
-const Color kFluggleBoardBorderColor = kFluggleSecondaryColor;
-const Color kFluggleLetterColor = kFlugglePrimaryColor; //Colors.white;
-const Color kFluggleLetterHighlightColor = kFluggleSecondaryColor; //Color.fromRGBO(69, 209, 253, 1);
-const Color kFluggleSwipeLineColor = kFluggleSecondaryColor; //kFluggleLetterHighlightColor;
+const Color kFluggleCubeColor = Color(0xFFFFFDD0);
+const Color kFluggleBoardColor = Color.fromRGBO(9, 89, 157, 1);
+const Color kFluggleBoardBackgroundColor = Color.fromRGBO(9, 89, 157, 0.2);
+const Color kFluggleBoardBorderColor = kFluggleDarkColor;
+
+const Color kFluggleLetterColor = kFlugglePrimaryColor;
+const Color kFluggleLetterHighlightColor = kFluggleLightColor;
+const Color kFluggleSwipeLineColor = kFluggleLightColor;
 
 const double kSwipeLineWidth = 8.0;
 
-const kEggTimerTextStyle = TextStyle(
+const kTimerTextStyle = TextStyle(
   fontSize: 24.0,
   fontWeight: FontWeight.bold,
   letterSpacing: 1.5,
-  color: Color.fromRGBO(69, 209, 253, 1),
+  color: kFluggleLightColor,
 );
 
 var kElevatedButtonStyle = ElevatedButton.styleFrom(
   elevation: 10,
-  primary: kFlugglePrimaryColor,
+  primary: kFluggleLightColor,
   padding: EdgeInsets.all(10.0),
 );
 

@@ -27,36 +27,26 @@ class AppTheme {
         bodyColor: Colors.white,
       ),
       dialogTheme: DialogTheme(
-        backgroundColor: kFlugglePrimaryColor,
+        backgroundColor: kFluggleLightColor,
         shape: RoundedRectangleBorder(
-          side: BorderSide(width: 2.0, style: BorderStyle.solid, color: Colors.white),
           borderRadius: BorderRadius.all(
             Radius.circular(8.0),
           ),
         ),
       ),
       cardTheme: CardTheme(
-        margin: EdgeInsets.only(top: 6.0, bottom: 6.0),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(width: 2.0, style: BorderStyle.solid, color: Colors.white),
-          borderRadius: BorderRadius.all(
-            Radius.circular(8.0),
-          ),
-        ),
+        color: kFluggleDarkColor,
+        elevation: 3,
+        margin: EdgeInsets.all(0.0),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          side: BorderSide(width: 2.0, style: BorderStyle.solid, color: Colors.white),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(8.0),
-            ),
-          ),
+          primary: kFluggleLightColor,
+          elevation: 2,
         ),
       ),
       buttonTheme: ButtonThemeData(
         shape: RoundedRectangleBorder(
-          side: BorderSide(width: 2.0, style: BorderStyle.solid, color: Colors.white),
           borderRadius: BorderRadius.all(
             Radius.circular(8.0),
           ),
@@ -64,7 +54,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          primary: Colors.blue,
+          primary: kFluggleLightColor,
         ),
       ),
       iconTheme: IconThemeData(
@@ -72,8 +62,9 @@ class AppTheme {
         size: 36.0,
       ),
       appBarTheme: AppBarTheme(
+        elevation: 0.0,
         centerTitle: true,
-        backgroundColor: kFlugglePrimaryColor,
+        backgroundColor: kFluggleCanvasColor,
         textTheme: GoogleFonts.varelaRoundTextTheme(
           Theme.of(context).textTheme,
         ).apply(
@@ -82,14 +73,13 @@ class AppTheme {
           bodyColor: Colors.white,
         ),
       ),
-      brightness: Brightness.light,
-      canvasColor: kFlugglePrimaryColor,
+      canvasColor: kFluggleCanvasColor,
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: TextStyle(color: Colors.white),
         helperStyle: TextStyle(color: Colors.white),
         hintStyle: TextStyle(color: Colors.white),
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: kFluggleSecondaryColor),
+          borderSide: BorderSide(color: kFluggleLightColor),
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -98,6 +88,13 @@ class AppTheme {
           borderSide: BorderSide(color: Colors.blue),
         ),
         errorStyle: TextStyle(color: Colors.redAccent),
+      ),
+      toggleButtonsTheme: ToggleButtonsThemeData(
+        color: Colors.white,
+        hoverColor: kFluggleDarkColor,
+        borderRadius: BorderRadius.circular(0),
+        fillColor: Colors.transparent,
+        selectedColor: kFluggleDarkColor,
       ),
     );
   }

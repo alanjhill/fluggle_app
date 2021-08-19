@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/list_items_builder.dart';
+import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/pages/previous_games/previous_games_item.dart';
 import 'package:fluggle_app/top_level_providers.dart';

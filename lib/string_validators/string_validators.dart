@@ -35,8 +35,7 @@ class ValidatorInputFormatter implements TextInputFormatter {
   final StringValidator editingValidator;
 
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     final bool oldValueValid = editingValidator.isValid(oldValue.text);
     final bool newValueValid = editingValidator.isValid(newValue.text);
     if (oldValueValid && !newValueValid) {
@@ -68,5 +67,15 @@ class MinLengthStringValidator extends StringValidator {
   @override
   bool isValid(String value) {
     return value.length >= minLength;
+  }
+}
+
+class MinLengthOrEmptyStringValidator extends StringValidator {
+  MinLengthOrEmptyStringValidator(this.minLength);
+  final int minLength;
+
+  @override
+  bool isValid(String value) {
+    return value.isEmpty || value.length >= minLength;
   }
 }

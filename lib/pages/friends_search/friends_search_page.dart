@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/models/user/user_view_model.dart';
@@ -28,7 +28,7 @@ class FriendsSearchPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.addFriendPage));
+    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.addFriendPage);
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
     final friendsSearchAsyncValue = watch(userViewModelStreamProvider(email));

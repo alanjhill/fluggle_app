@@ -1,7 +1,8 @@
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/alert_dialogs/alert_dialogs.dart';
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/keys.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
@@ -59,7 +60,7 @@ class SignInPageContents extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: Text(title),
+        titleText: title,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -84,13 +85,12 @@ class SignInPageContents extends StatelessWidget {
             children: <Widget>[
               CustomRaisedButton(
                 key: emailPasswordButtonKey,
-                child: Text(Strings.signInWithEmailPassword),
+                child: AutoSizeText(Strings.signInWithEmailPassword),
                 textColor: Colors.white,
-                color: Theme.of(context).primaryColor,
                 onPressed: viewModel.isLoading ? null : () => _showEmailPasswordSignInPage(context),
               ),
               const SizedBox(height: 8),
-              const Text(
+              const AutoSizeText(
                 Strings.or,
                 style: TextStyle(
                   fontSize: 14.0,
@@ -101,7 +101,6 @@ class SignInPageContents extends StatelessWidget {
               CustomRaisedButton(
                   key: anonymousButtonKey,
                   child: Text(Strings.goAnonymous),
-                  color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   onPressed: viewModel.isLoading
                       ? null

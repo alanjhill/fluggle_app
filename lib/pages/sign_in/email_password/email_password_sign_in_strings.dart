@@ -15,8 +15,13 @@ class EmailPasswordSignInStrings {
   static const String passwordResetFailed = 'Password reset failed';
   static const String sendResetLink = 'Send Reset Link';
   static const String backToSignIn = 'Back to sign in';
+
   static const String resetLinkSentTitle = 'Reset link sent';
   static const String resetLinkSentMessage = 'Check your email to reset your password';
+
+  static const String updateAccount = 'Update Account';
+  static const String updateAccountSuccessTitle = 'Account updated';
+  static const String updateAccountSuccessMessage = 'Your account has been updated';
 
   static const String displayNameLabel = 'Name';
   static const String displayNameHint = 'Name';
@@ -27,6 +32,9 @@ class EmailPasswordSignInStrings {
   static const String password8CharactersLabel = 'Password (8+ characters)';
   static const String passwordLabel = 'Password';
 
+  static const String passwordConfirm = 'Password confirm';
+  static const String passwordConfirmLabel = 'Password confirm';
+
   static const String invalidDisplayNameErrorText = 'Name is invalid';
   static const String invalidDisplayNameEmpty = 'Name can\'t be empty';
 
@@ -35,4 +43,6 @@ class EmailPasswordSignInStrings {
 
   static const String invalidPasswordTooShort = 'Password is too short';
   static const String invalidPasswordEmpty = 'Password can\'t be empty';
+
+  static const String invalidPasswordAndPasswordConfirm = 'Passwords do not match';
 }

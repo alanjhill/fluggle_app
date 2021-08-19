@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluggle_app/common_widgets/list_items_builder.dart';
+import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/user/user_friend.dart';
 import 'package:fluggle_app/pages/friends/friend_item.dart';
 import 'package:flutter/material.dart';

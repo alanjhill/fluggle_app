@@ -11,20 +11,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameService {
-  Game createPracticeGame(BuildContext context) {
+  Game createPracticeGame(BuildContext context, {required int gameTime}) {
     final firebaseAuth = context.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser!;
-    final String uid = user.uid;
+    final user = firebaseAuth.currentUser;
+    final String? uid = user?.uid;
 
-    List<Player> gamePlayers = [Player(playerId: uid)];
+    List<Player> gamePlayers = [];
     Map<String, PlayerStatus> playerUids = {};
-    playerUids[uid] = PlayerStatus.accepted;
+    if (uid != null) {
+      gamePlayers.add(Player(playerId: uid));
+      playerUids[uid] = PlayerStatus.accepted;
+    }
 
     Game game = Game(
       creatorId: uid,
       created: Timestamp.now(),
+      gameTime: gameTime,
       gameStatus: GameStatus.created,
-      practise: true,
+      practice: true,
       playerUids: playerUids,
       players: gamePlayers,
       letters: _getShuffledLetters(),
@@ -33,7 +37,7 @@ class GameService {
     return game;
   }
 
-  Future<Game> createGame(BuildContext context, {required GameStatus gameStatus, List<AppUser>? players, bool? persist = true}) async {
+  Future<Game> createGame(BuildContext context, {required GameStatus gameStatus, List<AppUser>? players, required int gameTime, bool? persist = true}) async {
     final firestoreDatabase = context.read(databaseProvider);
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
@@ -50,8 +54,9 @@ class GameService {
     Game game = Game(
       creatorId: uid,
       created: Timestamp.now(),
+      gameTime: gameTime,
       gameStatus: gameStatus,
-      practise: false,
+      practice: false,
       playerUids: playerUids,
       players: gamePlayers,
       letters: _getShuffledLetters(),
@@ -65,10 +70,42 @@ class GameService {
     return game;
   }
 
-  Future<void> saveGame(BuildContext context, {required Game game}) async {
+  Future<void> saveGameAndPlayer(BuildContext context, {required Game game, required Player player}) async {
     final firestoreDatabase = context.read(databaseProvider);
+    await firestoreDatabase.saveGameAndPlayer(game: game, player: player);
+  }
+
+  Future<void> saveGame(BuildContext context, {required Game game, required PlayerStatus playerStatus, required String uid}) async {
+    final firestoreDatabase = context.read(databaseProvider);
+
+    // Get the GameStatus
+    GameStatus gameStatus = game.gameStatus!;
+
+    // Update this player to declined / resigned
+    game.playerUids[uid] = playerStatus;
+
+    // If any players have not declined, resigned or finished, then the game is finished
+    game.playerUids.forEach((String playerUid, PlayerStatus playerStatus) {
+      if ([PlayerStatus.finished, PlayerStatus.resigned, PlayerStatus.declined].contains(playerStatus)) {
+        game.gameStatus = GameStatus.finished;
+      } else {
+        game.gameStatus = gameStatus;
+        // break out of the loop
+        return;
+      }
+    });
+
     await firestoreDatabase.saveGame(game: game);
-    return;
+  }
+
+  Future<void> _saveGameAndPlayers(BuildContext context, {required Game game, required List<Player> players}) async {
+    final firestoreDatabase = context.read(databaseProvider);
+    await firestoreDatabase.saveGameAndPlayers(game: game, players: players);
+  }
+
+  Future<void> deleteGame(BuildContext context, {required Game game}) async {
+    final firestoreDatabase = context.read(databaseProvider);
+    await firestoreDatabase.deleteGame(gameId: game.gameId!);
   }
 
   void listGames(BuildContext context, {required String uid}) async {
@@ -81,10 +118,8 @@ class GameService {
     required Game game,
     required List<Player> players,
   }) {
-    final firestoreDatabase = context.read(databaseProvider);
-
     // Establish if all players have finished and scores have been uploaded
-    List<bool> playersFinished = _allPlayersFinished(players);
+    List<bool> playersFinished = _allPlayersFinished(game: game, players: players);
 
     // Update word tallys
     Map<String, int> wordTally = _getWordTally(players);
@@ -93,10 +128,12 @@ class GameService {
     LinkedHashMap<String, int> wordTallyMap = _sortWordTally(wordTally);
 
     // If all players have finished....
-    if (!playersFinished.contains(false)) {
-      if (game.gameStatus != GameStatus.finished) {
-        // Now iterate through each players words and update
-        for (var player in players) {
+    //if (!playersFinished.contains(false)) {
+    // If we haven't yet set the game status to finished
+    if (game.gameStatus != GameStatus.finished) {
+      // Now iterate through each players words and update
+      for (var player in players) {
+        if (true || game.playerUids[player.playerId] == PlayerStatus.finished) {
           int playerScore = 0;
           player.words!.forEach((String word, PlayerWord playerWord) {
             int? count = wordTally[word];
@@ -110,21 +147,24 @@ class GameService {
             playerScore += playerWord.gameWord.score!;
           });
           player.score = playerScore;
-
-          // If this is a real game (i.e. not practice) then save the game and player
-          // TODO: Potentially make this a transaction to read data first to check status of each player...?
-          if (game.practise == false) {
-            // Update game status to finished
-            game.gameStatus = GameStatus.finished;
-            game.finished = Timestamp.now();
-            // Save Game and Player
-            for (var player in players) {
-              firestoreDatabase.saveGameAndPlayer(game: game, player: player);
-            }
-          }
         }
       }
+
+      if (game.practice == false) {
+        // If all players have finished (or players have declined/resigned)
+        if (!playersFinished.contains(false)) {
+          // Update game status to finished and set finished time
+          game.gameStatus = GameStatus.finished;
+        }
+
+        // Set the finished time for the last person to finish
+        game.finished = Timestamp.now();
+
+        // Save the Game and Players collection items
+        _saveGameAndPlayers(context, game: game, players: players);
+      }
     }
+    //}
 
     return wordTallyMap;
   }
@@ -146,7 +186,7 @@ class GameService {
   /// Sort the words based on;
   ///   1. Being unique
   ///   2. Word length
-  ///   3. Alphabetcial ordering
+  ///   3. Alphabetical ordering
   LinkedHashMap<String, int> _sortWordTally(Map<String, int> wordTally) {
     List<Map<String, int>> wordTallyList = [];
     LinkedHashMap<String, int> wordTallyMap = LinkedHashMap();
@@ -166,8 +206,6 @@ class GameService {
       var wordBLength = wordB.length;
       var valueB = b.values.elementAt(0);
 
-      //if (valueA == 1) return 1;
-      //if (valueB == 1) return -1;
       // First sort on the number of points
       int comparePoints = valueA.compareTo(valueB);
       if (comparePoints != 0) return comparePoints * -1;
@@ -176,7 +214,7 @@ class GameService {
       int compareWordLength = wordALength.compareTo(wordBLength);
       if (compareWordLength != 0) return compareWordLength;
 
-      // Then, aphabetically, on the word itself
+      // Then, alphabetically, on the word itself
       return wordA.compareTo(wordB) * -1;
     });
 
@@ -188,20 +226,33 @@ class GameService {
     return wordTallyMap;
   }
 
-  List<bool> _allPlayersFinished(List<Player> playerList) {
+  List<bool> _allPlayersFinished({required Game game, required List<Player> players}) {
     List<bool> playersFinished = [];
-    for (var player in playerList) {
+    for (var player in players) {
+      PlayerStatus? playerStatus = game.playerUids[player.playerId];
       if (player.creator) {
         playersFinished.add(true);
         // Already have the scores
-      } else if (player.playerStatus == PlayerStatus.accepted) {
+      } else if (playerStatus == PlayerStatus.invited || playerStatus == PlayerStatus.accepted) {
         // Waiting for score from this player
         playersFinished.add(false);
-      } else if (player.playerStatus == PlayerStatus.finished) {
+      } else if (playerStatus == PlayerStatus.finished) {
+        playersFinished.add(true);
+      } else if (playerStatus == PlayerStatus.declined || playerStatus == PlayerStatus.resigned) {
         playersFinished.add(true);
       }
     }
     return playersFinished;
+  }
+
+  int getNumPlayersFinished({required Game game}) {
+    int count = 0;
+    game.playerUids.forEach((String playerId, PlayerStatus playerStatus) {
+      if (playerStatus == PlayerStatus.finished) {
+        count++;
+      }
+    });
+    return count;
   }
 
   /// Get the score based on the word length

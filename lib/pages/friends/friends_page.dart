@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
 import 'package:fluggle_app/models/user/friend_list_view_model.dart';
@@ -25,7 +25,7 @@ class FriendsPage extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.friendsPage));
+    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.friendsPage);
     final friendsListAsyncValue = watch(friendsStreamProvider);
 
     void _addFriend() {
@@ -64,6 +64,7 @@ class FriendsPage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   buttonsWidget,
+                  SizedBox(height: 8.0),
                   FriendsList(data: friendsListAsyncValue),
                 ],
               ),

@@ -1,3 +1,4 @@
+import 'package:fluggle_app/widgets/word_cubes.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
 import 'package:fluggle_app/pages/onboarding/onboarding_view_model.dart';
 import 'package:flutter/material.dart';
@@ -18,22 +19,19 @@ class OnboardingPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'FLUGGLE',
-              style: Theme.of(context).textTheme.headline4,
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: WordCubes(word: 'FLUGGLE', width: MediaQuery.of(context).size.width - 32, spacing: 1.0),
             ),
             SizedBox(height: 16.0),
             Text(
-              'A Boggle like word game\nwritten using Flutter',
+              'A BOGGLE like word game\nwritten using Flutter',
               style: TextStyle(),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 16.0),
             CustomRaisedButton(
               onPressed: () => onGetStarted(context),
-              color: Colors.indigo,
-              borderRadius: 30,
               child: Text(
                 'Get Started',
                 style: Theme.of(context).textTheme.headline5!.copyWith(color: Colors.white),

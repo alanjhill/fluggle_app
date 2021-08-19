@@ -60,7 +60,7 @@ class Scores extends StatelessWidget {
     required double width,
     required bool first,
   }) {
-    final bool showScrollbar = !first || game.practise == true;
+    final bool showScrollbar = !first || game.practice == true;
     return Container(
       height: height,
       width: width,
@@ -70,9 +70,9 @@ class Scores extends StatelessWidget {
         margin: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding, bottom: kScoresColumnPadding),
         padding: EdgeInsets.only(left: 0.0, right: 0.0, bottom: kScoresColumnPadding),
         decoration: BoxDecoration(
-          color: kFluggleBoardBackgroundColor,
-          border: Border.all(width: 2.0, color: Colors.white),
-          borderRadius: BorderRadius.circular(8.0),
+          color: kFluggleDarkColor,
+          border: Border.all(width: 1.0, color: Colors.white),
+          borderRadius: BorderRadius.circular(10.0),
         ),
         child: _buildPlayerScoresList(
           context,
@@ -98,54 +98,56 @@ class Scores extends StatelessWidget {
     required Player player,
     required bool showScrollbar,
   }) {
-    //final mediaQuery = MediaQuery.of(context);
-    //final double borderWidth = 2.0;
-    //final double headerHeight = 24.0;
-    final PlayerStatus playerStatus = game.playerUids![player.playerId] as PlayerStatus;
+    final PlayerStatus playerStatus = game.playerUids[player.playerId] as PlayerStatus;
 
-    if (playerStatus == PlayerStatus.finished) {
-      return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Container(
-            child: RawScrollbar(
-              controller: verticalScrollController,
-              thumbColor: Colors.white,
-              radius: Radius.circular(8.0),
-              thickness: showScrollbar ? 8.0 : 0.0,
-              isAlwaysShown: true,
-              interactive: true,
-              child: ListView.builder(
-                controller: verticalScrollController,
-                padding: EdgeInsets.only(right: 16.0),
-                itemCount: wordTally.length,
-                itemBuilder: (context, index) {
-                  String word = wordTally.keys.elementAt(index);
-                  if (player.words![word] != null) {
-                    return ScoresItem(playerWord: player.words![word]!, switched: switched);
-                  } else {
-                    return ScoresItem(
-                        playerWord: PlayerWord(
-                            gameWord: GameWord(
-                              word: word,
-                              score: 0,
-                              unique: null,
-                            ),
-                            gridItems: []),
-                        switched: switched);
-                  }
-                },
-              ),
-            ),
-          );
-        },
-      );
-    } else {
-      return Container(
-        height: 24,
-        child: Text(
-          'Waiting...',
-        ),
-      );
+    switch (playerStatus) {
+      case PlayerStatus.invited:
+      case PlayerStatus.accepted:
+        return Text('Waiting...');
+      case PlayerStatus.finished:
+        return _playerFinished(showScrollbar: showScrollbar, switched: switched);
+      case PlayerStatus.declined:
+        return Text('Declined');
+      case PlayerStatus.resigned:
+        return Text('Resigned');
     }
+  }
+
+  Widget _playerFinished({required bool showScrollbar, required bool switched}) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return Container(
+          child: RawScrollbar(
+            controller: verticalScrollController,
+            thumbColor: Colors.white,
+            radius: Radius.circular(8.0),
+            thickness: showScrollbar ? 8.0 : 0.0,
+            isAlwaysShown: true,
+            interactive: true,
+            child: ListView.builder(
+              controller: verticalScrollController,
+              padding: EdgeInsets.only(right: 16.0),
+              itemCount: wordTally.length,
+              itemBuilder: (context, index) {
+                String word = wordTally.keys.elementAt(index);
+                if (player.words![word] != null) {
+                  return ScoresItem(playerWord: player.words![word]!, switched: switched);
+                } else {
+                  return ScoresItem(
+                      playerWord: PlayerWord(
+                          gameWord: GameWord(
+                            word: word,
+                            score: 0,
+                            unique: null,
+                          ),
+                          gridItems: []),
+                      switched: switched);
+                }
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 }

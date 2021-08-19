@@ -1,15 +1,12 @@
-import 'package:fluggle_app/common_widgets/empty_content.dart';
-import 'package:fluggle_app/constants/constants.dart';
+import 'package:fluggle_app/widgets/empty_content.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/pages/previous_games/previous_games_page.dart';
 import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_swipe_action_cell/core/cell.dart';
-import 'package:flutter_swipe_action_cell/core/controller.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
-// ignore: must_be_immutable
 class PreviousGamesItem extends ConsumerWidget {
   PreviousGamesItem({
     required this.game,
@@ -20,15 +17,8 @@ class PreviousGamesItem extends ConsumerWidget {
   final String uid;
   final Function previousGameOnTap;
 
-  /// Controller for swipe actions
-  SwipeActionController? controller;
-
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    controller = SwipeActionController(selectedIndexPathsChangeCallback: (changedIndexPaths, selected, currentCount) {
-      debugPrint('cell at ${changedIndexPaths.toString()} is/are ${selected ? 'selected' : 'unselected'} ,current selected count is $currentCount');
-    });
-
     final gamePlayersAsyncValue = watch(previousGamesPlayerStreamProvider(game.gameId!));
 
     List<Player> players = [];
@@ -48,107 +38,66 @@ class PreviousGamesItem extends ConsumerWidget {
   }
 
   Widget _buildPreviousGameCard(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
-    return SwipeActionCell(
-      key: Key(game.gameId!),
-      child: GestureDetector(
-        child: ReusableCard(
+    return Column(
+      children: [
+        Slidable(
           key: Key(game.gameId!),
-          cardChild: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                _getHeadingText(game: game, players: players, uid: uid),
-                _buildPlayers(context, game: game, players: players, uid: uid),
-                _buildFooterText(context, game: game, players: players, uid: uid),
-              ],
+          child: Container(
+            child: GestureDetector(
+              child: ReusableCard(
+                key: Key(game.gameId!),
+                cardChild: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      _getHeadingText(game: game, players: players, uid: uid),
+                      _buildPlayers(context, game: game, players: players, uid: uid),
+                      _buildFooterText(context, game: game, players: players, uid: uid),
+                      //Text(game.gameId!),
+                    ],
+                  ),
+                ),
+              ),
+              onTap: () {
+                previousGameOnTap(context, game: game);
+              },
             ),
           ),
+          movementDuration: Duration(milliseconds: 500),
+          actionPane: SlidableBehindActionPane(),
+          actions: [
+            IconSlideAction(
+              icon: Icons.more_horiz,
+              onTap: () async {
+                debugPrint('More');
+              },
+              //color: kFlugglePrimaryColor,
+              color: Colors.transparent,
+            )
+          ],
+          secondaryActions: [
+            IconSlideAction(
+              icon: Icons.more_horiz,
+              onTap: () async {
+                debugPrint('More');
+              },
+              color: Colors.transparent,
+            )
+          ],
         ),
-        onTap: () {
-          previousGameOnTap(context, game: game);
-        },
-      ),
-      normalAnimationDuration: 500,
-      deleteAnimationDuration: 400,
-      leadingActions: [
-        SwipeAction(
-          content: Container(child: Icon(Icons.more_horiz)),
-          onTap: (handler) async {
-            debugPrint('More');
-          },
-          color: kFlugglePrimaryColor,
-        )
-      ],
-      trailingActions: [
-        SwipeAction(
-          content: Container(child: Icon(Icons.more_horiz)),
-          onTap: (handler) async {
-            debugPrint('More');
-          },
-          color: kFlugglePrimaryColor,
-        )
+        SizedBox(height: 8.0),
       ],
     );
   }
 
   Text _getHeadingText({required Game game, required List<Player> players, required String uid}) {
     if (game.gameStatus == GameStatus.finished) {
-      return Text('You played a game with:', textAlign: TextAlign.left);
+      return Text('Game with:', textAlign: TextAlign.left);
     } else if (game.gameStatus == GameStatus.abandoned) {
       return Text('Game abandoned', textAlign: TextAlign.left);
     } else {
-      return Text('Game complete', textAlign: TextAlign.left);
-    }
-  }
-
-  Widget _getGameWinner({required List<Player> playerList}) {
-    int maxScore = 0;
-    Map<Player, int> scores = {};
-    for (var player in playerList) {
-      scores[player] = player.score;
-      if (player.score > maxScore) {
-        maxScore = player.score;
-      }
-    }
-
-    List<Player> winningPlayers = [];
-    scores.forEach((Player player, int score) {
-      if (score == maxScore) {
-        winningPlayers.add(player);
-      }
-    });
-
-    if (winningPlayers.isEmpty) {
-      return Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-        Container(
-          child: Text(
-            'No winners',
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ]);
-    } else if (winningPlayers.length == 1) {
-      return Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-        Container(
-          child: Text(
-            '${winningPlayers[0].user!.displayName} won',
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ]);
-    } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Container(
-            child: Text(
-              'It\'s a draw',
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
-      );
+      return Text('Game in progress', textAlign: TextAlign.left);
     }
   }
 
@@ -157,38 +106,60 @@ class PreviousGamesItem extends ConsumerWidget {
     return Column(
       children: <Widget>[
         ListView.builder(
+          padding: EdgeInsets.symmetric(
+            vertical: 8.0,
+          ),
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: otherPlayers.length,
-          itemBuilder: (context, index) => _buildPlayerItem(context, player: otherPlayers[index]),
+          itemBuilder: (context, index) => _buildPlayerItem(context, game: game, player: otherPlayers[index]),
         ),
       ],
     );
   }
 
-  Widget _buildPlayerItem(BuildContext context, {required Player player}) {
+  Widget _buildPlayerItem(BuildContext context, {required Game game, required Player player}) {
     return Container(
       //height: 128.0,
       child: Row(
         children: <Widget>[
-          Expanded(
+          Container(
+            width: 16.0,
+            child: game.creatorId == player.playerId ? Text('*') : null,
+          ),
+          Container(
             child: Container(
               padding: EdgeInsets.only(
-                left: 16.0,
-                top: 8.0,
-                bottom: 8.0,
+                left: 0.0,
+                top: 4.0,
+                bottom: 4.0,
               ),
-              child: Text(player.user!.displayName),
+              child: Text(player.user!.displayName!),
             ),
           ),
           Expanded(
             child: Container(
-              child: Text('${player.score}', textAlign: TextAlign.right),
+              child: _buildPlayerScore(game: game, player: player),
             ),
           )
         ],
       ),
     );
+  }
+
+  Widget _buildPlayerScore({required Game game, required Player player}) {
+    PlayerStatus playerStatus = game.playerUids[player.playerId] as PlayerStatus;
+    switch (playerStatus) {
+      case PlayerStatus.invited:
+      case PlayerStatus.accepted:
+        return Text('-', textAlign: TextAlign.right);
+      case PlayerStatus.declined:
+        return Text('Declined', textAlign: TextAlign.right);
+      case PlayerStatus.resigned:
+        return Text('Resigned', textAlign: TextAlign.right);
+      case PlayerStatus.finished:
+        return Text('${player.score}', textAlign: TextAlign.right);
+    }
   }
 
   Widget _buildFooterText(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
@@ -204,12 +175,16 @@ class PreviousGamesItem extends ConsumerWidget {
         }
       }
 
-      if (myScore > highestScore) {
-        return Text('You won with $myScore points');
-      } else if (myScore == highestScore) {
-        return Text('You drew with $myScore points');
+      if (game.gameStatus == GameStatus.finished) {
+        if (myScore > highestScore) {
+          return Text('You won with $myScore points');
+        } else if (myScore == highestScore) {
+          return Text('You drew with $myScore points');
+        } else {
+          return Text('You lost with $myScore points');
+        }
       } else {
-        return Text('You lost with $myScore points');
+        return Text('You scored $myScore points');
       }
     } else {
       return const EmptyContent();

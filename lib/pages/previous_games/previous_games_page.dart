@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/game/game.dart';
@@ -38,7 +38,7 @@ class PreviousGamesPage extends ConsumerWidget {
     //final firebaseAuth = context.read(firebaseAuthProvider);
     //final user = firebaseAuth.currentUser;
     //final bool isSignedIn = user != null;
-    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.previousGamesPage));
+    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.previousGamesPage);
 
     /// Previous Games Data
     final previousGamesAsyncValue = watch(gameViewModelStreamProvider);

@@ -10,7 +10,7 @@ class GameCube extends StatefulWidget {
   final List<List<GridItem>> gridItems;
   final String letter;
 
-  GameCube({required this.rowCol, this.letter = "", this.gridItems = const []});
+  const GameCube({required this.rowCol, required this.letter, required this.gridItems});
 
   @override
   _GameCubeState createState() => _GameCubeState();
@@ -21,17 +21,26 @@ class _GameCubeState extends State<GameCube> {
   Widget build(BuildContext context) {
     return Container(
       child: AnimatedContainer(
-        padding: EdgeInsets.all(_getPadding(widget.rowCol.row, widget.rowCol.col)),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6.0),
-            color: kFluggleCubeColor,
-          ),
-          child: _buildGameCube(
-            widget.rowCol,
+        padding: EdgeInsets.all(
+          _getPadding(
+            widget.rowCol.row,
+            widget.rowCol.col,
           ),
         ),
-        duration: Duration(milliseconds: 200),
+        child: Card(
+          color: Colors.transparent,
+          elevation: 4,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6.0),
+              color: kFluggleCubeColor,
+            ),
+            child: _buildGameCube(
+              widget.rowCol,
+            ),
+          ),
+        ),
+        duration: Duration(milliseconds: 250),
         curve: Curves.easeInOut,
       ),
     );

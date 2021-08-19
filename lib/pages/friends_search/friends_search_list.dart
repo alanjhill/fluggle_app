@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/list_items_builder.dart';
+import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/pages/friends_search/friends_search_item.dart';
 import 'package:flutter/cupertino.dart';

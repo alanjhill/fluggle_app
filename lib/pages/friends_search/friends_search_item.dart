@@ -5,7 +5,7 @@ import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_swipe_action_cell/core/cell.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class FriendsSearchItem extends ConsumerWidget {
   final AppUser appUser;
@@ -15,7 +15,7 @@ class FriendsSearchItem extends ConsumerWidget {
 
   @override
   build(BuildContext context, ScopedReader watch) {
-    return SwipeActionCell(
+    return Slidable(
       key: Key(appUser.uid),
       child: GestureDetector(
         child: ReusableCard(
@@ -31,7 +31,7 @@ class FriendsSearchItem extends ConsumerWidget {
                     wrapWords: false,
                   ),
                   subtitle: AutoSizeText(
-                    appUser.displayName,
+                    appUser.displayName!,
                     wrapWords: false,
                   ),
                   trailing: IconButton(
@@ -54,24 +54,25 @@ class FriendsSearchItem extends ConsumerWidget {
           //_playGameButtonPressed(context, game: game);
         },
       ),
-      normalAnimationDuration: 500,
-      deleteAnimationDuration: 400,
-      leadingActions: [
-        SwipeAction(
-          content: Container(child: Icon(Icons.more_horiz)),
-          onTap: (handler) async {
+      //normalAnimationDuration: 500,
+      //deleteAnimationDuration: 400,
+      actionPane: SlidableBehindActionPane(),
+      actions: [
+        IconSlideAction(
+          icon: Icons.more_horiz,
+          onTap: () async {
             debugPrint('More');
           },
-          color: kFlugglePrimaryColor,
+          color: kFluggleLightColor,
         )
       ],
-      trailingActions: [
-        SwipeAction(
-          content: Container(child: Icon(Icons.more_horiz)),
-          onTap: (handler) async {
+      secondaryActions: [
+        IconSlideAction(
+          icon: Icons.more_horiz,
+          onTap: () async {
             debugPrint('More');
           },
-          color: kFlugglePrimaryColor,
+          color: kFluggleLightColor,
         )
       ],
     );

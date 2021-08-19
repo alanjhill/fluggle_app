@@ -6,7 +6,7 @@ import 'package:fluggle_app/pages/start_game/start_game_page.dart';
 import 'package:fluggle_app/routing/app_router.dart';
 import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swipe_action_cell/core/cell.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class FriendItem extends StatelessWidget {
   FriendItem({
@@ -18,7 +18,7 @@ class FriendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeActionCell(
+    return Slidable(
       key: Key('0-${appUserFriend.friend.friendId}'),
       child: GestureDetector(
         child: ReusableCard(
@@ -29,27 +29,30 @@ class FriendItem extends StatelessWidget {
           _playButtonPressed(context, friend: appUserFriend.appUser);
         },
       ),
-      normalAnimationDuration: 500,
-      deleteAnimationDuration: 400,
-      performsFirstActionWithFullSwipe: true,
-      leadingActions: [
-        SwipeAction(
-          content: Container(child: Icon(Icons.check_sharp)),
-          onTap: (handler) async {
+      movementDuration: Duration(milliseconds: 500),
+      //normalAnimationDuration: 500,
+      //deleteAnimationDuration: 400,
+      //performsFirstActionWithFullSwipe: true,
+
+      actionPane: SlidableBehindActionPane(),
+      actions: [
+        IconSlideAction(
+          icon: Icons.check_sharp,
+          onTap: () async {
             debugPrint('Accept');
             // Update friend to FriendStatus.accepted
           },
-          color: kFlugglePrimaryColor,
+          color: kFluggleLightColor,
         )
       ],
-      trailingActions: [
-        SwipeAction(
-          content: Container(child: Icon(Icons.close_sharp)),
-          onTap: (handler) async {
+      secondaryActions: [
+        IconSlideAction(
+          icon: Icons.close_sharp,
+          onTap: () async {
             debugPrint('Decline');
             // update friend to FriendStatus.declined
           },
-          color: kFlugglePrimaryColor,
+          color: kFluggleLightColor,
         )
       ],
     );
@@ -67,7 +70,7 @@ class FriendItem extends StatelessWidget {
 
   Widget _buildFriendItem(BuildContext context, {required AppUserFriend appUserFriend}) {
     return ListTile(
-      title: Text(appUserFriend.appUser.displayName),
+      title: Text(appUserFriend.appUser.displayName!),
       trailing: Container(
         margin: EdgeInsets.all(0.0),
         padding: EdgeInsets.all(0.0),

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
@@ -24,7 +25,7 @@ class ScoresHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (game.practise == true) {
+    if (game.practice == true) {
       return Container();
     } else {
       if (index == 0) {
@@ -66,10 +67,11 @@ class ScoresHeader extends StatelessWidget {
       width: width,
       margin: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
       padding: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
-      child: Text(
-        player.user!.displayName,
+      child: AutoSizeText(
+        player.user!.displayName!,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 18),
+        maxLines: 1,
       ),
     );
   }

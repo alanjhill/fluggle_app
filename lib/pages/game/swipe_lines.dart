@@ -61,7 +61,7 @@ class LinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (start == null || end == null) return;
+    //if (start == null || end == null) return;
     canvas.drawLine(
       start,
       end,

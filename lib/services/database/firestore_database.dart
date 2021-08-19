@@ -11,9 +11,27 @@ String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
 class FirestoreDatabase {
   final String uid;
 
-  FirestoreDatabase({required this.uid}) : assert(uid != null);
+  FirestoreDatabase({required this.uid});
 
   final _service = FirestoreService.instance;
+
+  Future<void> createAppUser({required AppUser appUser}) async {
+    var appUserToMap = appUser.toMap();
+    await _service.createDataWithId(
+      id: uid,
+      path: FirestorePath.users(),
+      data: appUserToMap,
+    );
+  }
+
+  Future<void> updateAppUser({required AppUser appUser}) async {
+    var appUserToMap = appUser.toMap();
+    await _service.setData(
+      path: FirestorePath.user(uid),
+      data: appUserToMap,
+      merge: true,
+    );
+  }
 
   /// Get all friends for a uid
   Stream<List<Friend>> friendsStream() => _service.collectionStream<Friend>(
@@ -70,15 +88,15 @@ class FirestoreDatabase {
   Stream<List<Game>> get myPreviousGamesStream => _service.collectionStream(
         path: FirestorePath.games(),
         builder: (data, documentId) => Game.fromMap(data, documentId),
-        queryBuilder: (query) => query
-            .where(
-              'playerUids.$uid',
-              isEqualTo: PlayerStatus.finished.toString(),
-            )
-            .where(
+        queryBuilder: (query) => query.where(
+          'playerUids.$uid',
+          isEqualTo: PlayerStatus.finished.toString(),
+        )
+        /*.where(
               'gameStatus',
               isEqualTo: GameStatus.finished.toString(),
-            ),
+            )*/
+        ,
         sort: (Game lhs, Game rhs) => rhs.finished!.compareTo(lhs.finished!),
       );
 
@@ -89,21 +107,6 @@ class FirestoreDatabase {
     }
   }
 
-  Stream<List<Game>> _myPendingGamesStream() {
-    return FirebaseFirestore.instance
-        .collection('games')
-        .where('playerUids', arrayContains: uid)
-        .where('gameStatus', isEqualTo: GameStatus.created.toString())
-        .orderBy('created', descending: true)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((document) {
-        Game game = Game.fromMap(document.data(), document.id);
-        return game;
-      }).toList();
-    });
-  }
-
   Stream<List<Player>> playersStream({required String gameId}) => _service.collectionStream<Player>(
         path: FirestorePath.gamePlayers(gameId),
         builder: (data, documentId) => Player.fromMap(data!, documentId),
@@ -112,7 +115,7 @@ class FirestoreDatabase {
   Stream<List<Player>> gamePlayerStream({required String gameId, required bool includeSelf}) => _service.collectionStream<Player>(
         path: FirestorePath.gamePlayers(gameId),
         builder: (data, documentId) => Player.fromMap(data!, documentId),
-        queryBuilder: !includeSelf ? (query) => query.where(FieldPath.documentId, isNotEqualTo: uid) : null,
+        queryBuilder: !includeSelf ? (query) => query.where(FieldPath.documentId, whereNotIn: [uid]) : null,
       );
 
   Future<Game> getGame({required String gameId}) => _service.getData<Game>(
@@ -127,17 +130,6 @@ class FirestoreDatabase {
       data: gameToMap,
       merge: true,
     );
-  }
-
-  Future<Friend> _addFriend({required String friendId, FriendStatus friendStatus = FriendStatus.invited}) async {
-    Friend friend = Friend(friendId: friendId, friendStatus: friendStatus);
-    await _service.setData(
-      path: FirestorePath.userFriend(uid, friendId),
-      data: friend.toMap(),
-      merge: true,
-    );
-
-    return friend;
   }
 
   Future<Friend> addFriend({
@@ -232,6 +224,32 @@ class FirestoreDatabase {
     return;
   }
 
+  Future<void> saveGameAndPlayers({required Game game, required List<Player> players}) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    await _service.setDataWithBatch(
+      batch: batch,
+      path: FirestorePath.game(game.gameId),
+      data: game.toMap(),
+      merge: true,
+    );
+
+    for (Player player in players) {
+      await _service.setDataWithBatch(
+        batch: batch,
+        path: FirestorePath.gamePlayer(game.gameId!, player.playerId),
+        data: player.toMap(),
+        merge: true,
+      );
+    }
+
+    batch.commit().whenComplete(() {
+      print('Complete');
+    });
+
+    return;
+  }
+
   Future<void> createGame({required Game game}) async {
     String? gameId;
 
@@ -248,22 +266,25 @@ class FirestoreDatabase {
     gameId = documentRef.id;
     game.gameId = gameId;
 
-    // If we have a game id, create the Players...
-    if (gameId != null) {
-      // Set Players
-      for (var player in game.players!) {
-        _service.createDataWithBatchAndId(
-          batch: batch,
-          path: FirestorePath.addPlayer(gameId),
-          data: player.toMap(),
-          id: player.playerId,
-        );
-      }
-
-      batch.commit().whenComplete(() {
-        print('Complete');
-      });
+    // Set Players
+    for (var player in game.players) {
+      _service.createDataWithBatchAndId(
+        batch: batch,
+        path: FirestorePath.addPlayer(gameId),
+        data: player.toMap(),
+        id: player.playerId,
+      );
     }
+
+    batch.commit().whenComplete(() {
+      print('Complete');
+    });
+  }
+
+  Future<void> deleteGame({required String gameId}) async {
+    _service.deleteData(
+      path: FirestorePath.game(gameId),
+    );
   }
 }
 

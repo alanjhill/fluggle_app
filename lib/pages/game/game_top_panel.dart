@@ -4,6 +4,7 @@ import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/pages/game/current_word.dart';
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/pages/game/word_count.dart';
 import 'package:flutter/material.dart';
 
@@ -11,12 +12,14 @@ class GameTopPanel extends StatefulWidget {
   final bool gameStarted;
   final List<GridItem> swipedGridItems;
   final String currentWord;
+  final WordStatus currentWordStatus;
   final LinkedHashMap<String, PlayerWord>? addedWords;
 
   GameTopPanel({
     this.gameStarted = false,
     this.swipedGridItems = const [],
     this.currentWord = "",
+    required this.currentWordStatus,
     this.addedWords,
   });
 
@@ -57,6 +60,7 @@ class _GameTopPanelState extends State<GameTopPanel> {
               child: CurrentWord(
                 swipedGridItems: widget.swipedGridItems,
                 currentWord: widget.currentWord,
+                currentWordStatus: widget.currentWordStatus,
               ),
             ),
           ],

@@ -18,23 +18,11 @@ class WordCount extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            count > 0
-                ? Text(
-                    'WORDS: ',
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 36),
-                  )
-                : Text(''),
-            count > 0
-                ? Container(
-                    width: 48,
-                    child: AutoSizeText(
-                      '$count',
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 36),
-                    ),
-                  )
-                : Text(''),
+            AutoSizeText(
+              'WORDS: $count',
+              maxLines: 1,
+              style: TextStyle(fontSize: 36),
+            ),
           ],
         ),
       );

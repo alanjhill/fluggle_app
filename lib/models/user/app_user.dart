@@ -1,7 +1,7 @@
 class AppUser {
-  AppUser({required this.uid, required this.displayName, this.email, this.photoURL, this.admin = false});
+  AppUser({required this.uid, this.displayName, this.email, this.photoURL, this.admin = false});
   final String uid;
-  final String displayName;
+  final String? displayName;
   final String? email;
   final String? photoURL;
   final bool? admin;

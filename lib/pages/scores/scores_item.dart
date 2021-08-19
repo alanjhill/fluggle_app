@@ -64,7 +64,7 @@ class _ScoresItemState extends State<ScoresItem> {
         textAlign: textAlign,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: kFluggleSecondaryColor,
+          color: kFluggleLightColor,
         ),
       );
     } else if (playerWord.gameWord.unique == false) {
@@ -74,7 +74,7 @@ class _ScoresItemState extends State<ScoresItem> {
         textAlign: textAlign,
         style: TextStyle(
           fontWeight: FontWeight.w500,
-          color: kFluggleSecondaryColor.withAlpha(128),
+          color: kFluggleLightColor.withAlpha(128),
         ),
       );
     } else {
@@ -97,7 +97,7 @@ class _ScoresItemState extends State<ScoresItem> {
         '${widget.playerWord.gameWord.score}',
         textAlign: textAlign,
         style: TextStyle(
-          color: kFluggleSecondaryColor,
+          color: kFluggleLightColor,
           fontWeight: FontWeight.bold,
         ),
       );
@@ -107,7 +107,7 @@ class _ScoresItemState extends State<ScoresItem> {
         textAlign: textAlign,
         style: TextStyle(
           fontWeight: FontWeight.w500,
-          color: kFluggleSecondaryColor.withAlpha(128),
+          color: kFluggleLightColor.withAlpha(128),
         ),
       );
     } else {

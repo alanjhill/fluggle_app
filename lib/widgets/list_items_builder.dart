@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/empty_content.dart';
+import 'package:fluggle_app/widgets/empty_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,19 +9,22 @@ class ListItemsBuilder<T> extends StatelessWidget {
     Key? key,
     required this.data,
     required this.itemBuilder,
+    this.separator,
     this.physics,
     this.scrollDirection,
+    this.padding,
   }) : super(key: key);
   final AsyncValue<List<T>> data;
   final ItemWidgetBuilder<T> itemBuilder;
-  ScrollPhysics? physics;
-  Axis? scrollDirection;
+  final Widget? separator;
+  final ScrollPhysics? physics;
+  final Axis? scrollDirection;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return data.when(
       data: (items) => items.isNotEmpty ? _buildList(items) : const EmptyContent(),
-      //data: (items) => const Center(child: CircularProgressIndicator()),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => EmptyContent(
         title: 'Something went wrong',
@@ -32,14 +35,21 @@ class ListItemsBuilder<T> extends StatelessWidget {
 
   Widget _buildList(List<T> items) {
     return ListView.separated(
+      padding: padding,
       shrinkWrap: true,
       physics: physics,
       scrollDirection: scrollDirection ?? Axis.vertical,
       itemCount: items.length + 2,
-      separatorBuilder: (context, index) => const Divider(height: 0.5),
+      separatorBuilder: (context, index) {
+        if (separator != null) {
+          return separator!;
+        } else {
+          return Divider(height: 8.0, thickness: 0.0, color: Colors.transparent);
+        }
+      },
       itemBuilder: (context, index) {
         if (index == 0 || index == items.length + 1) {
-          return Container(); // zero height: not visible
+          return Container(height: 0); // zero height: not visible
         }
         return itemBuilder(context, items[index - 1]);
       },

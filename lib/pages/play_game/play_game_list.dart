@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/list_items_builder.dart';
+import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/pages/play_game/play_game_item.dart';
 import 'package:fluggle_app/top_level_providers.dart';
@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PlayGameList extends StatelessWidget {
-  PlayGameList({Key? key, required this.data}) : super(key: key);
+  PlayGameList({Key? key, required this.data, required this.leftSwipeGame}) : super(key: key);
 
   final AsyncValue<List<Game>> data;
+  final Function leftSwipeGame;
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +18,10 @@ class PlayGameList extends StatelessWidget {
 
     return SafeArea(
       child: ListItemsBuilder<Game>(
+        padding: EdgeInsets.all(0.0),
         physics: ScrollPhysics(),
         data: data,
-        itemBuilder: (context, game) => PlayGameItem(
-          game: game,
-          uid: user.uid,
-        ),
+        itemBuilder: (context, game) => PlayGameItem(game: game, uid: user.uid, leftSwipeGame: leftSwipeGame),
       ),
     );
   }

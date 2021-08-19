@@ -11,7 +11,6 @@ class Player {
   AppUser? user;
   bool creator;
   LinkedHashMap<String, PlayerWord>? words;
-  PlayerStatus? playerStatus;
   int score;
 
   Player({required this.playerId, this.user, this.creator = false, this.words, this.score = 0});

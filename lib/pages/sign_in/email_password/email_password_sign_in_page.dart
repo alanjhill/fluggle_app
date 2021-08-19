@@ -12,6 +12,20 @@ class EmailPasswordSignInPage extends StatefulWidget {
     );
   }
 
+  factory EmailPasswordSignInPage.updateUser(FirebaseAuth auth, {VoidCallback? onSignedIn}) {
+    debugPrint('auth.currentUser: ${auth.currentUser}');
+    String? displayName = auth.currentUser!.displayName;
+    String? email = auth.currentUser!.email;
+    return EmailPasswordSignInPage(
+      model: EmailPasswordSignInModel(
+        auth: auth,
+        displayName: displayName ?? '',
+        email: email!,
+        formType: EmailPasswordSignInFormType.updateAccount,
+      ),
+    );
+  }
+
   @override
   _EmailPasswordSignInPageState createState() => _EmailPasswordSignInPageState();
 }
@@ -21,22 +35,29 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordConfirmController = TextEditingController();
 
   EmailPasswordSignInModel get model => widget.model;
+
+  final UserService userService = UserService();
 
   @override
   void initState() {
     super.initState();
     // Temporary workaround to update state until a replacement for ChangeNotifierProvider is found
     model.addListener(() => setState(() {}));
+    _displayNameController.text = model.displayName;
+    _emailController.text = model.email;
   }
 
   @override
   void dispose() {
     model.dispose();
     _node.dispose();
+    _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _passwordConfirmController.dispose();
     super.dispose();
   }
 
@@ -48,17 +69,34 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
     );
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(BuildContext context) async {
     try {
       final bool success = await model.submit();
       if (success) {
-        if (model.formType == EmailPasswordSignInFormType.forgotPassword) {
+        if (model.formType == EmailPasswordSignInFormType.register) {
+          // Create Firestore User
+          await userService.createUser(context, user: model.auth.currentUser!);
+        } else if (model.formType == EmailPasswordSignInFormType.forgotPassword) {
           await showAlertDialog(
             context: context,
             title: EmailPasswordSignInStrings.resetLinkSentTitle,
             content: EmailPasswordSignInStrings.resetLinkSentMessage,
             defaultActionText: EmailPasswordSignInStrings.ok,
           );
+        } else if (model.formType == EmailPasswordSignInFormType.updateAccount) {
+          // Update Firestore User
+          await userService.updateUser(context, user: model.auth.currentUser!);
+
+          // Show Alert
+          await showAlertDialog(
+            context: context,
+            title: EmailPasswordSignInStrings.updateAccountSuccessTitle,
+            content: EmailPasswordSignInStrings.updateAccountSuccessMessage,
+            defaultActionText: EmailPasswordSignInStrings.ok,
+          );
+          setState(() {
+            model.isLoading = false;
+          });
         } else {
           if (widget.onSignedIn != null) {
             widget.onSignedIn?.call();
@@ -87,7 +125,15 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
       _node.previousFocus();
       return;
     }
-    _submit();
+    //_submit();
+  }
+
+  void _passwordConfirmEditingComplete() {
+    if (!model.canSubmitEmail) {
+      _node.previousFocus();
+      return;
+    }
+    //_submit();
   }
 
   void _updateFormType(EmailPasswordSignInFormType formType) {
@@ -104,6 +150,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
       decoration: InputDecoration(
         labelText: EmailPasswordSignInStrings.displayNameLabel,
         hintText: EmailPasswordSignInStrings.displayNameHint,
+        hintStyle: TextStyle(color: Colors.blueGrey),
         errorText: model.displayNameErrorText,
         enabled: !model.isLoading,
       ),
@@ -122,7 +169,9 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
       controller: _emailController,
       decoration: InputDecoration(
         labelText: EmailPasswordSignInStrings.emailLabel,
+        //labelStyle: TextStyle(color: kFluggleLightColor),
         hintText: EmailPasswordSignInStrings.emailHint,
+        hintStyle: TextStyle(color: Colors.blueGrey),
         errorText: model.emailErrorText,
         enabled: !model.isLoading,
       ),
@@ -144,6 +193,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
       controller: _passwordController,
       decoration: InputDecoration(
         labelText: model.passwordLabelText,
+        //labelStyle: TextStyle(color: kFluggleLightColor),
         errorText: model.passwordErrorText,
         enabled: !model.isLoading,
       ),
@@ -155,37 +205,69 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildPasswordConfirmField() {
+    return TextFormField(
+      key: const Key('passwordConfirm'),
+      style: TextStyle(color: Colors.white),
+      controller: _passwordConfirmController,
+      decoration: InputDecoration(
+        labelText: model.passwordConfirmLabelText,
+        errorText: model.passwordConfirmErrorText,
+        enabled: !model.isLoading,
+      ),
+      obscureText: true,
+      autocorrect: false,
+      textInputAction: TextInputAction.done,
+      keyboardAppearance: Brightness.light,
+      onEditingComplete: _passwordConfirmEditingComplete,
+/*      validator: (value) {
+        if (value != _passwordConfirmController.text) {
+          return 'Passwords do not match';
+        }
+      },*/
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     return FocusScope(
       node: _node,
       child: Form(
-        onChanged: () => model.updateWith(email: _emailController.text, password: _passwordController.text),
+        onChanged: () => model.updateWith(displayName: _displayNameController.text, email: _emailController.text, password: _passwordController.text, passwordConfirm: _passwordConfirmController.text),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            if (model.formType == EmailPasswordSignInFormType.register) ...<Widget>[
+            // Display Name
+            if (model.formType == EmailPasswordSignInFormType.register || model.formType == EmailPasswordSignInFormType.updateAccount) ...<Widget>[
               const SizedBox(height: 8.0),
               _buildDisplayNameField(),
             ],
             const SizedBox(height: 8.0),
+            // Email
             _buildEmailField(),
+            // Password
             if (model.formType != EmailPasswordSignInFormType.forgotPassword) ...<Widget>[
               const SizedBox(height: 8.0),
               _buildPasswordField(),
+            ],
+            // Password Confirm
+            if (model.formType == EmailPasswordSignInFormType.register || model.formType == EmailPasswordSignInFormType.updateAccount) ...<Widget>[
+              const SizedBox(height: 8.0),
+              _buildPasswordConfirmField(),
             ],
             const SizedBox(height: 8.0),
             FormSubmitButton(
               key: const Key('primary-button'),
               text: model.primaryButtonText,
               loading: model.isLoading,
-              onPressed: model.isLoading ? null : _submit,
+              onPressed: model.isLoading ? null : () => _submit(context),
             ),
             const SizedBox(height: 8.0),
-            TextButton(
-              key: const Key('secondary-button'),
-              child: Text(model.secondaryButtonText),
-              onPressed: model.isLoading ? null : () => _updateFormType(model.secondaryActionFormType),
-            ),
+            if (model.formType == EmailPasswordSignInFormType.signIn)
+              TextButton(
+                key: const Key('secondary-button'),
+                child: Text(model.secondaryButtonText),
+                onPressed: model.isLoading ? null : () => _updateFormType(model.secondaryActionFormType),
+              ),
             if (model.formType == EmailPasswordSignInFormType.signIn)
               TextButton(
                 key: const Key('tertiary-button'),
@@ -202,7 +284,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: Text(model.title),
+        titleText: model.title,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -212,10 +294,10 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
               padding: const EdgeInsets.all(16.0),
               child: Card(
                 elevation: 2.0,
-                color: kFlugglePrimaryColor,
+                color: kFluggleDarkColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: _buildContent(),
+                  child: _buildContent(context),
                 ),
               ),
             );

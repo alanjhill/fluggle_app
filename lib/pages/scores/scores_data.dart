@@ -78,7 +78,7 @@ class _ScoresDataState extends State<ScoresData> {
       }
     }
 
-    // For single player practise, scores is full width, otherwise, half width
+    // For single player practice, scores is full width, otherwise, half width
     final scoresWidgetWidth = otherPlayers.isEmpty ? widget.width : widget.width / 2;
     return Container(
         height: widget.height,

@@ -1,15 +1,15 @@
-import 'dart:ui';
-
-import 'package:fluggle_app/common_widgets/word_cubes.dart';
+import 'package:fluggle_app/widgets/word_cubes.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:flutter/material.dart';
 
 class CurrentWord extends StatelessWidget {
   final List<GridItem> swipedGridItems;
-  final String currentWord;
+  final String? currentWord;
+  final WordStatus currentWordStatus;
 
-  CurrentWord({this.swipedGridItems = const [], this.currentWord = ""});
+  CurrentWord({this.swipedGridItems = const [], this.currentWord, required this.currentWordStatus});
 
   String _getWord() {
     String? word;
@@ -22,7 +22,6 @@ class CurrentWord extends StatelessWidget {
         }
       }
     }
-
     return word!;
   }
 
@@ -30,31 +29,22 @@ class CurrentWord extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     debugPrint('screen size: ${mediaQuery.size}');
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
-      final width = (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
-      return Container(
-        padding: EdgeInsets.symmetric(
-          vertical: 0,
-          horizontal: 0,
-        ),
-/*        decoration: BoxDecoration(
-          border: Border.all(
-            color: kFluggleBoardBorderColor,
-            width: kFluggleBoardBorderWidth,
-            style: BorderStyle.solid,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),*/
-        child: Row(
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        final width = (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
+        return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-              child: WordCubes(word: _getWord(), width: width),
+            Column(
+              children: [
+                WordCubes(word: _getWord(), width: width, spacing: kCurrentWordCubeSpacing, wordStatus: currentWordStatus),
+                //Text('$currentWordStatus'),
+                //WordFeedback(word: _getWord(), width: width, spacing: kCurrentWordCubeSpacing),
+              ],
             ),
           ],
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

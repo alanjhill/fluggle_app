@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/platform_alert_dialog.dart';
+import 'package:fluggle_app/widgets/platform_alert_dialog.dart';
 import 'package:flutter/services.dart';
 
 class PlatformExceptionAlertDialog extends PlatformAlertDialog {

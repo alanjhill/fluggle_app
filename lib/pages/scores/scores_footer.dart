@@ -43,7 +43,7 @@ class ScoresFooter extends StatelessWidget {
     required double height,
     required double width,
   }) {
-    final bool singlePlayer = game.practise;
+    final bool singlePlayer = game.practice;
     if (singlePlayer) {
       width = width - 4;
     } else {
@@ -111,7 +111,7 @@ class ScoresFooter extends StatelessWidget {
     );
 
     /// Only show the Unique Words if this is a real game
-    if (game.practise == false) {
+    if (game.practice == false) {
       // Unique Words
       rows.add(
         Container(

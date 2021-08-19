@@ -4,6 +4,7 @@ import 'package:fluggle_app/pages/account/account_page.dart';
 import 'package:fluggle_app/pages/friends/friends_page.dart';
 import 'package:fluggle_app/pages/friends_search/friends_search_page.dart';
 import 'package:fluggle_app/pages/game/game_page.dart';
+import 'package:fluggle_app/pages/help_page/help_page.dart';
 import 'package:fluggle_app/pages/home/home_page.dart';
 import 'package:fluggle_app/pages/play_game/play_game_page.dart';
 import 'package:fluggle_app/pages/previous_games/previous_games_page.dart';
@@ -21,11 +22,13 @@ class AppRoutes {
   static const gamePage = '/game';
   static const homePage = '/home';
   static const emailPasswordSignInPage = '/email-password-sign-in';
+  static const updateUserPage = "/update-user";
   static const playGamePage = '/play-game';
   static const previousGamesPage = '/previous-games';
   static const scoresPage = '/scores';
   static const signInPage = '/sign-in';
   static const startGamePage = '/start-game';
+  static const helpPage = '/help-page';
 }
 
 class AppRouter {
@@ -39,6 +42,13 @@ class AppRouter {
           page: EmailPasswordSignInPage.withFirebaseAuth(
             auth,
             onSignedIn: args as void Function(),
+          ),
+        );
+      case AppRoutes.updateUserPage:
+        return pageTransition(
+          context,
+          page: EmailPasswordSignInPage.updateUser(
+            auth,
           ),
         );
       case AppRoutes.signInPage:
@@ -90,6 +100,11 @@ class AppRouter {
         return pageTransition(
           context,
           page: AccountPage(),
+        );
+      case AppRoutes.helpPage:
+        return pageTransition(
+          context,
+          page: HelpPage(),
         );
     }
   }

@@ -1,4 +1,4 @@
-const kGameCubes = [
+var kGameCubes = [
   ['G', 'H', 'W', 'E', 'N', 'E'],
   ['N', 'R', 'N', 'Z', 'L', 'H'],
   ['B', 'O', 'A', 'J', 'O', 'B'],

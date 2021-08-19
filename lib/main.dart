@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluggle_app/auth/auth_widget.dart';
-import 'package:fluggle_app/common_widgets/app_theme.dart';
+import 'package:fluggle_app/widgets/app_theme.dart';
 import 'package:fluggle_app/pages/home/home_page.dart';
 import 'package:fluggle_app/pages/onboarding/onboarding_page.dart';
 import 'package:fluggle_app/pages/onboarding/onboarding_view_model.dart';
@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
             final didCompleteOnboarding = watch(onboardingViewModelProvider);
             debugPrint('didCompleteOnboarding: $didCompleteOnboarding');
             return didCompleteOnboarding ? HomePage() : OnboardingPage();
+            //return OnboardingPage();
           },
         ),
         signedInBuilder: (_) => HomePage(),

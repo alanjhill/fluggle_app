@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/game_view_model.dart';
@@ -48,12 +48,12 @@ class ScoresPage extends ConsumerWidget {
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
-    if (game.practise == true) {
+    if (game.practice == true) {
       // Single Player / practice
       final gameAsyncValue = AsyncValue.data(game);
       AppUser appUser = watch(userStreamProvider(user.uid)).data?.value as AppUser;
       List<Player>? players = game.players;
-      players![0].user = appUser;
+      players[0].user = appUser;
       final playerScoresAsyncValue = AsyncValue.data(players);
       return _buildScores(context, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
     } else {
@@ -69,7 +69,7 @@ class ScoresPage extends ConsumerWidget {
 
   Widget _buildScores(BuildContext context, {required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData}) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.scoresPage));
+    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.scoresPage);
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
@@ -112,18 +112,7 @@ class ScoresPage extends ConsumerWidget {
         gameData: gameData,
         playerData: playerData,
         uid: uid,
-        saveGame: saveGame,
       ),
     );
-  }
-
-  bool saveGame(BuildContext context, {required Game game}) {
-    final firestoreDatabase = context.read(databaseProvider);
-    game.gameStatus = GameStatus.finished;
-    firestoreDatabase.saveGame(game: game).then((_) {
-      debugPrint('Game saved');
-      return true;
-    });
-    return false;
   }
 }

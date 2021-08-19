@@ -1,15 +1,17 @@
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
+import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:flutter/material.dart';
 
 class ScoresBanner extends StatelessWidget {
-  const ScoresBanner({
+  ScoresBanner({
     required this.context,
     required this.game,
     required this.players,
     required this.height,
   });
 
+  final GameService gameService = GameService();
   final BuildContext context;
   final Game game;
   final List<Player> players;
@@ -17,7 +19,7 @@ class ScoresBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (game.practise == true) {
+    if (game.practice == true) {
       return Container();
     } else {
       List<Player> winningPlayers = [];
@@ -37,16 +39,18 @@ class ScoresBanner extends StatelessWidget {
         }
       }
 
-      if (winningPlayers.isEmpty) {
-        return CircularProgressIndicator();
-      } else if (winningPlayers.length == 1) {
+      if (game.gameStatus != GameStatus.finished) {
+        return Text('Game in progress', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
+      } else {}
+      if (winningPlayers.length == 1) {
         // Winner
         return Text('${winningPlayers[0].user!.displayName} WON!', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
-      } else if (winningPlayers.length < players.length) {
-        // DRAW
+      } else if (winningPlayers.length == gameService.getNumPlayersFinished(game: game)) {
+        // Draw
         return Text('It\'s a DRAW!', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
       } else {
-        return Text('Waiting for all players...', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
+        // Draw but not a draw between all players...do we need to identify which players?  Probably!
+        return Text('It\'s a DRAW!', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
       }
     }
   }

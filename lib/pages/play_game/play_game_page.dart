@@ -1,4 +1,4 @@
-import 'package:fluggle_app/common_widgets/custom_app_bar.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
@@ -8,6 +8,7 @@ import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/models/user/user_view_model.dart';
 import 'package:fluggle_app/pages/play_game/play_game_list.dart';
+import 'package:fluggle_app/pages/start_game/start_game_page.dart';
 import 'package:fluggle_app/routing/app_router.dart';
 import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/top_level_providers.dart';
@@ -44,7 +45,15 @@ class PlayGamePage extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-    final PreferredSizeWidget appBar = CustomAppBar(title: Text(Strings.playGamePage));
+    final PreferredSizeWidget appBar = CustomAppBar(
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.of(context).pushNamed(AppRoutes.homePage);
+        },
+      ),
+      titleText: Strings.playGamePage,
+    );
 
     final firebaseAuth = context.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
@@ -69,9 +78,10 @@ class PlayGamePage extends ConsumerWidget {
           ),
           SizedBox(height: 8.0),
           CustomRaisedButton(
-            child: Text(Strings.practise),
-            onPressed: () => practice(context),
+            child: Text(Strings.practice),
+            onPressed: isSignedIn ? () => practice(context) : null,
           ),
+          SizedBox(height: 8.0),
         ],
       ),
     );
@@ -81,8 +91,14 @@ class PlayGamePage extends ConsumerWidget {
 
     Widget _buildPlayGameListWidget(BuildContext context) {
       return Container(
-        //height: remainingHeight * 0.8,
-        child: PlayGameList(data: playGamesAsyncValue),
+        //padding: EdgeInsets.only(top: 8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PlayGameList(data: playGamesAsyncValue, leftSwipeGame: leftSwipeGame),
+          ],
+        ),
       );
     }
 
@@ -102,6 +118,7 @@ class PlayGamePage extends ConsumerWidget {
                 children: <Widget>[
                   buttonsWidget,
                   if (isSignedIn) _buildPlayGameListWidget(context),
+                  SizedBox(height: 8.0),
                 ],
               ),
             ),
@@ -116,8 +133,19 @@ class PlayGamePage extends ConsumerWidget {
   }
 
   void practice(BuildContext ctx) async {
-    // Create a basic Game object for a practice game
-    Game game = gameService.createPracticeGame(ctx);
-    Navigator.of(ctx).pushNamed(AppRoutes.gamePage, arguments: game);
+    Navigator.of(ctx).pushNamed(
+      AppRoutes.startGamePage,
+      arguments: StartGameArguments(
+        players: [],
+      ),
+    );
+  }
+
+  void leftSwipeGame(BuildContext context, {required Game game, required String uid}) async {
+    if (game.creatorId == uid) {
+      await gameService.deleteGame(context, game: game);
+    } else {
+      await gameService.saveGame(context, game: game, playerStatus: PlayerStatus.declined, uid: uid);
+    }
   }
 }

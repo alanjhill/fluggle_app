@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "645489800545",
+    "firebase_url": "https://fluggle-default-rtdb.firebaseio.com",
     "project_id": "fluggle",
     "storage_bucket": "fluggle.appspot.com"
   },
