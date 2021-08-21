@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserService {
-  Future<void> createUser(BuildContext context, {required User user}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  Future<void> createUser(WidgetRef ref, {required User user}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
     AppUser appUser = AppUser(uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL);
     await firestoreDatabase.createAppUser(appUser: appUser);
     return;
   }
 
-  Future<void> updateUser(BuildContext context, {required User user}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  Future<void> updateUser(WidgetRef ref, {required User user}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
     AppUser appUser = AppUser(
       uid: user.uid,
       displayName: user.displayName,

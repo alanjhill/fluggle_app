@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameService {
-  Game createPracticeGame(BuildContext context, {required int gameTime}) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Game createPracticeGame(WidgetRef ref, {required int gameTime}) {
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
     final String? uid = user?.uid;
 
@@ -37,9 +37,9 @@ class GameService {
     return game;
   }
 
-  Future<Game> createGame(BuildContext context, {required GameStatus gameStatus, List<AppUser>? players, required int gameTime, bool? persist = true}) async {
-    final firestoreDatabase = context.read(databaseProvider);
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Future<Game> createGame(WidgetRef ref, {required GameStatus gameStatus, List<AppUser>? players, required int gameTime, bool? persist = true}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
     final String uid = user.uid;
 
@@ -70,13 +70,13 @@ class GameService {
     return game;
   }
 
-  Future<void> saveGameAndPlayer(BuildContext context, {required Game game, required Player player}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  Future<void> saveGameAndPlayer(WidgetRef ref, {required Game game, required Player player}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
     await firestoreDatabase.saveGameAndPlayer(game: game, player: player);
   }
 
-  Future<void> saveGame(BuildContext context, {required Game game, required PlayerStatus playerStatus, required String uid}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  Future<void> saveGame(WidgetRef ref, {required Game game, required PlayerStatus playerStatus, required String uid}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
 
     // Get the GameStatus
     GameStatus gameStatus = game.gameStatus!;
@@ -98,23 +98,23 @@ class GameService {
     await firestoreDatabase.saveGame(game: game);
   }
 
-  Future<void> _saveGameAndPlayers(BuildContext context, {required Game game, required List<Player> players}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  Future<void> _saveGameAndPlayers(WidgetRef ref, {required Game game, required List<Player> players}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
     await firestoreDatabase.saveGameAndPlayers(game: game, players: players);
   }
 
-  Future<void> deleteGame(BuildContext context, {required Game game}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  Future<void> deleteGame(WidgetRef ref, {required Game game}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
     await firestoreDatabase.deleteGame(gameId: game.gameId!);
   }
 
-  void listGames(BuildContext context, {required String uid}) async {
-    final firestoreDatabase = context.read(databaseProvider);
+  void listGames(WidgetRef ref, {required String uid}) async {
+    final firestoreDatabase = ref.read(databaseProvider);
     firestoreDatabase.myPendingGamesStream;
   }
 
   LinkedHashMap<String, int> processWords(
-    BuildContext context, {
+    WidgetRef ref, {
     required Game game,
     required List<Player> players,
   }) {
@@ -161,7 +161,7 @@ class GameService {
         game.finished = Timestamp.now();
 
         // Save the Game and Players collection items
-        _saveGameAndPlayers(context, game: game, players: players);
+        _saveGameAndPlayers(ref, game: game, players: players);
       }
     }
     //}

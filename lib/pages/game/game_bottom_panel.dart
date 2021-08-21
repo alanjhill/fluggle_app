@@ -1,10 +1,10 @@
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
+import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GameBottomPanel extends StatefulWidget {
-  GameBottomPanel({this.gameStarted = false, this.gamePaused = false, required this.startButtonPressed, required this.pauseButtonPressed, required this.height});
-  final bool gameStarted;
-  final bool gamePaused;
+class GameBottomPanel extends ConsumerStatefulWidget {
+  GameBottomPanel({required this.startButtonPressed, required this.pauseButtonPressed, required this.height});
   final Function startButtonPressed;
   final Function pauseButtonPressed;
   final double height;
@@ -13,16 +13,15 @@ class GameBottomPanel extends StatefulWidget {
   _GameBottomPanelState createState() => _GameBottomPanelState();
 }
 
-class _GameBottomPanelState extends State<GameBottomPanel> {
+class _GameBottomPanelState extends ConsumerState<GameBottomPanel> {
   bool buttonClicked = false;
 
-  void _buttonPressed(BuildContext context) {
-    if (!widget.gameStarted) {
-      debugPrint('>>> START BUTTON');
-      widget.startButtonPressed();
+  void _buttonPressed(BuildContext context, WidgetRef ref) {
+    final gameState = ref.read(gameStateProvider);
+    if (!gameState.gameStarted) {
+      widget.startButtonPressed(context, ref);
     } else {
-      debugPrint('>>> PAUSE BUTTON');
-      widget.pauseButtonPressed(context);
+      widget.pauseButtonPressed(context, ref);
     }
     setState(() {
       buttonClicked = true;
@@ -31,14 +30,15 @@ class _GameBottomPanelState extends State<GameBottomPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final gameState = ref.read(gameStateProvider);
     return Expanded(
       child: Container(
         height: widget.height,
         child: Center(
           child: ButtonTheme(
             child: CustomRaisedButton(
-              child: !widget.gameStarted ? Text('Start') : Text('Pause'),
-              onPressed: () => _buttonPressed(context),
+              child: !gameState.gameStarted ? Text('Start') : Text('Pause'),
+              onPressed: () => _buttonPressed(context, ref),
             ),
           ),
         ),

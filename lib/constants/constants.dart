@@ -17,7 +17,6 @@ const double kCurrentWordCubeSpacing = 2.0;
 
 const int kGridCount = 4;
 
-//1a73e8
 const Color kFlugglePrimaryColor = Color(0xFF1A73E8);
 const Color kFluggleLightColor = Color(0xFF69A1FF);
 const Color kFluggleDarkColor = Color(0xFF0049B5);
@@ -26,7 +25,7 @@ const Color kFluggleCanvasColor = kFlugglePrimaryColor;
 const Color kFluggleCubeColor = Color(0xFFFFFDD0);
 const Color kFluggleBoardColor = Color.fromRGBO(9, 89, 157, 1);
 const Color kFluggleBoardBackgroundColor = Color.fromRGBO(9, 89, 157, 0.2);
-const Color kFluggleBoardBorderColor = kFluggleDarkColor;
+const Color kFluggleBoardBorderColor = kFluggleLightColor;
 
 const Color kFluggleLetterColor = kFlugglePrimaryColor;
 const Color kFluggleLetterHighlightColor = kFluggleLightColor;

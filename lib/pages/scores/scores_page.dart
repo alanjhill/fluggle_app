@@ -43,35 +43,37 @@ class ScoresPage extends ConsumerWidget {
   final GameService gameService = GameService();
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('>>> build >>> ref: $ref');
+
     /// Get current user
-    final firebaseAuth = context.read(firebaseAuthProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
     if (game.practice == true) {
       // Single Player / practice
       final gameAsyncValue = AsyncValue.data(game);
-      AppUser appUser = watch(userStreamProvider(user.uid)).data?.value as AppUser;
+      AppUser appUser = ref.watch(userStreamProvider(user.uid)).data?.value as AppUser;
       List<Player>? players = game.players;
       players[0].user = appUser;
       final playerScoresAsyncValue = AsyncValue.data(players);
-      return _buildScores(context, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
+      return _buildScores(context, ref, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
     } else {
       // Multi Player
       final String gameId = game.gameId!;
       debugPrint('>>> about to watch game');
-      final gameAsyncValue = watch(gameStreamProvider(gameId));
+      final gameAsyncValue = ref.watch(gameStreamProvider(gameId));
       debugPrint('>>> done watch game: $gameAsyncValue');
-      final playerScoresAsyncValue = watch(playerScoresStreamProvider(gameId));
-      return _buildScores(context, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
+      final playerScoresAsyncValue = ref.watch(playerScoresStreamProvider(gameId));
+      return _buildScores(context, ref, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
     }
   }
 
-  Widget _buildScores(BuildContext context, {required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData}) {
+  Widget _buildScores(BuildContext context, WidgetRef ref, {required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData}) {
     final mediaQuery = MediaQuery.of(context);
     final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.scoresPage);
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-    final firebaseAuth = context.read(firebaseAuthProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
     return Scaffold(

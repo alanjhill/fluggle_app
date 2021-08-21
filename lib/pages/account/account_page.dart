@@ -19,15 +19,15 @@ final appUserProvider = StreamProvider.autoDispose.family<AppUser, String>((ref,
 
 class AccountPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAuth = ref.watch(firebaseAuthProvider);
     final User? user = firebaseAuth.currentUser;
     if (user != null) {
       user.reload();
     }
 
     if (user != null) {
-      final appUserAsyncValue = watch(appUserProvider(user.uid));
+      final appUserAsyncValue = ref.watch(appUserProvider(user.uid));
       return Scaffold(
         appBar: CustomAppBar(
           titleText: Strings.accountPage,

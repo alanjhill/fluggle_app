@@ -1,5 +1,6 @@
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -27,7 +28,7 @@ class AppTheme {
         bodyColor: Colors.white,
       ),
       dialogTheme: DialogTheme(
-        backgroundColor: kFluggleLightColor,
+        backgroundColor: kFluggleDarkColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(8.0),
@@ -64,7 +65,10 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         elevation: 0.0,
         centerTitle: true,
+        backwardsCompatibility: false,
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: kFluggleCanvasColor),
         backgroundColor: kFluggleCanvasColor,
+        brightness: Brightness.light,
         textTheme: GoogleFonts.varelaRoundTextTheme(
           Theme.of(context).textTheme,
         ).apply(

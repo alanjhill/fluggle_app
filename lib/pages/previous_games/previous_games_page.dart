@@ -32,7 +32,7 @@ class PreviousGamesPage extends ConsumerWidget {
   final GameService gameService = GameService();
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     //final firebaseAuth = context.read(firebaseAuthProvider);
@@ -41,7 +41,7 @@ class PreviousGamesPage extends ConsumerWidget {
     final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.previousGamesPage);
 
     /// Previous Games Data
-    final previousGamesAsyncValue = watch(gameViewModelStreamProvider);
+    final previousGamesAsyncValue = ref.watch(gameViewModelStreamProvider);
 
     return Scaffold(
       appBar: appBar,

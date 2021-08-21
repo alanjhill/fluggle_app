@@ -83,6 +83,10 @@ class Strings {
   static const String newGame = 'New Game';
   static const String practiceGame = 'Practice Game';
 
+  // Game page
+  static const String quit = 'Quit?';
+  static const String quitAreYouSure = 'Are you sure you want to quit?';
+
   // Scores
   static const String scoresPage = 'Scores';
 

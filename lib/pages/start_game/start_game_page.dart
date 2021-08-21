@@ -11,8 +11,9 @@ import 'package:fluggle_app/utils/utils.dart';
 import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class StartGamePage extends StatefulWidget {
+class StartGamePage extends ConsumerStatefulWidget {
   final StartGameArguments startGameArguments;
   StartGamePage({required this.startGameArguments});
 
@@ -20,7 +21,7 @@ class StartGamePage extends StatefulWidget {
   _StartGamePageState createState() => _StartGamePageState();
 }
 
-class _StartGamePageState extends State<StartGamePage> {
+class _StartGamePageState extends ConsumerState<StartGamePage> {
   final GameService gameService = GameService();
 
   List<AppUser>? players;
@@ -64,7 +65,7 @@ class _StartGamePageState extends State<StartGamePage> {
                       ..._buildPlayerList(players),
                       _buildGameDuration(context),
                       SizedBox(height: 4),
-                      _buildPlayButton(context),
+                      _buildPlayButton(context, ref),
                       //_getHeadingText(),
                       //..._buildPlayerList(players),
                     ],
@@ -112,15 +113,15 @@ class _StartGamePageState extends State<StartGamePage> {
     );
   }
 
-  void _createGame(BuildContext context) async {
+  void _createGame(BuildContext context, WidgetRef ref) async {
     // Create game and wait for other players to join...
     debugPrint("Create Game");
     if (players!.isNotEmpty) {
-      Game game = await gameService.createGame(context, gameStatus: GameStatus.created, players: players, gameTime: _currentValue);
+      Game game = await gameService.createGame(ref, gameStatus: GameStatus.created, players: players, gameTime: _currentValue);
       debugPrint('game: $game');
       Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: game);
     } else {
-      Game game = gameService.createPracticeGame(context, gameTime: _currentValue);
+      Game game = gameService.createPracticeGame(ref, gameTime: _currentValue);
       Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: game);
     }
   }
@@ -228,9 +229,9 @@ class _StartGamePageState extends State<StartGamePage> {
     return '${minutes.toInt().toString().padLeft(1, "0")}:${seconds.toInt().toString().padLeft(2, "0")}';
   }
 
-  Widget _buildPlayButton(BuildContext context) {
+  Widget _buildPlayButton(BuildContext context, WidgetRef ref) {
     return CustomRaisedButton(
-      onPressed: () => _createGame(context),
+      onPressed: () => _createGame(context, ref),
       child: Text('Play'),
     );
   }

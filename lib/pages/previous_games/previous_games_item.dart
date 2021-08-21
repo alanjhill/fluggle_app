@@ -18,8 +18,8 @@ class PreviousGamesItem extends ConsumerWidget {
   final Function previousGameOnTap;
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final gamePlayersAsyncValue = watch(previousGamesPlayerStreamProvider(game.gameId!));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gamePlayersAsyncValue = ref.watch(previousGamesPlayerStreamProvider(game.gameId!));
 
     List<Player> players = [];
     return gamePlayersAsyncValue.when(

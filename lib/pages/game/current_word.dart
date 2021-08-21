@@ -1,7 +1,8 @@
-import 'package:fluggle_app/widgets/word_cubes.dart';
 import 'package:fluggle_app/constants/constants.dart';
+import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/pages/game/game_page.dart';
+import 'package:fluggle_app/widgets/word_cubes.dart';
 import 'package:flutter/material.dart';
 
 class CurrentWord extends StatelessWidget {

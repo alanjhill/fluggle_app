@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:fluggle_app/widgets/custom_app_bar.dart';
+import 'package:fluggle_app/alert_dialogs/alert_dialogs.dart';
+import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/custom_buttons/custom_buttons.dart';
-import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game.dart';
-import 'package:fluggle_app/models/game/game_word.dart';
+import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:fluggle_app/models/game/player.dart';
-import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:fluggle_app/models/game_board/game_letters.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/pages/game/game_board.dart';
@@ -23,47 +21,38 @@ import 'package:fluggle_app/top_level_providers.dart';
 import 'package:fluggle_app/utils/dictionary.dart';
 import 'package:fluggle_app/utils/language.dart';
 import 'package:fluggle_app/widgets/countdown_timer.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum WordStatus { empty, valid, invalid, duplicate }
-
-class GamePage extends StatelessWidget {
+class GamePage extends ConsumerStatefulWidget {
   final Game game;
   GamePage({Key? key, required this.game}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return GamePageWidget(game: game);
-  }
+  _GamePageState createState() => _GamePageState();
 }
 
-class GamePageWidget extends StatefulWidget {
-  GamePageWidget({required this.game});
-  final Game game;
-
-  @override
-  _GamePageWidgetState createState() => _GamePageWidgetState();
-}
-
-class _GamePageWidgetState extends State<GamePageWidget> {
+class _GamePageState extends ConsumerState<GamePage> {
   final GameService gameService = GameService();
-  List<String> letters = [];
+  Dictionary? dictionary;
+  List<String>? letters;
+  List<List<GridItem>> gridItems = [];
   List<String> shuffledLetters = [];
   List<String> emptyLetters = [];
-  List<List<GridItem>> gridItems = [];
-  List<GridItem> swipedGridItems = [];
-  LinkedHashMap<String, PlayerWord> addedWords = LinkedHashMap<String, PlayerWord>();
-  String currentWord = "";
-  WordStatus currentWordStatus = WordStatus.empty;
-  Dictionary? dictionary;
-  bool gameStarted = false;
-  bool gamePaused = false;
 
   @override
   void initState() {
     super.initState();
-    _setupGame();
+    letters = _getEmptyLetters();
+    _setupGame(widget.game);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final gameStateNotifier = ref.read(gameStateProvider.notifier);
+    gameStateNotifier.reset();
   }
 
   @override
@@ -71,7 +60,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    final PreferredSizeWidget appBar = _buildAppBar(context, _quitGame, gameStarted);
+    final PreferredSizeWidget appBar = _buildAppBar(context, ref, _quitGame);
 
     final appBarHeight = appBar.preferredSize.height;
     final gameBoardHeight = screenWidth - kGameBoardPadding;
@@ -87,8 +76,6 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     // Bottom panel / button bar
     final gameBottomPanel = _buildGameBottomPanel(kBottomBarHeight);
 
-    // Bottom Bar
-
     return Scaffold(
       appBar: appBar,
       body: Column(
@@ -102,129 +89,43 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     );
   }
 
-  LinkedHashMap<String, PlayerWord> get _addedWords {
-    return addedWords;
-  }
-
-  bool _isSwipedGridItem(GridItem gridItem) {
-    return swipedGridItems.contains(gridItem);
-  }
-
-  List<GridItem> _getSwipedGridItems() {
-    return swipedGridItems;
-  }
-
-  bool _addSwipedGridItem(GridItem gridItem) {
-    bool added = false;
+  void _resetWords(GameState gameState) {
     setState(() {
-      currentWord = "";
-      currentWordStatus = WordStatus.empty;
-      GridItem? lastAddedGridItem = swipedGridItems.isNotEmpty ? swipedGridItems.last : null;
-      if (!swipedGridItems.contains(gridItem) && (gridItem.isAdjacent(lastAddedGridItem) || _isFirstItem())) {
-        swipedGridItems.add(gridItem);
-        added = true;
-      }
-    });
-    debugPrint('_addSwipedGridItem, added; $added');
-    return added;
-  }
-
-  bool _isFirstItem() {
-    return swipedGridItems.isEmpty;
-  }
-
-  void _resetWords() {
-    setState(() {
-      addedWords.clear();
+      gameState.addedWords.clear();
     });
   }
 
-  void _addWord() {
-    String word = "";
-    for (GridItem gridItem in swipedGridItems) {
-      word += gridItem.letter;
-    }
-
-    setState(() {
-      // Set the current word
-      currentWord = word;
-
-      // Add the word to the list of words if it does not exist
-      if (word.length >= 3) {
-        // Check if word exists in dictionary
-        if (dictionary!.exists(currentWord)) {
-          if (!addedWords.containsKey(word)) {
-            addedWords[word] = PlayerWord(gameWord: GameWord(word: word), gridItems: swipedGridItems);
-            currentWordStatus = WordStatus.valid;
-          } else {
-            currentWordStatus = WordStatus.duplicate;
-          }
-        } else {
-          // Doesn't exist in dictionary, invalid
-          currentWordStatus = WordStatus.invalid;
-        }
-      } else {
-        // Word is too short
-        currentWordStatus = WordStatus.invalid;
-      }
-    });
-
-    // Reset the swiped items
-    _resetGridItems();
-  }
-
-  void _updateCurrentWord() {
-    for (GridItem gridItem in swipedGridItems) {
-      setState(() {
-        currentWord += gridItem.letter;
-        debugPrint('currentWord: $currentWord');
-      });
-    }
-  }
-
-  void _resetGridItems() {
-    for (var gridItem in swipedGridItems) {
-      setState(() {
-        gridItem.swiped = false;
-      });
-    }
-  }
-
-  void _resetSwipedItems() {
-    setState(() {
-      swipedGridItems = [];
-    });
-  }
-
-  Future<void> _timerEnded(BuildContext context) async {
+  Future<void> _timerEnded(BuildContext context, WidgetRef ref) async {
     debugPrint('timerEnded');
-    final firebaseAuth = context.read(firebaseAuthProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
+
+    final gameState = ref.read(gameStateProvider);
 
     // If practice mode, we don't save anything, just redirect to the scores page, passing the game object
     if (widget.game.practice == true) {
       // Set the words for this player
       Player player = widget.game.players[0];
-      player.words = addedWords;
+      player.words = gameState.addedWords;
       widget.game.playerUids[player.playerId] = PlayerStatus.finished;
 
       Navigator.of(context).pop(null);
       Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: widget.game);
     } else {
       // Real game, go to the scores page, passing the game object
-      final database = context.read(databaseProvider);
+      final database = ref.read(databaseProvider);
 
       // Get Player
       Player player = await database.getGamePlayer(gameId: widget.game.gameId!, playerUid: user!.uid);
 
       // Set the words for this player
-      player.words = addedWords;
+      player.words = gameState.addedWords;
 
       // Set the status of this player to finished
       widget.game.playerUids[user.uid] = PlayerStatus.finished;
 
       // Save the game status of this player
-      await gameService.saveGameAndPlayer(context, game: widget.game, player: player);
+      await gameService.saveGameAndPlayer(ref, game: widget.game, player: player);
 
       // Go to scoreboard
       Navigator.of(context).pop(null);
@@ -232,61 +133,22 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     }
   }
 
-  void _confirmQuit(BuildContext context) {
-    debugPrint('confirmQuit');
-    Navigator.pop(context);
-    _quitGame(context);
+  void _confirmQuit(BuildContext context, WidgetRef ref) {
+    _quitGame(context, ref);
   }
 
-  void _cancelQuit(BuildContext context) {
-    debugPrint('cancelQuit');
-    Navigator.pop(context);
-  }
-
-  void _showQuitGameDialog(BuildContext context) {
-    showGeneralDialog(
-        barrierLabel: 'x',
-        barrierDismissible: true,
-        context: context,
-        transitionDuration: Duration(milliseconds: 300),
-        pageBuilder: (context, anim1, anim2) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10),
-                ),
-              ),
-              backgroundColor: kFluggleLightColor,
-              title: Text(
-                'Quit?',
-                style: TextStyle(
-                    //color: kFluggleLetterColor,
-                    ),
-              ),
-              content: Text('Are you sure you want to quit?'),
-              actions: [
-                ButtonTheme(
-                  child: CustomRaisedButton(
-                    child: Text('Yes'),
-                    onPressed: () {
-                      _confirmQuit(context);
-                    },
-                  ),
-                ),
-                ButtonTheme(
-                  child: CustomRaisedButton(
-                    child: Text('No'),
-                    onPressed: () {
-                      _cancelQuit(context);
-                    },
-                  ),
-                )
-              ],
-            ),
-          );
-        });
+  void _showQuitGameDialog(BuildContext context, WidgetRef ref) async {
+    final bool didConfirmQuit = await showAlertDialog(
+          context: context,
+          title: Strings.quit,
+          content: Strings.quitAreYouSure,
+          cancelActionText: Strings.cancel,
+          defaultActionText: Strings.ok,
+        ) ??
+        false;
+    if (didConfirmQuit == true) {
+      _confirmQuit(context, ref);
+    }
   }
 
   String _getTitleText() {
@@ -297,15 +159,15 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     }
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, Function quitGame, bool gameStarted) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref, Function quitGame) {
+    final gameState = ref.read(gameStateProvider);
     return CustomAppBar(
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
-          if (gameStarted) {
-            _showQuitGameDialog(context);
+          if (gameState.gameStarted) {
+            _showQuitGameDialog(context, ref);
           } else {
-            //Navigator.of(context).pop();
             Navigator.of(context).pushNamed(AppRoutes.playGamePage);
           }
         },
@@ -314,11 +176,11 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       actions: <Widget>[
         Center(
           child: CountdownTimer(
-            gameStarted: gameStarted,
-            gamePaused: gamePaused,
+            gameStarted: gameState.gameStarted,
+            gamePaused: gameState.gamePaused,
             gameTime: widget.game.gameTime,
             timerEndedCallback: () async {
-              await _timerEnded(context);
+              await _timerEnded(context, ref);
             },
           ),
         ),
@@ -329,79 +191,64 @@ class _GamePageWidgetState extends State<GamePageWidget> {
   Widget _buildGameTopPanel(double topPanelHeight) {
     return Container(
       height: topPanelHeight,
-      child: GameTopPanel(
-        gameStarted: gameStarted,
-        swipedGridItems: swipedGridItems,
-        addedWords: _addedWords,
-        currentWord: currentWord,
-        currentWordStatus: currentWordStatus,
-      ),
+      child: GameTopPanel(),
     );
   }
 
   Widget _buildGameBoard(double height) {
     return Container(
-        //color: Colors.black26,
-        /*padding: EdgeInsets.all(GAME_BOARD_PADDING),*/
         height: height,
         child: GameBoard(
-          gameStarted: gameStarted,
-          letters: letters,
+          dictionary: dictionary,
+          letters: letters!,
           gridItems: gridItems,
-          addSwipedGridItem: _addSwipedGridItem,
-          isSwipedGridItem: _isSwipedGridItem,
-          getSwipedGridItems: _getSwipedGridItems,
-          resetSwipedItems: _resetSwipedItems,
-          addWord: _addWord,
-          updateCurrentWord: _updateCurrentWord,
         ));
   }
 
   Widget _buildGameBottomPanel(double bottomPanelHeight) {
     return GameBottomPanel(
-      gameStarted: gameStarted,
-      gamePaused: gamePaused,
       startButtonPressed: _startGame,
       pauseButtonPressed: _pauseGame,
       height: bottomPanelHeight,
     );
   }
 
-  void _setupGame() {
+  void _setupGame(Game game) {
     debugPrint('setupGame');
     shuffledLetters = widget.game.letters;
 
     /// Load the words for the specified language
     Language.forLanguageCode('en-GB').then((language) {
-      //debugPrint('language: ${language} loaded');
       dictionary = language.dictionary;
     });
 
-    _setEmptyLetters();
     _updateGridData();
-    _resetWords();
   }
 
-  void _startGame() async {
+  void _startGame(BuildContext context, WidgetRef ref) async {
+    final gameState = ref.read(gameStateProvider);
     debugPrint('startGame');
-    await _animateLetters();
-    letters = shuffledLetters;
+    await _animateLetters(gameState);
     _updateGridData();
-    _resetWords();
+    _resetWords(gameState);
     setState(() {
-      gameStarted = true;
+      gameState.gameStarted = true;
     });
   }
 
-  void _pauseGame(BuildContext context) {
+  void _pauseGame(BuildContext context, WidgetRef ref) {
+    //final gameStateNotifier = context.read(gameStateProvider.notifier);
+    final gameState = ref.read(gameStateProvider);
     debugPrint('pauseGame');
+    //gameStateNotifier.toggleGamePaused();
     setState(() {
-      gamePaused = !gamePaused;
-      _displayPopup(context);
+      gameState.gamePaused = !gameState.gamePaused;
     });
+    _displayPopup(context, ref);
   }
 
-  void _displayPopup(BuildContext context) {
+  void _displayPopup(BuildContext context, WidgetRef ref) {
+    final gameStateNotifier = ref.read(gameStateProvider.notifier);
     showGeneralDialog(
       barrierLabel: 'x',
       context: context,
@@ -416,7 +263,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
                 onPressed: () {
                   setState(
                     () {
-                      gamePaused = !gamePaused;
+                      gameStateNotifier.toggleGamePaused();
                       Navigator.pop(context);
                     },
                   );
@@ -437,33 +284,31 @@ class _GamePageWidgetState extends State<GamePageWidget> {
     );
   }
 
-  void _quitGame(BuildContext context) async {
+  void _quitGame(BuildContext context, WidgetRef ref) async {
+    final gameState = ref.read(gameStateProvider);
     setState(() {
-      gameStarted = false;
+      gameState.gameStarted = false;
     });
     // Update the PlayerStatus for this player
-    final firebaseAuth = context.read(firebaseAuthProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
 
     // Save the game
-    await gameService.saveGame(context, game: widget.game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
+    await gameService.saveGame(ref, game: widget.game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
 
     // Navigate to the Play Game Page
-    Navigator.of(context).pushNamed(AppRoutes.playGamePage);
+    Navigator.of(context).pushReplacementNamed(AppRoutes.playGamePage);
   }
 
-  void _setEmptyLetters() {
+  List<String> _getEmptyLetters() {
     List<String> emptyLetters = [];
-    for (var _ in shuffledLetters) {
+    for (int i = 0; i < 16; i++) {
       emptyLetters.add('?');
     }
-    setState(() {
-      letters = emptyLetters;
-      swipedGridItems = [];
-    });
+    return emptyLetters;
   }
 
-  Future _animateLetters() async {
+  Future _animateLetters(GameState gameState) async {
     Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
     bool running = true;
 
@@ -475,7 +320,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       for (int l = 0; l < 16; l++) {
         await Future.delayed(const Duration(microseconds: 1));
         setState(() {
-          letters[l] = kAZLetters[rnd.nextInt(kAZLetters.length)];
+          letters![l] = kAZLetters[rnd.nextInt(kAZLetters.length)];
         });
         _updateGridData();
       }
@@ -491,7 +336,7 @@ class _GamePageWidgetState extends State<GamePageWidget> {
       List<GridItem> gridRow = [];
       for (int colCounter = 0; colCounter < 4; colCounter++) {
         int letterIndex = (rowCounter * 4) + colCounter;
-        String letter = letters[letterIndex];
+        String letter = letters![letterIndex];
         gridRow.add(GridItem(row: rowCounter, col: colCounter, letter: letter));
       }
       localGridItems.add(gridRow);

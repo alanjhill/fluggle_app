@@ -12,6 +12,7 @@ import 'package:fluggle_app/string_validators/string_validators.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'email_password_sign_in_model.dart';
 part 'email_password_sign_in_page.dart';

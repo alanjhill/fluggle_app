@@ -1,57 +1,33 @@
 import 'package:fluggle_app/constants/constants.dart';
+import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
 import 'package:fluggle_app/models/game_board/row_col.dart';
 import 'package:fluggle_app/pages/game/game_cube.dart';
 import 'package:fluggle_app/pages/game/grid_cell.dart';
 import 'package:fluggle_app/pages/game/swipe_lines.dart';
+import 'package:fluggle_app/utils/dictionary.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GameBoard extends StatefulWidget {
-  final bool gameStarted;
+class GameBoard extends ConsumerWidget {
   final List<String> letters;
   final List<List<GridItem>> gridItems;
-  final List<String> addedWords;
-  final Function? addSwipedGridItem;
-  final Function? isSwipedGridItem;
-  final Function? getSwipedGridItems;
-  final Function? resetSwipedItems;
-  final Function? addWord;
-  final Function? updateCurrentWord;
-
+  Dictionary? dictionary;
   GameBoard({
-    this.gameStarted = false,
-    this.letters = const [],
-    this.gridItems = const [],
-    this.addedWords = const [],
-    this.addSwipedGridItem,
-    this.isSwipedGridItem,
-    this.getSwipedGridItems,
-    this.resetSwipedItems,
-    this.addWord,
-    this.updateCurrentWord,
+    required this.letters,
+    required this.gridItems,
+    this.dictionary,
   });
 
-  @override
-  _GameBoardState createState() => _GameBoardState();
-}
-
-class _GameBoardState extends State<GameBoard> {
   GlobalKey? gridKey = GlobalKey();
   GridItem? currentGridItem;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
-
     print('kToolbarHeight: $kToolbarHeight');
-
     double gridSize = mediaQuery.size.width - kGameBoardPadding / 2;
 
     // Grid Lines - first item in the stack
@@ -65,7 +41,9 @@ class _GameBoardState extends State<GameBoard> {
     );
 
     // Swipe Lines - second item in the stack
-    final swipeLines = SwipeLines(swipedGridItems: widget.getSwipedGridItems!(), gridSize: gridSize);
+    final gameStateNotifier = ref.watch(gameStateProvider.notifier);
+    final swipedGridItems = gameStateNotifier.getSwipedGridItems();
+    final swipeLines = SwipeLines(swipedGridItems: swipedGridItems, gridSize: gridSize);
 
     // Grid Cells containing grid
     final gameCubes = GridView.builder(
@@ -98,14 +76,14 @@ class _GameBoardState extends State<GameBoard> {
         ),
         onPointerDown: (PointerEvent event) {
           debugPrint('onPointerDown');
-          selectItem(event);
+          _selectItem(ref, event);
         },
         onPointerMove: (event) {
           debugPrint('onPointerMove');
-          selectItem(event);
+          _selectItem(ref, event);
         },
         onPointerUp: (PointerEvent event) {
-          endSelectItem(event);
+          _endSelectItem(ref, event);
         },
       ),
     );
@@ -160,13 +138,14 @@ class _GameBoardState extends State<GameBoard> {
   Widget _buildGameCubes(BuildContext context, int index) {
     return GameCube(
       rowCol: _getRowColFromIndex(index),
-      gridItems: widget.gridItems,
-      letter: widget.letters[index],
+      gridItems: gridItems,
+      letter: letters[index],
     );
   }
 
-  void selectItem(PointerEvent event) {
-    if (widget.gameStarted) {
+  void _selectItem(WidgetRef ref, PointerEvent event) {
+    final gameStateNotifier = ref.read(gameStateProvider.notifier);
+    if (gameStateNotifier.state.gameStarted) {
       RenderBox box = gridKey!.currentContext!.findRenderObject() as RenderBox;
       BoxHitTestResult result = BoxHitTestResult();
       Offset? local = box.globalToLocal(event.position);
@@ -175,29 +154,26 @@ class _GameBoardState extends State<GameBoard> {
           HitTestTarget? target = hit.target;
           if (target is GridCellRenderObject) {
             RowCol rowCol = target.rowCol;
-            GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
-            setState(() {
-              if (widget.addSwipedGridItem!(gridItem)) {
-                gridItem.swiped = true;
-                currentGridItem = gridItem;
-              } else {
-                currentGridItem = null;
-              }
-              widget.updateCurrentWord!();
-            });
+            GridItem gridItem = gridItems[rowCol.row][rowCol.col];
+            if (gameStateNotifier.addSwipedGridItem(gridItem)) {
+              gridItem.swiped = true;
+              currentGridItem = gridItem;
+            } else {
+              currentGridItem = null;
+            }
+            gameStateNotifier.updateCurrentWord();
           }
         }
       }
     }
   }
 
-  void endSelectItem(PointerEvent event) {
-    if (widget.gameStarted) {
-      setState(() {
-        currentGridItem = null;
-        widget.addWord!();
-        widget.resetSwipedItems!();
-      });
+  void _endSelectItem(WidgetRef ref, PointerEvent event) {
+    final gameStateNotifier = ref.read(gameStateProvider.notifier);
+    if (gameStateNotifier.state.gameStarted) {
+      currentGridItem = null;
+      gameStateNotifier.addWord(dictionary!);
+      gameStateNotifier.resetSwipedItems();
     }
   }
 }

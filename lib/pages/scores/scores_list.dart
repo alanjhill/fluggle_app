@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ScoresList extends StatefulWidget {
+class ScoresList extends ConsumerStatefulWidget {
   ScoresList({
     required this.gameData,
     required this.playerData,
@@ -22,7 +22,7 @@ class ScoresList extends StatefulWidget {
   _ScoresListState createState() => _ScoresListState();
 }
 
-class _ScoresListState extends State<ScoresList> {
+class _ScoresListState extends ConsumerState<ScoresList> {
   GameService gameService = GameService();
 
   @override
@@ -50,9 +50,9 @@ class _ScoresListState extends State<ScoresList> {
     debugPrint('ScoresList.build, >>> game: $game');
     if (game != null) {
       if (game!.practice == true) {
-        return _buildSinglePlayerScores(context, game: game!);
+        return _buildSinglePlayerScores(ref, game: game!);
       } else {
-        return _buildMultiPlayerScores(context, game: game!, uid: widget.uid);
+        return _buildMultiPlayerScores(ref, game: game!, uid: widget.uid);
       }
     } else {
       return const Scaffold(
@@ -63,7 +63,7 @@ class _ScoresListState extends State<ScoresList> {
     }
   }
 
-  Widget _buildSinglePlayerScores(BuildContext context, {required Game game}) {
+  Widget _buildSinglePlayerScores(WidgetRef ref, {required Game game}) {
     List<Player> players = [];
     widget.playerData.when(
         loading: () => {},
@@ -87,7 +87,7 @@ class _ScoresListState extends State<ScoresList> {
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: _buildScores(
-          context,
+          ref,
           game: game,
           players: players,
           uid: widget.uid,
@@ -96,7 +96,7 @@ class _ScoresListState extends State<ScoresList> {
     });
   }
 
-  Widget _buildMultiPlayerScores(BuildContext context, {required Game game, required String uid}) {
+  Widget _buildMultiPlayerScores(WidgetRef ref, {required Game game, required String uid}) {
     List<Player> players = [];
 
     return widget.playerData.when(
@@ -114,7 +114,7 @@ class _ScoresListState extends State<ScoresList> {
               height: constraints.maxHeight,
               child: game != null
                   ? _buildScores(
-                      context,
+                      ref,
                       game: game,
                       players: players,
                       uid: uid,
@@ -127,13 +127,13 @@ class _ScoresListState extends State<ScoresList> {
   }
 
   Widget _buildScores(
-    BuildContext context, {
+    WidgetRef ref, {
     required Game game,
     required List<Player> players,
     required String uid,
   }) {
     // Process the scores/words
-    Map<String, int> wordTally = gameService.processWords(context, game: game, players: players);
+    Map<String, int> wordTally = gameService.processWords(ref, game: game, players: players);
 
     final double bannerHeight = 48.0;
     return Container(

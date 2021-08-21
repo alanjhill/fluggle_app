@@ -1,3 +1,4 @@
+import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:fluggle_app/widgets/letter_cube.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/pages/game/game_page.dart';
@@ -87,11 +88,9 @@ class _WordCubesState extends State<WordCubes> with SingleTickerProviderStateMix
   double _getCubeSize({required double size}) {
     if (widget.wordStatus == WordStatus.invalid) {
       var s = size * (1 - _animationController.value);
-      debugPrint('size: $s');
       return s;
     } else {
       var s = size;
-      debugPrint('size: $s');
       return size;
     }
   }

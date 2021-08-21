@@ -1,5 +1,6 @@
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timer_controller/timer_controller.dart';
 
 class CountdownTimer extends StatefulWidget {
@@ -71,6 +72,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
               break;
             case TimerStatus.paused:
               timerColor = Colors.grey;
+
               break;
             case TimerStatus.finished:
               timerColor = Colors.red;

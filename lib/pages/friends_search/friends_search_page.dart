@@ -26,12 +26,12 @@ class FriendsSearchPage extends ConsumerWidget {
   final _emailController = TextEditingController();
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final mediaQuery = MediaQuery.of(context);
     final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.addFriendPage);
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
-    final friendsSearchAsyncValue = watch(userViewModelStreamProvider(email));
+    final friendsSearchAsyncValue = ref.watch(userViewModelStreamProvider(email));
 
     Widget _buildFindFriendsListWidget(BuildContext context) {
       return Container(
@@ -74,8 +74,8 @@ class FriendsSearchPage extends ConsumerWidget {
     );
   }
 
-  void _addFriend(BuildContext context, {required String friendId}) async {
-    await friendsService.addFriend(context, friendId: friendId);
+  void _addFriend(WidgetRef ref, {required String friendId}) async {
+    await friendsService.addFriend(ref, friendId: friendId);
   }
 
   void _searchByEmail() {

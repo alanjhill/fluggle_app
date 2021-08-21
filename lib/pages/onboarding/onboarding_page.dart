@@ -4,14 +4,9 @@ import 'package:fluggle_app/pages/onboarding/onboarding_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OnboardingPage extends StatelessWidget {
-  Future<void> onGetStarted(BuildContext context) async {
-    final OnboardingViewModel onboardingViewModel = context.read(onboardingViewModelProvider.notifier);
-    await onboardingViewModel.completeOnboarding();
-  }
-
+class OnboardingPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -31,7 +26,7 @@ class OnboardingPage extends StatelessWidget {
             ),
             SizedBox(height: 16.0),
             CustomRaisedButton(
-              onPressed: () => onGetStarted(context),
+              onPressed: () => onGetStarted(ref),
               child: Text(
                 'Get Started',
                 style: Theme.of(context).textTheme.headline5!.copyWith(color: Colors.white),
@@ -41,5 +36,10 @@ class OnboardingPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> onGetStarted(WidgetRef ref) async {
+    final OnboardingViewModel onboardingViewModel = ref.read(onboardingViewModelProvider.notifier);
+    await onboardingViewModel.completeOnboarding();
   }
 }

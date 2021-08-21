@@ -19,8 +19,8 @@ final signInModelProvider = ChangeNotifierProvider<SignInViewModel>(
 
 class SignInPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final signInModel = watch(signInModelProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final signInModel = ref.watch(signInModelProvider);
     return ProviderListener<SignInViewModel>(
       provider: signInModelProvider,
       onChange: (context, model) async {

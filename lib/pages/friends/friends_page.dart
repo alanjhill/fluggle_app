@@ -22,11 +22,11 @@ final friendsStreamProvider = StreamProvider.autoDispose<List<AppUserFriend>>(
 
 class FriendsPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.friendsPage);
-    final friendsListAsyncValue = watch(friendsStreamProvider);
+    final friendsListAsyncValue = ref.watch(friendsStreamProvider);
 
     void _addFriend() {
       Navigator.of(context).pushNamed(AppRoutes.friendsSearchPage);

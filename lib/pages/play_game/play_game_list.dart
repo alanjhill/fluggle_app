@@ -5,15 +5,15 @@ import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PlayGameList extends StatelessWidget {
+class PlayGameList extends ConsumerWidget {
   PlayGameList({Key? key, required this.data, required this.leftSwipeGame}) : super(key: key);
 
   final AsyncValue<List<Game>> data;
   final Function leftSwipeGame;
 
   @override
-  Widget build(BuildContext context) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
     return SafeArea(

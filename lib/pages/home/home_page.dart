@@ -18,8 +18,8 @@ final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((r
 
 class HomePage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final firebaseAuth = context.read(firebaseAuthProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
     debugPrint('user.displayName: ${user?.displayName}');
     bool isSignedIn = user != null;
@@ -122,8 +122,8 @@ class HomePage extends ConsumerWidget {
     Navigator.of(ctx).pushNamed(AppRoutes.helpPage);
   }
 
-  Future<void> onboardingIncomplete(BuildContext context) async {
-    final OnboardingViewModel onboardingViewModel = context.read(onboardingViewModelProvider.notifier);
+  Future<void> onboardingIncomplete(BuildContext context, WidgetRef ref) async {
+    final OnboardingViewModel onboardingViewModel = ref.read(onboardingViewModelProvider.notifier);
     await onboardingViewModel.setCompleteOnboardingFalse();
   }
 }

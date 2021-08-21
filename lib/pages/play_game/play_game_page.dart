@@ -42,7 +42,7 @@ class PlayGamePage extends ConsumerWidget {
   final GameService gameService = GameService();
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final PreferredSizeWidget appBar = CustomAppBar(
@@ -55,7 +55,7 @@ class PlayGamePage extends ConsumerWidget {
       titleText: Strings.playGamePage,
     );
 
-    final firebaseAuth = context.read(firebaseAuthProvider);
+    final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
     final bool isSignedIn = user != null;
     bool isAnonymous = true;
@@ -87,7 +87,7 @@ class PlayGamePage extends ConsumerWidget {
     );
 
     /// Play Games Data
-    final playGamesAsyncValue = watch(gameViewModelStreamProvider);
+    final playGamesAsyncValue = ref.watch(gameViewModelStreamProvider);
 
     Widget _buildPlayGameListWidget(BuildContext context) {
       return Container(
@@ -141,11 +141,11 @@ class PlayGamePage extends ConsumerWidget {
     );
   }
 
-  void leftSwipeGame(BuildContext context, {required Game game, required String uid}) async {
+  void leftSwipeGame(WidgetRef ref, {required Game game, required String uid}) async {
     if (game.creatorId == uid) {
-      await gameService.deleteGame(context, game: game);
+      await gameService.deleteGame(ref, game: game);
     } else {
-      await gameService.saveGame(context, game: game, playerStatus: PlayerStatus.declined, uid: uid);
+      await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.declined, uid: uid);
     }
   }
 }

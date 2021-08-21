@@ -14,7 +14,7 @@ class FriendsSearchItem extends ConsumerWidget {
   FriendsSearchItem({required this.appUser, required this.addFriend});
 
   @override
-  build(BuildContext context, ScopedReader watch) {
+  build(BuildContext context, WidgetRef ref) {
     return Slidable(
       key: Key(appUser.uid),
       child: GestureDetector(
@@ -42,7 +42,7 @@ class FriendsSearchItem extends ConsumerWidget {
                     ),
                     onPressed: () async {
                       debugPrint('Add Friend');
-                      await addFriend(context, friendId: appUser.uid);
+                      await addFriend(ref, friendId: appUser.uid);
                     },
                   ),
                 ),

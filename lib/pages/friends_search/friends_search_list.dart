@@ -12,6 +12,14 @@ class FriendsSearchList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: ListItemsBuilder<AppUser>(data: data, itemBuilder: (context, appUser) => FriendsSearchItem(appUser: appUser, addFriend: addFriend)));
+    return SafeArea(
+      child: ListItemsBuilder<AppUser>(
+        data: data,
+        itemBuilder: (context, appUser) => FriendsSearchItem(
+          appUser: appUser,
+          addFriend: addFriend,
+        ),
+      ),
+    );
   }
 }

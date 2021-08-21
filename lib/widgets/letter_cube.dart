@@ -11,7 +11,6 @@ class LetterCube extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('size: $size');
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 1.0),
       color: Colors.transparent,

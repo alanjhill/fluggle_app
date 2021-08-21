@@ -1,6 +1,6 @@
 part of email_password_sign_in_ui;
 
-class EmailPasswordSignInPage extends StatefulWidget {
+class EmailPasswordSignInPage extends ConsumerStatefulWidget {
   const EmailPasswordSignInPage({Key? key, required this.model, this.onSignedIn}) : super(key: key);
   final EmailPasswordSignInModel model;
   final VoidCallback? onSignedIn;
@@ -30,7 +30,7 @@ class EmailPasswordSignInPage extends StatefulWidget {
   _EmailPasswordSignInPageState createState() => _EmailPasswordSignInPageState();
 }
 
-class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
+class _EmailPasswordSignInPageState extends ConsumerState<EmailPasswordSignInPage> {
   final FocusScopeNode _node = FocusScopeNode();
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -69,13 +69,13 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
     );
   }
 
-  Future<void> _submit(BuildContext context) async {
+  Future<void> _submit(BuildContext context, WidgetRef ref) async {
     try {
       final bool success = await model.submit();
       if (success) {
         if (model.formType == EmailPasswordSignInFormType.register) {
           // Create Firestore User
-          await userService.createUser(context, user: model.auth.currentUser!);
+          await userService.createUser(ref, user: model.auth.currentUser!);
         } else if (model.formType == EmailPasswordSignInFormType.forgotPassword) {
           await showAlertDialog(
             context: context,
@@ -85,7 +85,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
           );
         } else if (model.formType == EmailPasswordSignInFormType.updateAccount) {
           // Update Firestore User
-          await userService.updateUser(context, user: model.auth.currentUser!);
+          await userService.updateUser(ref, user: model.auth.currentUser!);
 
           // Show Alert
           await showAlertDialog(
@@ -228,7 +228,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
     );
   }
 
-  Widget _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context, WidgetRef ref) {
     return FocusScope(
       node: _node,
       child: Form(
@@ -259,7 +259,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
               key: const Key('primary-button'),
               text: model.primaryButtonText,
               loading: model.isLoading,
-              onPressed: model.isLoading ? null : () => _submit(context),
+              onPressed: model.isLoading ? null : () => _submit(context, ref),
             ),
             const SizedBox(height: 8.0),
             if (model.formType == EmailPasswordSignInFormType.signIn)
@@ -297,7 +297,7 @@ class _EmailPasswordSignInPageState extends State<EmailPasswordSignInPage> {
                 color: kFluggleDarkColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: _buildContent(context),
+                  child: _buildContent(context, ref),
                 ),
               ),
             );

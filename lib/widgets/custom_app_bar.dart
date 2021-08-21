@@ -17,8 +17,6 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backwardsCompatibility: false,
-      systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: kFluggleCanvasColor),
       leading: leading,
       leadingWidth: 48.0,
       centerTitle: true,

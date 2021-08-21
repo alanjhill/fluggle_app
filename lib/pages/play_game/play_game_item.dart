@@ -25,8 +25,8 @@ class PlayGameItem extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final playersAsyncValue = watch(playerStreamProvider(game.gameId!));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final playersAsyncValue = ref.watch(playerStreamProvider(game.gameId!));
 
     return Slidable(
       key: Key(game.gameId!),

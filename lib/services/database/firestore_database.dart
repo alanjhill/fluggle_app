@@ -15,6 +15,7 @@ class FirestoreDatabase {
 
   final _service = FirestoreService.instance;
 
+  /// Create a new AppUser in the users collection
   Future<void> createAppUser({required AppUser appUser}) async {
     var appUserToMap = appUser.toMap();
     await _service.createDataWithId(
@@ -24,6 +25,7 @@ class FirestoreDatabase {
     );
   }
 
+  /// Update the AppUser in the users collection
   Future<void> updateAppUser({required AppUser appUser}) async {
     var appUserToMap = appUser.toMap();
     await _service.setData(
