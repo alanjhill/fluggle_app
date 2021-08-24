@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluggle_app/auth/auth_widget.dart';
 import 'package:fluggle_app/top_level_providers.dart';
@@ -17,6 +19,23 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  const bool USE_EMULATOR = true;
+
+  if (USE_EMULATOR) {
+    // [Firestore | localhost:8080]
+    FirebaseFirestore.instance.settings = const Settings(
+      host: 'localhost:8080',
+      sslEnabled: false,
+      persistenceEnabled: false,
+    );
+
+    // [Authentication | localhost:9099]
+    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+
+    // [Storage | localhost:9199]
+    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  }
+
   Language.registerLoader(
     LanguageLoader(
       words: (code) => rootBundle.loadString('assets/dictionary/$code.dic'),
@@ -34,30 +53,32 @@ Future<void> main() async {
   ));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   final AppTheme appTheme = AppTheme();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final firebaseAuth = ref.read(firebaseAuthProvider);
-    return MaterialApp(
-      theme: appTheme.getThemeData(context),
-      debugShowCheckedModeBanner: false,
-      home: AuthWidget(
-        nonSignedInBuilder: (_) => Consumer(
-          builder: (context, ref, _) {
-            final didCompleteOnboarding = ref.watch(onboardingViewModelProvider);
-            debugPrint('didCompleteOnboarding: $didCompleteOnboarding');
-            return didCompleteOnboarding ? HomePage() : OnboardingPage();
-          },
+  Widget build(BuildContext context) {
+    return Consumer(builder: (context, ref, _) {
+      final firebaseAuth = ref.read(firebaseAuthProvider);
+      return MaterialApp(
+        theme: appTheme.getThemeData(context),
+        debugShowCheckedModeBanner: false,
+        home: AuthWidget(
+          nonSignedInBuilder: (_) => Consumer(
+            builder: (context, ref, _) {
+              final didCompleteOnboarding = ref.watch(onboardingViewModelProvider);
+              debugPrint('didCompleteOnboarding: $didCompleteOnboarding');
+              return didCompleteOnboarding ? HomePage() : OnboardingPage();
+            },
+          ),
+          signedInBuilder: (_) => HomePage(),
         ),
-        signedInBuilder: (_) => HomePage(),
-      ),
-      onGenerateRoute: (settings) => AppRouter.onGenerateRoute(
-        context,
-        settings,
-        firebaseAuth,
-      ),
-    );
+        onGenerateRoute: (settings) => AppRouter.onGenerateRoute(
+          context,
+          settings,
+          firebaseAuth,
+        ),
+      );
+    });
   }
 }

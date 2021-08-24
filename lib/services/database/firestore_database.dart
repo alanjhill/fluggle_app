@@ -278,9 +278,8 @@ class FirestoreDatabase {
       );
     }
 
-    batch.commit().whenComplete(() {
-      print('Complete');
-    });
+    print('>>> about to commit');
+    return batch.commit();
   }
 
   Future<void> deleteGame({required String gameId}) async {

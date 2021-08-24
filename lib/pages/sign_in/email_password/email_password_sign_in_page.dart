@@ -72,10 +72,16 @@ class _EmailPasswordSignInPageState extends ConsumerState<EmailPasswordSignInPag
   Future<void> _submit(BuildContext context, WidgetRef ref) async {
     try {
       final bool success = await model.submit();
+
+      debugPrint('${model.auth.currentUser}');
+
       if (success) {
         if (model.formType == EmailPasswordSignInFormType.register) {
           // Create Firestore User
           await userService.createUser(ref, user: model.auth.currentUser!);
+
+          // Navigate to the previous page
+          Navigator.of(context).pop();
         } else if (model.formType == EmailPasswordSignInFormType.forgotPassword) {
           await showAlertDialog(
             context: context,

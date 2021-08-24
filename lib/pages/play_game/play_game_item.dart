@@ -43,7 +43,7 @@ class PlayGameItem extends ConsumerWidget {
                   _getHeadingText(game: game, uid: uid!),
                   _buildPlayers(context, uid: uid!, game: game, playerData: playersAsyncValue),
                   _buildGameDuration(context, game: game),
-                  //Text(game.gameId!),
+                  Text(game.gameId!),
                 ],
               ),
             ),

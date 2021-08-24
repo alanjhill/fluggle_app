@@ -127,6 +127,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       // Save the game status of this player
       await gameService.saveGameAndPlayer(ref, game: widget.game, player: player);
 
+      // Save
+      gameService.processWords(ref, game: widget.game, players: widget.game.players);
+
       // Go to scoreboard
       Navigator.of(context).pop(null);
       Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: widget.game);
@@ -229,6 +232,9 @@ class _GamePageState extends ConsumerState<GamePage> {
     final gameState = ref.read(gameStateProvider);
     debugPrint('startGame');
     await _animateLetters(gameState);
+    setState(() {
+      letters = shuffledLetters;
+    });
     _updateGridData();
     _resetWords(gameState);
     setState(() {

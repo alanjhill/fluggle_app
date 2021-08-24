@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/pages/scores/scores_banner.dart';
@@ -133,7 +135,10 @@ class _ScoresListState extends ConsumerState<ScoresList> {
     required String uid,
   }) {
     // Process the scores/words
-    Map<String, int> wordTally = gameService.processWords(ref, game: game, players: players);
+    //Map<String, int> wordTally = gameService.processWords(ref, game: game, players: players);
+    Map<String, int> wordTally = gameService.getWordTally(players);
+
+    LinkedHashMap<String, int> sortedWordTallyMap = gameService.sortWordTally(wordTally);
 
     final double bannerHeight = 48.0;
     return Container(
@@ -160,7 +165,7 @@ class _ScoresListState extends ConsumerState<ScoresList> {
                 uid: uid,
                 height: constraints.maxHeight - bannerHeight,
                 width: constraints.maxWidth,
-                wordTally: wordTally,
+                wordTally: sortedWordTallyMap,
               )
             ],
           );

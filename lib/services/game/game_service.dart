@@ -37,7 +37,7 @@ class GameService {
     return game;
   }
 
-  Future<Game> createGame(WidgetRef ref, {required GameStatus gameStatus, List<AppUser>? players, required int gameTime, bool? persist = true}) async {
+  Future<Game> createGame(WidgetRef ref, {required GameStatus gameStatus, List<AppUser>? players, required int gameTime}) async {
     final firestoreDatabase = ref.read(databaseProvider);
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
@@ -62,10 +62,7 @@ class GameService {
       letters: _getShuffledLetters(),
     );
 
-    // Only save if persist is true (by default).  practice games are not saved
-    if (persist!) {
-      await firestoreDatabase.createGame(game: game);
-    }
+    await firestoreDatabase.createGame(game: game);
 
     return game;
   }
@@ -113,19 +110,71 @@ class GameService {
     firestoreDatabase.myPendingGamesStream;
   }
 
-  LinkedHashMap<String, int> processWords(
+  void processWords(
     WidgetRef ref, {
     required Game game,
     required List<Player> players,
   }) {
+    debugPrint('processWords: ${DateTime.now()}');
     // Establish if all players have finished and scores have been uploaded
     List<bool> playersFinished = _allPlayersFinished(game: game, players: players);
 
     // Update word tallys
-    Map<String, int> wordTally = _getWordTally(players);
+    Map<String, int> wordTally = getWordTally(players);
 
     // Sort the wordTallyMap
-    LinkedHashMap<String, int> wordTallyMap = _sortWordTally(wordTally);
+    //LinkedHashMap<String, int> wordTallyMap = sortWordTally(wordTally);
+
+    if (game.gameStatus != GameStatus.finished) {
+      // Now iterate through each players words and update
+      for (var player in players) {
+        if (game.playerUids[player.playerId] == PlayerStatus.finished) {
+          int playerScore = 0;
+          player.words!.forEach((String word, PlayerWord playerWord) {
+            int? count = wordTally[word];
+            if (count == 1) {
+              playerWord.gameWord.unique = true;
+              playerWord.gameWord.score = _getScore(word);
+            } else {
+              playerWord.gameWord.unique = false;
+              playerWord.gameWord.score = 0;
+            }
+            playerScore += playerWord.gameWord.score!;
+          });
+          player.score = playerScore;
+        }
+      }
+
+      if (game.practice == false) {
+        // If all players have finished (or players have declined/resigned)
+        if (!playersFinished.contains(false)) {
+          // Update game status to finished and set finished time
+          game.gameStatus = GameStatus.finished;
+        }
+
+        // Set the finished time for the last person to finish
+        game.finished = Timestamp.now();
+
+        // Save the Game and Players collection items
+        _saveGameAndPlayers(ref, game: game, players: players);
+      }
+    }
+  }
+
+  LinkedHashMap<String, int> _processWords(
+    WidgetRef ref, {
+    required Game game,
+    required List<Player> players,
+  }) {
+    debugPrint('processWords: ${DateTime.now()}');
+    // Establish if all players have finished and scores have been uploaded
+    List<bool> playersFinished = _allPlayersFinished(game: game, players: players);
+
+    // Update word tallys
+    Map<String, int> wordTally = getWordTally(players);
+
+    // Sort the wordTallyMap
+    LinkedHashMap<String, int> wordTallyMap = sortWordTally(wordTally);
 
     // If all players have finished....
     //if (!playersFinished.contains(false)) {
@@ -169,7 +218,7 @@ class GameService {
     return wordTallyMap;
   }
 
-  Map<String, int> _getWordTally(List<Player> players) {
+  Map<String, int> getWordTally(List<Player> players) {
     Map<String, int> wordTally = {};
     for (var player in players) {
       player.words!.forEach((String word, PlayerWord playerWord) {
@@ -187,7 +236,7 @@ class GameService {
   ///   1. Being unique
   ///   2. Word length
   ///   3. Alphabetical ordering
-  LinkedHashMap<String, int> _sortWordTally(Map<String, int> wordTally) {
+  LinkedHashMap<String, int> sortWordTally(Map<String, int> wordTally) {
     List<Map<String, int>> wordTallyList = [];
     LinkedHashMap<String, int> wordTallyMap = LinkedHashMap();
 

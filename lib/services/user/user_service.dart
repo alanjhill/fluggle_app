@@ -9,7 +9,6 @@ class UserService {
     final firestoreDatabase = ref.read(databaseProvider);
     AppUser appUser = AppUser(uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL);
     await firestoreDatabase.createAppUser(appUser: appUser);
-    return;
   }
 
   Future<void> updateUser(WidgetRef ref, {required User user}) async {
@@ -21,6 +20,5 @@ class UserService {
       photoURL: user.photoURL,
     );
     await firestoreDatabase.updateAppUser(appUser: appUser);
-    return;
   }
 }

@@ -13,7 +13,8 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="fluggle_app">
+        android:label="fluggle_app"
+        >
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

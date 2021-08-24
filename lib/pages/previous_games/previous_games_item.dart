@@ -54,7 +54,7 @@ class PreviousGamesItem extends ConsumerWidget {
                       _getHeadingText(game: game, players: players, uid: uid),
                       _buildPlayers(context, game: game, players: players, uid: uid),
                       _buildFooterText(context, game: game, players: players, uid: uid),
-                      //Text(game.gameId!),
+                      Text(game.gameId!),
                     ],
                   ),
                 ),

@@ -11,21 +11,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GameBoard extends ConsumerWidget {
+class GameBoard extends ConsumerStatefulWidget {
   final List<String> letters;
   final List<List<GridItem>> gridItems;
   Dictionary? dictionary;
+
   GameBoard({
     required this.letters,
     required this.gridItems,
     this.dictionary,
   });
 
+  @override
+  _GameBoardState createState() => _GameBoardState();
+}
+
+class _GameBoardState extends ConsumerState<GameBoard> {
   GlobalKey? gridKey = GlobalKey();
   GridItem? currentGridItem;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     print('kToolbarHeight: $kToolbarHeight');
     double gridSize = mediaQuery.size.width - kGameBoardPadding / 2;
@@ -138,8 +144,8 @@ class GameBoard extends ConsumerWidget {
   Widget _buildGameCubes(BuildContext context, int index) {
     return GameCube(
       rowCol: _getRowColFromIndex(index),
-      gridItems: gridItems,
-      letter: letters[index],
+      gridItems: widget.gridItems,
+      letter: widget.letters[index],
     );
   }
 
@@ -154,14 +160,16 @@ class GameBoard extends ConsumerWidget {
           HitTestTarget? target = hit.target;
           if (target is GridCellRenderObject) {
             RowCol rowCol = target.rowCol;
-            GridItem gridItem = gridItems[rowCol.row][rowCol.col];
-            if (gameStateNotifier.addSwipedGridItem(gridItem)) {
-              gridItem.swiped = true;
-              currentGridItem = gridItem;
-            } else {
-              currentGridItem = null;
-            }
-            gameStateNotifier.updateCurrentWord();
+            GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
+            setState(() {
+              if (gameStateNotifier.addSwipedGridItem(gridItem)) {
+                gridItem.swiped = true;
+                currentGridItem = gridItem;
+              } else {
+                currentGridItem = null;
+              }
+              gameStateNotifier.updateCurrentWord();
+            });
           }
         }
       }
@@ -171,9 +179,11 @@ class GameBoard extends ConsumerWidget {
   void _endSelectItem(WidgetRef ref, PointerEvent event) {
     final gameStateNotifier = ref.read(gameStateProvider.notifier);
     if (gameStateNotifier.state.gameStarted) {
-      currentGridItem = null;
-      gameStateNotifier.addWord(dictionary!);
-      gameStateNotifier.resetSwipedItems();
+      setState(() {
+        currentGridItem = null;
+        gameStateNotifier.addWord(widget.dictionary!);
+        gameStateNotifier.resetSwipedItems();
+      });
     }
   }
 }
