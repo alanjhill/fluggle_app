@@ -109,10 +109,10 @@ class FirestoreDatabase {
     }
   }
 
-  Stream<List<Player>> playersStream({required String gameId}) => _service.collectionStream<Player>(
+/*  Stream<List<Player>> playersStream({required String gameId}) => _service.collectionStream<Player>(
         path: FirestorePath.gamePlayers(gameId),
         builder: (data, documentId) => Player.fromMap(data!, documentId),
-      );
+      );*/
 
   Stream<List<Player>> gamePlayerStream({required String gameId, required bool includeSelf}) => _service.collectionStream<Player>(
         path: FirestorePath.gamePlayers(gameId),
@@ -157,9 +157,11 @@ class FirestoreDatabase {
       merge: true,
     );
 
-    batch.commit().whenComplete(() {
+/*    batch.commit().whenComplete(() {
       print('Complete');
-    });
+    });*/
+
+    await batch.commit();
 
     print('returning invitedFriend...');
     return friend;
@@ -190,7 +192,7 @@ class FirestoreDatabase {
   }) =>
       _service.getData<Player>(
         path: FirestorePath.gamePlayer(gameId, playerUid),
-        builder: (data, documentId) => Player.fromMap(data!, documentId),
+        builder: (data, documentId) => Player.fromMap(data, documentId),
       );
 
   Future<void> saveGamePlayer({required Game game, required Player player}) async {
@@ -219,15 +221,17 @@ class FirestoreDatabase {
       merge: true,
     );
 
-    batch.commit().whenComplete(() {
+/*    batch.commit().whenComplete(() {
       print('Complete');
-    });
+    });*/
 
-    return;
+    await batch.commit();
   }
 
   Future<void> saveGameAndPlayers({required Game game, required List<Player> players}) async {
+    print('>>> saveGameAndPlayers 1');
     WriteBatch batch = FirebaseFirestore.instance.batch();
+    print('>>> saveGameAndPlayers 2');
 
     await _service.setDataWithBatch(
       batch: batch,
@@ -235,6 +239,7 @@ class FirestoreDatabase {
       data: game.toMap(),
       merge: true,
     );
+    print('>>> saveGameAndPlayers 3');
 
     for (Player player in players) {
       await _service.setDataWithBatch(
@@ -244,15 +249,18 @@ class FirestoreDatabase {
         merge: true,
       );
     }
+    print('>>> saveGameAndPlayers 4');
 
-    batch.commit().whenComplete(() {
+/*    batch.commit().whenComplete(() {
       print('Complete');
-    });
+    });*/
 
-    return;
+    print('>>> saveGameAndPlayers 5');
+    print('>>> batch.commit()');
+    return await batch.commit();
   }
 
-  Future<void> createGame({required Game game}) async {
+  Future<void> createGame({required Game game, required List<Player> players}) async {
     String? gameId;
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -269,7 +277,7 @@ class FirestoreDatabase {
     game.gameId = gameId;
 
     // Set Players
-    for (var player in game.players) {
+    for (var player in players) {
       _service.createDataWithBatchAndId(
         batch: batch,
         path: FirestorePath.addPlayer(gameId),

@@ -82,14 +82,20 @@ class _GameBoardState extends ConsumerState<GameBoard> {
         ),
         onPointerDown: (PointerEvent event) {
           debugPrint('onPointerDown');
-          _selectItem(ref, event);
+          if (!gameStateNotifier.timerEnded) {
+            _selectItem(ref, event);
+          }
         },
         onPointerMove: (event) {
           debugPrint('onPointerMove');
-          _selectItem(ref, event);
+          if (!gameStateNotifier.timerEnded) {
+            _selectItem(ref, event);
+          }
         },
         onPointerUp: (PointerEvent event) {
-          _endSelectItem(ref, event);
+          if (!gameStateNotifier.timerEnded) {
+            _endSelectItem(ref, event);
+          }
         },
       ),
     );

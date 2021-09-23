@@ -1,3 +1,4 @@
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/widgets/empty_content.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
@@ -60,7 +61,8 @@ class PreviousGamesItem extends ConsumerWidget {
                 ),
               ),
               onTap: () {
-                previousGameOnTap(context, game: game);
+                GameArguments gameArgs = GameArguments(game: game, players: players);
+                previousGameOnTap(context, gameArguments: gameArgs);
               },
             ),
           ),
@@ -175,16 +177,17 @@ class PreviousGamesItem extends ConsumerWidget {
         }
       }
 
+      String points = myScore == 1 ? 'point' : 'points';
       if (game.gameStatus == GameStatus.finished) {
         if (myScore > highestScore) {
-          return Text('You won with $myScore points');
+          return Text('You won with $myScore $points');
         } else if (myScore == highestScore) {
-          return Text('You drew with $myScore points');
+          return Text('You drew with $myScore $points');
         } else {
-          return Text('You lost with $myScore points');
+          return Text('You lost with $myScore $points');
         }
       } else {
-        return Text('You scored $myScore points');
+        return Text('You scored $myScore $points');
       }
     } else {
       return const EmptyContent();

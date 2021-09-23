@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final friendsStreamProvider = StreamProvider.autoDispose<List<AppUserFriend>>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    final vm = FriendListViewModel(database: database);
+    final vm = FriendListViewModel(database: database!);
     return vm.userFriendsStream();
   },
 );

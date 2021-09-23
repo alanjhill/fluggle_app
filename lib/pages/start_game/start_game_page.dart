@@ -1,4 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:fluggle_app/models/game/player.dart';
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
@@ -22,11 +24,9 @@ class StartGamePage extends ConsumerStatefulWidget {
 }
 
 class _StartGamePageState extends ConsumerState<StartGamePage> {
-  final GameService gameService = GameService();
-
   List<AppUser>? players;
-  int _currentValue = 60;
   final List<int> _values = [60, 120, 180];
+  int _currentValue = 60;
   final List<bool> _selections = List.generate(3, (_) => false);
 
   @override
@@ -114,15 +114,28 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
   }
 
   void _createGame(BuildContext context, WidgetRef ref) async {
+    final gameService = ref.read(gameServiceProvider);
     // Create game and wait for other players to join...
-    debugPrint("Create Game");
     if (players!.isNotEmpty) {
-      Game game = await gameService.createGame(ref, gameStatus: GameStatus.created, players: players, gameTime: _currentValue);
+      List<Player> gamePlayers = gameService.createPlayersFromAppUsers(ref, appUsers: players!);
+      Map<String, PlayerStatus> playerUids = {};
+
+      for (var gamePlayer in gamePlayers) {
+        playerUids[gamePlayer.playerId] = PlayerStatus.invited;
+      }
+
+      Game game = await gameService.createGame(ref, gameStatus: GameStatus.created, players: gamePlayers, playerUids: playerUids, gameTime: _currentValue);
       debugPrint('game: $game');
-      Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: game);
+
+      GameArguments gameArgs = GameArguments(game: game, players: gamePlayers);
+      Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: gameArgs);
     } else {
-      Game game = gameService.createPracticeGame(ref, gameTime: _currentValue);
-      Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: game);
+      // Game
+      List<Player> players = [];
+      Game game = gameService.createPracticeGame(ref, players: players, gameTime: _currentValue);
+
+      // Game Page
+      Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: GameArguments(game: game, players: players));
     }
   }
 
@@ -198,7 +211,7 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
         color: Colors.transparent,
         border: Border.all(
           width: 1.0,
-          color: selected ? kFluggleLightColor : Colors.white,
+          color: selected ? Colors.white : kFluggleLightColor,
         ),
       ),
       child: SizedBox(
@@ -209,7 +222,7 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
           overflow: TextOverflow.clip,
           style: TextStyle(
             fontSize: 40,
-            color: selected ? kFluggleLightColor : Colors.white,
+            color: selected ? Colors.white : kFluggleLightColor,
           ),
           maxLines: 1,
         ),

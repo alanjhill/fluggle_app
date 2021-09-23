@@ -1,7 +1,8 @@
 import 'package:fluggle_app/models/user/friend.dart';
 import 'package:fluggle_app/top_level_providers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final friendsServiceProvider = Provider<FriendsService>((ref) => throw UnimplementedError());
 
 class FriendsService {
   void findFriendByEmail({required String email}) {}
@@ -14,7 +15,7 @@ class FriendsService {
     final friend = Friend(friendId: friendId, friendStatus: FriendStatus.invited);
 
     // Invite the friend with a status of requested
-    await firestoreDatabase.addFriend(inviterStatus: FriendStatus.requested, friend: friend);
+    await firestoreDatabase!.addFriend(inviterStatus: FriendStatus.requested, friend: friend);
 
     return friend;
   }

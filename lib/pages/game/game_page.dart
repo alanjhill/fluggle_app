@@ -24,35 +24,44 @@ import 'package:fluggle_app/widgets/countdown_timer.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/scheduler.dart';
 
 class GamePage extends ConsumerStatefulWidget {
-  final Game game;
-  GamePage({Key? key, required this.game}) : super(key: key);
+  final GameArguments gameArguments;
+  GamePage({Key? key, required this.gameArguments}) : super(key: key);
 
   @override
   _GamePageState createState() => _GamePageState();
 }
 
 class _GamePageState extends ConsumerState<GamePage> {
-  final GameService gameService = GameService();
   Dictionary? dictionary;
   List<String>? letters;
   List<List<GridItem>> gridItems = [];
   List<String> shuffledLetters = [];
   List<String> emptyLetters = [];
 
+  late final Game game;
+  late final List<Player> players;
+
   @override
   void initState() {
     super.initState();
+    game = widget.gameArguments.game;
+    players = widget.gameArguments.players;
+
+    final gameStateNotifier = ref.read(gameStateProvider.notifier);
+    gameStateNotifier.reset();
+
     letters = _getEmptyLetters();
-    _setupGame(widget.game);
+    _setupGame(game);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final gameStateNotifier = ref.read(gameStateProvider.notifier);
-    gameStateNotifier.reset();
+    //final gameStateNotifier = ref.read(gameStateProvider.notifier);
+    //gameStateNotifier.reset();
   }
 
   @override
@@ -96,44 +105,26 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   Future<void> _timerEnded(BuildContext context, WidgetRef ref) async {
-    debugPrint('timerEnded');
+    debugPrint('>>> _timerEnded');
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
+    final gameService = ref.read(gameServiceProvider);
 
-    final gameState = ref.read(gameStateProvider);
+    // Get this player
+    Player player = players.firstWhere((p) => p.playerId == user!.uid);
 
-    // If practice mode, we don't save anything, just redirect to the scores page, passing the game object
-    if (widget.game.practice == true) {
-      // Set the words for this player
-      Player player = widget.game.players[0];
-      player.words = gameState.addedWords;
-      widget.game.playerUids[player.playerId] = PlayerStatus.finished;
+    // This player has finished, save their data and update other finished players
+    await gameService.playerFinished(ref, game: game, player: player, uid: user!.uid);
 
-      Navigator.of(context).pop(null);
-      Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: widget.game);
-    } else {
-      // Real game, go to the scores page, passing the game object
-      final database = ref.read(databaseProvider);
+    // Pop this page off the stack
+    Navigator.of(context).pop(null);
 
-      // Get Player
-      Player player = await database.getGamePlayer(gameId: widget.game.gameId!, playerUid: user!.uid);
+    // Create the game arguments for passing to the Scores Page
+    GameArguments gameArgs = GameArguments(game: game, players: players);
 
-      // Set the words for this player
-      player.words = gameState.addedWords;
-
-      // Set the status of this player to finished
-      widget.game.playerUids[user.uid] = PlayerStatus.finished;
-
-      // Save the game status of this player
-      await gameService.saveGameAndPlayer(ref, game: widget.game, player: player);
-
-      // Save
-      gameService.processWords(ref, game: widget.game, players: widget.game.players);
-
-      // Go to scoreboard
-      Navigator.of(context).pop(null);
-      Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: widget.game);
-    }
+    // Go to the scores page
+    Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: gameArgs);
+    debugPrint('<<< _timerEnded');
   }
 
   void _confirmQuit(BuildContext context, WidgetRef ref) {
@@ -155,7 +146,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   String _getTitleText() {
-    if (widget.game.practice == true) {
+    if (game.practice == true) {
       return Strings.practice;
     } else {
       return Strings.playing;
@@ -179,9 +170,9 @@ class _GamePageState extends ConsumerState<GamePage> {
       actions: <Widget>[
         Center(
           child: CountdownTimer(
-            gameStarted: gameState.gameStarted,
-            gamePaused: gameState.gamePaused,
-            gameTime: widget.game.gameTime,
+            duration: game.gameTime,
+            timerStarted: gameState.gameStarted,
+            timerPaused: gameState.gamePaused,
             timerEndedCallback: () async {
               await _timerEnded(context, ref);
             },
@@ -218,7 +209,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
   void _setupGame(Game game) {
     debugPrint('setupGame');
-    shuffledLetters = widget.game.letters;
+    shuffledLetters = game.letters;
 
     /// Load the words for the specified language
     Language.forLanguageCode('en-GB').then((language) {
@@ -243,19 +234,16 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _pauseGame(BuildContext context, WidgetRef ref) {
-    //final gameStateNotifier = context.read(gameStateProvider.notifier);
-    final gameState = ref.read(gameStateProvider);
-    debugPrint('pauseGame');
-    //gameStateNotifier.toggleGamePaused();
+    final gameStateNotifier = ref.watch(gameStateProvider.notifier);
     setState(() {
-      gameState.gamePaused = !gameState.gamePaused;
+      gameStateNotifier.toggleGamePaused();
     });
     _displayPopup(context, ref);
   }
 
   void _displayPopup(BuildContext context, WidgetRef ref) {
-    final gameStateNotifier = ref.read(gameStateProvider.notifier);
     showGeneralDialog(
+      barrierDismissible: false,
       barrierLabel: 'x',
       context: context,
       transitionDuration: Duration(milliseconds: 300),
@@ -267,12 +255,13 @@ class _GamePageState extends ConsumerState<GamePage> {
               child: CustomRaisedButton(
                 child: Text('Resume'),
                 onPressed: () {
+                  final gameStateNotifier = ref.watch(gameStateProvider.notifier);
                   setState(
                     () {
-                      gameStateNotifier.toggleGamePaused();
-                      Navigator.pop(context);
+                      gameStateNotifier.toggleGamePaused(); //.gamePaused = false;
                     },
                   );
+                  Navigator.pop(context);
                 },
               ),
             ),
@@ -291,6 +280,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _quitGame(BuildContext context, WidgetRef ref) async {
+    final gameService = ref.read(gameServiceProvider);
     final gameState = ref.read(gameStateProvider);
     setState(() {
       gameState.gameStarted = false;
@@ -300,7 +290,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     final user = firebaseAuth.currentUser;
 
     // Save the game
-    await gameService.saveGame(ref, game: widget.game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
+    await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
 
     // Navigate to the Play Game Page
     Navigator.of(context).pushReplacementNamed(AppRoutes.playGamePage);
@@ -362,4 +352,10 @@ class _GamePageState extends ConsumerState<GamePage> {
       gridItems = localGridItems;
     });
   }
+}
+
+class GameArguments {
+  final Game game;
+  final List<Player> players;
+  GameArguments({required this.game, required this.players});
 }

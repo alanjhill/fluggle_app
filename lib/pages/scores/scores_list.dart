@@ -25,8 +25,6 @@ class ScoresList extends ConsumerStatefulWidget {
 }
 
 class _ScoresListState extends ConsumerState<ScoresList> {
-  GameService gameService = GameService();
-
   @override
   void initState() {
     super.initState();
@@ -134,9 +132,10 @@ class _ScoresListState extends ConsumerState<ScoresList> {
     required List<Player> players,
     required String uid,
   }) {
+    final gameService = ref.read(gameServiceProvider);
     // Process the scores/words
     //Map<String, int> wordTally = gameService.processWords(ref, game: game, players: players);
-    Map<String, int> wordTally = gameService.getWordTally(players);
+    Map<String, int> wordTally = gameService.getWordTally(game: game, players: players);
 
     LinkedHashMap<String, int> sortedWordTallyMap = gameService.sortWordTally(wordTally);
 
@@ -153,13 +152,11 @@ class _ScoresListState extends ConsumerState<ScoresList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               ScoresBanner(
-                context: context,
                 game: game,
                 players: players,
                 height: bannerHeight,
               ),
               ScoresData(
-                context: context,
                 game: game,
                 players: players,
                 uid: uid,

@@ -9,17 +9,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum WordStatus { empty, valid, invalid, duplicate }
 
+final gameStateProvider = StateNotifierProvider<GameStateNotifier, GameState>((ref) => GameStateNotifier());
+
 class GameState {
-  //List<String> letters = [];
-  //List<String> shuffledLetters = [];
-  //List<String> emptyLetters = [];
-  //List<List<GridItem>> gridItems = [];
   late List<GridItem> swipedGridItems;
   late LinkedHashMap<String, PlayerWord> addedWords;
   late String currentWord;
   late WordStatus currentWordStatus;
   late bool gameStarted;
   late bool gamePaused;
+  late bool timerEnded;
 
   void reset() {
     swipedGridItems = [];
@@ -28,6 +27,7 @@ class GameState {
     currentWordStatus = WordStatus.empty;
     gameStarted = false;
     gamePaused = false;
+    timerEnded = false;
   }
 }
 
@@ -47,6 +47,10 @@ class GameStateNotifier extends StateNotifier<GameState> {
     state = state;
     return added;
   }
+
+  LinkedHashMap<String, PlayerWord> get addedWords => state.addedWords;
+
+  bool get timerEnded => state.timerEnded;
 
   void addWord(Dictionary dictionary) {
     String word = "";
@@ -112,7 +116,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
 
   void toggleGamePaused() {
     state.gamePaused = !state.gamePaused;
-    //state = state;
+    state = state;
   }
 
   void reset() {
@@ -120,10 +124,13 @@ class GameStateNotifier extends StateNotifier<GameState> {
     //state = state;
   }
 
+  void endTimer() {
+    state.timerEnded = true;
+    state = state;
+  }
+
   @override
   void dispose() {
     super.dispose();
   }
 }
-
-final gameStateProvider = StateNotifierProvider<GameStateNotifier, GameState>((ref) => GameStateNotifier());

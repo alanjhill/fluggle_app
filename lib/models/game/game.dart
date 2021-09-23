@@ -13,8 +13,6 @@ class Game {
   final List<String> letters;
   final Map<String, PlayerStatus> playerUids;
   Timestamp? finished;
-  // Not persisted
-  List<Player> players = [];
 
   Game({
     this.gameId,
@@ -26,7 +24,6 @@ class Game {
     required this.letters,
     this.finished,
     required this.playerUids,
-    required this.players,
   });
 
   factory Game.fromMap(Map<String, dynamic>? map, String documentId) {
@@ -47,7 +44,6 @@ class Game {
         ),
         practice: false,
         playerUids: playerUids,
-        players: [],
         letters: List<String>.from(map['letters']));
   }
 
@@ -71,7 +67,7 @@ class Game {
 
   @override
   String toString() {
-    return 'Game{gameId: $gameId, creatorId: $creatorId, created: gameTime: $gameTime, $created, finished: $finished, gameStatus: $gameStatus, letters: $letters, playerUids: $playerUids, players: $players,}';
+    return 'Game{gameId: $gameId, creatorId: $creatorId, created: gameTime: $gameTime, $created, finished: $finished, gameStatus: $gameStatus, letters: $letters, playerUids: $playerUids}';
   }
 
   @override
@@ -86,8 +82,7 @@ class Game {
           finished == other.finished &&
           gameStatus == other.gameStatus &&
           letters == other.letters &&
-          playerUids == other.playerUids &&
-          players == other.players;
+          playerUids == other.playerUids;
   @override
-  int get hashCode => gameId.hashCode ^ creatorId.hashCode ^ gameTime.hashCode ^ created.hashCode ^ gameStatus.hashCode ^ letters.hashCode ^ playerUids.hashCode ^ players.hashCode;
+  int get hashCode => gameId.hashCode ^ creatorId.hashCode ^ gameTime.hashCode ^ created.hashCode ^ gameStatus.hashCode ^ letters.hashCode ^ playerUids.hashCode;
 }

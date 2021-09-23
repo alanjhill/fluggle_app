@@ -22,7 +22,7 @@ class GameViewModel {
 
   Stream<List<Game>> get myPreviousGamesStream => database.myPreviousGamesStream;
 
-  Stream<List<Player>> gamePlayersStream({required String gameId, bool includeSelf = false}) {
+  Stream<List<Player>> gamePlayersStream({required String gameId, required bool includeSelf}) {
     debugPrint('>>> gamePlayersStream >>>');
     Stream<List<Player>> playerStream = database.gamePlayerStream(gameId: gameId, includeSelf: includeSelf).map((List<Player> players) {
       return players;

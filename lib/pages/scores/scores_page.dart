@@ -1,13 +1,13 @@
-import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/strings.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/game_view_model.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/models/user/user_view_model.dart';
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/pages/scores/scores_list.dart';
-import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/top_level_providers.dart';
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,19 +15,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final gameStreamProvider = StreamProvider.autoDispose.family<Game, String>((ref, String gameId) {
   final firestoreDatabase = ref.watch(databaseProvider);
-  final vm = GameViewModel(database: firestoreDatabase);
+  final vm = GameViewModel(database: firestoreDatabase!);
   return vm.getGame(gameId: gameId);
 });
 
 final playerScoresStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
   final firestoreDatabase = ref.watch(databaseProvider);
-  final vm = GameViewModel(database: firestoreDatabase);
+  final vm = GameViewModel(database: firestoreDatabase!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
 final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
-  final vm = UserViewModel(database: firestoreDatabase);
+  final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
 });
 
@@ -37,10 +37,10 @@ final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((r
 class ScoresPage extends ConsumerWidget {
   static const String routeName = "/scores";
 
-  final Game game;
-  ScoresPage({required this.game});
-
-  final GameService gameService = GameService();
+/*  final Game game;
+  final List<Player> players;*/
+  final GameArguments gameArguments;
+  ScoresPage({required this.gameArguments});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,12 +49,13 @@ class ScoresPage extends ConsumerWidget {
     /// Get current user
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
+    final Game game = gameArguments.game;
+    final List<Player> players = gameArguments.players;
 
     if (game.practice == true) {
       // Single Player / practice
       final gameAsyncValue = AsyncValue.data(game);
       AppUser appUser = ref.watch(userStreamProvider(user.uid)).data?.value as AppUser;
-      List<Player>? players = game.players;
       players[0].user = appUser;
       final playerScoresAsyncValue = AsyncValue.data(players);
       return _buildScores(context, ref, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);

@@ -66,9 +66,9 @@ class AppTheme {
         elevation: 0.0,
         centerTitle: true,
         backwardsCompatibility: false,
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: kFluggleCanvasColor),
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: kFluggleCanvasColor, statusBarIconBrightness: Brightness.light),
         backgroundColor: kFluggleCanvasColor,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         textTheme: GoogleFonts.varelaRoundTextTheme(
           Theme.of(context).textTheme,
         ).apply(

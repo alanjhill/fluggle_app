@@ -2,23 +2,23 @@ import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ScoresBanner extends StatelessWidget {
+class ScoresBanner extends ConsumerWidget {
   ScoresBanner({
-    required this.context,
     required this.game,
     required this.players,
     required this.height,
   });
 
-  final GameService gameService = GameService();
-  final BuildContext context;
   final Game game;
   final List<Player> players;
   final double height;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameService = ref.read(gameServiceProvider);
+
     if (game.practice == true) {
       return Container();
     } else {

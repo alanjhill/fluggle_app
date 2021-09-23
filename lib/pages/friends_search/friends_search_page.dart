@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final userViewModelStreamProvider = StreamProvider.autoDispose.family<List<AppUser>, String>(
   (ref, email) {
     final database = ref.watch(databaseProvider);
-    final vm = UserViewModel(database: database);
+    final vm = UserViewModel(database: database!);
     return vm.findUsersByEmail(email: email);
   },
 );
@@ -21,7 +21,6 @@ final userViewModelStreamProvider = StreamProvider.autoDispose.family<List<AppUs
 
 // ignore: must_be_immutable
 class FriendsSearchPage extends ConsumerWidget {
-  final FriendsService friendsService = FriendsService();
   String email = '';
   final _emailController = TextEditingController();
 
@@ -75,6 +74,7 @@ class FriendsSearchPage extends ConsumerWidget {
   }
 
   void _addFriend(WidgetRef ref, {required String friendId}) async {
+    final friendsService = ref.read(friendsServiceProvider);
     await friendsService.addFriend(ref, friendId: friendId);
   }
 

@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
-  final vm = UserViewModel(database: firestoreDatabase);
+  final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
 });
 

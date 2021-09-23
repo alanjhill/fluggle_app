@@ -14,7 +14,7 @@ import 'package:pedantic/pedantic.dart';
 
 final appUserProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
-  return database.appUserStream(uid: uid);
+  return database!.appUserStream(uid: uid);
 });
 
 class AccountPage extends ConsumerWidget {

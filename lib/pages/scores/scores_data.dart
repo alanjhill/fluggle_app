@@ -9,7 +9,6 @@ import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 
 class ScoresData extends StatefulWidget {
   const ScoresData({
-    required this.context,
     required this.game,
     required this.players,
     required this.uid,
@@ -18,7 +17,6 @@ class ScoresData extends StatefulWidget {
     required this.width,
   });
 
-  final BuildContext context;
   final Game game;
   final List<Player> players;
   final String uid;

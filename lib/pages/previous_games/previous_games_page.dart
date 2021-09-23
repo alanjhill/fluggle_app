@@ -1,3 +1,4 @@
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
@@ -6,7 +7,6 @@ import 'package:fluggle_app/models/game/game_view_model.dart';
 import 'package:fluggle_app/models/game/player.dart';
 import 'package:fluggle_app/pages/previous_games/previous_games_list.dart';
 import 'package:fluggle_app/routing/app_router.dart';
-import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,22 +15,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    final vm = GameViewModel(database: database);
+    final vm = GameViewModel(database: database!);
     return vm.myPreviousGamesStream;
   },
 );
 
 final previousGamesPlayerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
-  final vm = GameViewModel(database: database);
+  final vm = GameViewModel(database: database!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
 /// <<< end Providers
 
 class PreviousGamesPage extends ConsumerWidget {
-  final GameService gameService = GameService();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
@@ -40,7 +38,7 @@ class PreviousGamesPage extends ConsumerWidget {
     //final bool isSignedIn = user != null;
     final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.previousGamesPage);
 
-    /// Previous Games Data
+    // Previous Games Data
     final previousGamesAsyncValue = ref.watch(gameViewModelStreamProvider);
 
     return Scaffold(
@@ -72,8 +70,9 @@ class PreviousGamesPage extends ConsumerWidget {
     );
   }
 
-  void _previousGameOnTap(BuildContext context, {required Game game}) {
+  void _previousGameOnTap(BuildContext context, {required GameArguments gameArguments}) {
     debugPrint('>>> _previousGameOnTap');
-    Navigator.of(context).pushNamed(AppRoutes.scoresPage, arguments: game);
+
+    Navigator.of(context).pushNamed(AppRoutes.scoresPage, arguments: gameArguments);
   }
 }

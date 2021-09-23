@@ -19,28 +19,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    final vm = GameViewModel(database: database);
+    final vm = GameViewModel(database: database!);
     return vm.myPendingGamesStream;
   },
 );
 
 final playerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
-  final vm = GameViewModel(database: database);
-  return vm.gamePlayersStream(gameId: gameId);
+  final vm = GameViewModel(database: database!);
+  return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
 final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
-  final vm = UserViewModel(database: firestoreDatabase);
+  final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
 });
 
 /// <<< end Providers
 
 class PlayGamePage extends ConsumerWidget {
-  final GameService gameService = GameService();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
@@ -142,6 +140,7 @@ class PlayGamePage extends ConsumerWidget {
   }
 
   void leftSwipeGame(WidgetRef ref, {required Game game, required String uid}) async {
+    final gameService = ref.read(gameServiceProvider);
     if (game.creatorId == uid) {
       await gameService.deleteGame(ref, game: game);
     } else {

@@ -39,8 +39,6 @@ class _EmailPasswordSignInPageState extends ConsumerState<EmailPasswordSignInPag
 
   EmailPasswordSignInModel get model => widget.model;
 
-  final UserService userService = UserService();
-
   @override
   void initState() {
     super.initState();
@@ -70,6 +68,8 @@ class _EmailPasswordSignInPageState extends ConsumerState<EmailPasswordSignInPag
   }
 
   Future<void> _submit(BuildContext context, WidgetRef ref) async {
+    final userService = ref.read(userServiceProvider);
+
     try {
       final bool success = await model.submit();
 

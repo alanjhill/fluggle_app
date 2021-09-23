@@ -1,4 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:fluggle_app/pages/game/game_page.dart';
+import 'package:fluggle_app/widgets/empty_content.dart';
 import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
@@ -20,8 +22,9 @@ class PlayGameItem extends ConsumerWidget {
     required this.leftSwipeGame,
   });
 
-  void _playGameButtonPressed(BuildContext context, {required Game game}) {
-    Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: game);
+  void _playGameButtonPressed(BuildContext context, {required Game game, required List<Player> players}) {
+    GameArguments gameArgs = GameArguments(game: game, players: players);
+    Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: gameArgs);
   }
 
   @override
@@ -49,7 +52,11 @@ class PlayGameItem extends ConsumerWidget {
             ),
           ),
           onTap: () {
-            _playGameButtonPressed(context, game: game);
+            List<Player> players = [];
+            playersAsyncValue.whenData((playersData) {
+              players.addAll(playersData);
+            });
+            _playGameButtonPressed(context, game: game, players: players);
           },
         ),
       ),
@@ -133,12 +140,17 @@ class PlayGameItem extends ConsumerWidget {
     return Column(
       children: <Widget>[
         ListItemsBuilder<Player>(
-          padding: EdgeInsets.symmetric(
-            vertical: 8.0,
-          ),
-          data: playerData,
-          itemBuilder: (context, player) => _buildPlayerItem(context, game: game, player: player),
-        ),
+            padding: EdgeInsets.symmetric(
+              vertical: 8.0,
+            ),
+            data: playerData,
+            itemBuilder: (context, player) {
+              if (player.playerId != uid) {
+                return _buildPlayerItem(context, game: game, player: player);
+              } else {
+                return Container();
+              }
+            }),
       ],
     );
   }

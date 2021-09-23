@@ -64,7 +64,7 @@ class AppRouter {
       case AppRoutes.gamePage:
         return pageTransition(
           context,
-          page: GamePage(game: args as Game),
+          page: GamePage(gameArguments: args as GameArguments),
         );
       case AppRoutes.friendsPage:
         return pageTransition(
@@ -89,7 +89,7 @@ class AppRouter {
       case AppRoutes.scoresPage:
         return pageTransition(
           context,
-          page: ScoresPage(game: args as Game),
+          page: ScoresPage(gameArguments: args as GameArguments),
         );
       case AppRoutes.previousGamesPage:
         return pageTransition(
