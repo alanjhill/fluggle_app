@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBottomPanel extends ConsumerStatefulWidget {
-  GameBottomPanel({required this.startButtonPressed, required this.pauseButtonPressed, required this.height});
+  const GameBottomPanel(
+      {Key? key,
+      required this.startButtonPressed,
+      required this.pauseButtonPressed,
+      required this.height})
+      : super(key: key);
   final Function startButtonPressed;
   final Function pauseButtonPressed;
   final double height;
@@ -30,14 +35,16 @@ class _GameBottomPanelState extends ConsumerState<GameBottomPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final gameState = ref.read(gameStateProvider);
+    final gameState = ref.watch(gameStateProvider);
     return Expanded(
-      child: Container(
+      child: SizedBox(
         height: widget.height,
         child: Center(
           child: ButtonTheme(
             child: CustomRaisedButton(
-              child: !gameState.gameStarted ? Text('Start') : Text('Pause'),
+              child: !gameState.gameStarted
+                  ? const Text('Start')
+                  : const Text('Pause'),
               onPressed: () => _buttonPressed(context, ref),
             ),
           ),

@@ -6,17 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FriendsList extends StatelessWidget {
-  FriendsList({Key? key, required this.data}) : super(key: key);
+  const FriendsList({Key? key, required this.data}) : super(key: key);
   final AsyncValue<List<AppUserFriend>> data;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SafeArea(
-        child: ListItemsBuilder<AppUserFriend>(
-          data: data,
-          itemBuilder: (context, appUserFriend) => FriendItem(appUserFriend: appUserFriend),
-        ),
+    return SafeArea(
+      child: ListItemsBuilder<AppUserFriend>(
+        data: data,
+        itemBuilder: (context, appUserFriend) =>
+            FriendItem(appUserFriend: appUserFriend),
       ),
     );
   }
@@ -30,5 +29,7 @@ class Record {
       : assert(map!['display_name'] != null),
         displayName = map!['display_name'];
 
-  Record.fromSnapshot(DocumentSnapshot? snapshot) : this.fromMap(snapshot!.data() as Map<String, dynamic>?, reference: snapshot.reference);
+  Record.fromSnapshot(DocumentSnapshot? snapshot)
+      : this.fromMap(snapshot!.data() as Map<String, dynamic>?,
+            reference: snapshot.reference);
 }

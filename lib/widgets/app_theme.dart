@@ -20,14 +20,14 @@ class AppTheme {
         displayColor: Colors.white,
         bodyColor: Colors.white,
       ),
-      accentTextTheme: GoogleFonts.varelaRoundTextTheme(
+/*      accentTextTheme: GoogleFonts.varelaRoundTextTheme(
         Theme.of(context).textTheme,
       ).apply(
         fontSizeFactor: 1.2,
         displayColor: Colors.white,
         bodyColor: Colors.white,
-      ),
-      dialogTheme: DialogTheme(
+      ),*/
+      dialogTheme: const DialogTheme(
         backgroundColor: kFluggleDarkColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
@@ -35,7 +35,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         color: kFluggleDarkColor,
         elevation: 3,
         margin: EdgeInsets.all(0.0),
@@ -46,7 +46,7 @@ class AppTheme {
           elevation: 2,
         ),
       ),
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(8.0),
@@ -58,27 +58,27 @@ class AppTheme {
           primary: kFluggleLightColor,
         ),
       ),
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: Colors.white,
         size: 36.0,
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0.0,
         centerTitle: true,
-        backwardsCompatibility: false,
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: kFluggleCanvasColor, statusBarIconBrightness: Brightness.light),
+        systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: kFluggleCanvasColor,
+            statusBarIconBrightness: Brightness.light),
         backgroundColor: kFluggleCanvasColor,
-        brightness: Brightness.dark,
-        textTheme: GoogleFonts.varelaRoundTextTheme(
+/*        textTheme: GoogleFonts.varelaRoundTextTheme(
           Theme.of(context).textTheme,
         ).apply(
           fontSizeFactor: 1.25,
           displayColor: Colors.white,
           bodyColor: Colors.white,
-        ),
+        ),*/
       ),
       canvasColor: kFluggleCanvasColor,
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         labelStyle: TextStyle(color: Colors.white),
         helperStyle: TextStyle(color: Colors.white),
         hintStyle: TextStyle(color: Colors.white),

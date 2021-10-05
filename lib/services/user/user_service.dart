@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/top_level_providers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userServiceProvider = Provider<UserService>((ref) => throw UnimplementedError());

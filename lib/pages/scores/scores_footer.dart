@@ -6,7 +6,8 @@ import 'package:fluggle_app/models/game/player_word.dart';
 import 'package:flutter/material.dart';
 
 class ScoresFooter extends StatelessWidget {
-  ScoresFooter({
+  const ScoresFooter({
+    Key? key,
     required this.context,
     required this.game,
     required this.player,
@@ -14,7 +15,7 @@ class ScoresFooter extends StatelessWidget {
     required this.width,
     required this.index,
     required this.scrollController,
-  });
+  }) : super(key: key);
 
   final BuildContext context;
   final Game game;
@@ -29,7 +30,7 @@ class ScoresFooter extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       child: _buildPlayersScoresFooterContent(
         height: height,
         width: width,
@@ -52,23 +53,27 @@ class ScoresFooter extends StatelessWidget {
 
     return Container(
       height: height,
-      margin: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
-      padding: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <Widget>[
-        _score(player: player),
-        ..._wordCounts(player: player),
-      ]),
+      margin: const EdgeInsets.only(
+          left: kScoresColumnPadding, right: kScoresColumnPadding),
+      padding: const EdgeInsets.only(
+          left: kScoresColumnPadding, right: kScoresColumnPadding),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            _score(player: player),
+            ..._wordCounts(player: player),
+          ]),
     );
   }
 
   Widget _score({required Player player}) {
     return Container(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Expanded(
+          const Expanded(
             child: Text(
               'Score',
               textAlign: TextAlign.left,
@@ -99,14 +104,14 @@ class ScoresFooter extends StatelessWidget {
 
     // Total Words
     rows.add(
-      Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(child: AutoSizeText('Total words:', maxLines: 1, textAlign: TextAlign.left)),
-            AutoSizeText('$wordCount', textAlign: TextAlign.right),
-          ],
-        ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const Expanded(
+              child: AutoSizeText('Total words:',
+                  maxLines: 1, textAlign: TextAlign.left)),
+          AutoSizeText('$wordCount', textAlign: TextAlign.right),
+        ],
       ),
     );
 
@@ -114,14 +119,14 @@ class ScoresFooter extends StatelessWidget {
     if (game.practice == false) {
       // Unique Words
       rows.add(
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Expanded(child: AutoSizeText('Unique words:', maxLines: 1, textAlign: TextAlign.left)),
-              AutoSizeText('$uniqueWordCount', textAlign: TextAlign.right),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            const Expanded(
+                child: AutoSizeText('Unique words:',
+                    maxLines: 1, textAlign: TextAlign.left)),
+            AutoSizeText('$uniqueWordCount', textAlign: TextAlign.right),
+          ],
         ),
       );
     }

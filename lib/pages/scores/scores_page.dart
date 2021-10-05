@@ -13,19 +13,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// >>> Providers
 
-final gameStreamProvider = StreamProvider.autoDispose.family<Game, String>((ref, String gameId) {
+final gameStreamProvider =
+    StreamProvider.autoDispose.family<Game, String>((ref, String gameId) {
   final firestoreDatabase = ref.watch(databaseProvider);
   final vm = GameViewModel(database: firestoreDatabase!);
   return vm.getGame(gameId: gameId);
 });
 
-final playerScoresStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
+final playerScoresStreamProvider = StreamProvider.autoDispose
+    .family<List<Player>, String>((ref, String gameId) {
   final firestoreDatabase = ref.watch(databaseProvider);
   final vm = GameViewModel(database: firestoreDatabase!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
-final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
+final userStreamProvider =
+    StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
   final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
@@ -40,7 +43,7 @@ class ScoresPage extends ConsumerWidget {
 /*  final Game game;
   final List<Player> players;*/
   final GameArguments gameArguments;
-  ScoresPage({required this.gameArguments});
+  const ScoresPage({Key? key, required this.gameArguments}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,25 +58,34 @@ class ScoresPage extends ConsumerWidget {
     if (game.practice == true) {
       // Single Player / practice
       final gameAsyncValue = AsyncValue.data(game);
-      AppUser appUser = ref.watch(userStreamProvider(user.uid)).data?.value as AppUser;
+      AppUser appUser =
+          ref.watch(userStreamProvider(user.uid)).data?.value as AppUser;
       players[0].user = appUser;
       final playerScoresAsyncValue = AsyncValue.data(players);
-      return _buildScores(context, ref, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
+      return _buildScores(context, ref,
+          gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
     } else {
       // Multi Player
       final String gameId = game.gameId!;
       debugPrint('>>> about to watch game');
       final gameAsyncValue = ref.watch(gameStreamProvider(gameId));
       debugPrint('>>> done watch game: $gameAsyncValue');
-      final playerScoresAsyncValue = ref.watch(playerScoresStreamProvider(gameId));
-      return _buildScores(context, ref, gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
+      final playerScoresAsyncValue =
+          ref.watch(playerScoresStreamProvider(gameId));
+      return _buildScores(context, ref,
+          gameData: gameAsyncValue, playerData: playerScoresAsyncValue);
     }
   }
 
-  Widget _buildScores(BuildContext context, WidgetRef ref, {required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData}) {
+  Widget _buildScores(BuildContext context, WidgetRef ref,
+      {required AsyncValue<Game> gameData,
+      required AsyncValue<List<Player>?> playerData}) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.scoresPage);
-    final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
+    final PreferredSizeWidget appBar =
+        CustomAppBar(titleText: Strings.scoresPage);
+    final remainingHeight = mediaQuery.size.height -
+        appBar.preferredSize.height -
+        mediaQuery.padding.top;
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
 
@@ -82,7 +94,7 @@ class ScoresPage extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -108,8 +120,12 @@ class ScoresPage extends ConsumerWidget {
   }
 
   // Scores List Widget
-  Widget _buildScoresListWidget(BuildContext context, {required double height, required AsyncValue<Game> gameData, required AsyncValue<List<Player>?> playerData, required String uid}) {
-    return Container(
+  Widget _buildScoresListWidget(BuildContext context,
+      {required double height,
+      required AsyncValue<Game> gameData,
+      required AsyncValue<List<Player>?> playerData,
+      required String uid}) {
+    return SizedBox(
       height: height,
       child: ScoresList(
         gameData: gameData,

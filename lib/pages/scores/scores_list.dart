@@ -10,11 +10,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ScoresList extends ConsumerStatefulWidget {
-  ScoresList({
+  const ScoresList({
+    Key? key,
     required this.gameData,
     required this.playerData,
     required this.uid,
-  });
+  }) : super(key: key);
 
   final AsyncValue<Game> gameData;
   final AsyncValue<List<Player>?> playerData;
@@ -43,7 +44,7 @@ class _ScoresListState extends ConsumerState<ScoresList> {
       data: (g) {
         game = g;
       },
-      loading: () => CircularProgressIndicator(),
+      loading: () => const CircularProgressIndicator(),
       error: (_, __) => {},
     );
 
@@ -80,7 +81,8 @@ class _ScoresListState extends ConsumerState<ScoresList> {
         },
         error: (_, __) => {});
 
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
       return Container(
         height: constraints.maxHeight,
         decoration: BoxDecoration(
@@ -96,34 +98,34 @@ class _ScoresListState extends ConsumerState<ScoresList> {
     });
   }
 
-  Widget _buildMultiPlayerScores(WidgetRef ref, {required Game game, required String uid}) {
+  Widget _buildMultiPlayerScores(WidgetRef ref,
+      {required Game game, required String uid}) {
     List<Player> players = [];
 
     return widget.playerData.when(
-        loading: () => CircularProgressIndicator(),
+        loading: () => const CircularProgressIndicator(),
         data: (playerList) {
           Iterator<Player> it = playerList!.iterator;
           while (it.moveNext()) {
             Player player = it.current;
             players.add(player);
           }
-          return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+          return LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
             return Container(
-              padding: EdgeInsets.all(0.0),
-              margin: EdgeInsets.all(0.0),
+              padding: const EdgeInsets.all(0.0),
+              margin: const EdgeInsets.all(0.0),
               height: constraints.maxHeight,
-              child: game != null
-                  ? _buildScores(
-                      ref,
-                      game: game,
-                      players: players,
-                      uid: uid,
-                    )
-                  : CircularProgressIndicator(),
+              child: _buildScores(
+                ref,
+                game: game,
+                players: players,
+                uid: uid,
+              ),
             );
           });
         },
-        error: (_, __) => Text('Error Loading data'));
+        error: (_, __) => const Text('Error Loading data'));
   }
 
   Widget _buildScores(
@@ -135,39 +137,35 @@ class _ScoresListState extends ConsumerState<ScoresList> {
     final gameService = ref.read(gameServiceProvider);
     // Process the scores/words
     //Map<String, int> wordTally = gameService.processWords(ref, game: game, players: players);
-    Map<String, int> wordTally = gameService.getWordTally(game: game, players: players);
+    Map<String, int> wordTally =
+        gameService.getWordTally(game: game, players: players);
 
-    LinkedHashMap<String, int> sortedWordTallyMap = gameService.sortWordTally(wordTally);
+    LinkedHashMap<String, int> sortedWordTallyMap =
+        gameService.sortWordTally(wordTally);
 
-    final double bannerHeight = 48.0;
-    return Container(
-      //color: kFluggleBoardBackgroundColor,
-      //color: Color
-      //padding: EdgeInsets.all(0.0),
-      //margin: EdgeInsets.all(0.0),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          debugPrint('_buildScores, constraints: ${constraints.toString()}');
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              ScoresBanner(
-                game: game,
-                players: players,
-                height: bannerHeight,
-              ),
-              ScoresData(
-                game: game,
-                players: players,
-                uid: uid,
-                height: constraints.maxHeight - bannerHeight,
-                width: constraints.maxWidth,
-                wordTally: sortedWordTallyMap,
-              )
-            ],
-          );
-        },
-      ),
+    const double bannerHeight = 48.0;
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        debugPrint('_buildScores, constraints: ${constraints.toString()}');
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            ScoresBanner(
+              game: game,
+              players: players,
+              height: bannerHeight,
+            ),
+            ScoresData(
+              game: game,
+              players: players,
+              uid: uid,
+              height: constraints.maxHeight - bannerHeight,
+              width: constraints.maxWidth,
+              wordTally: sortedWordTallyMap,
+            )
+          ],
+        );
+      },
     );
   }
 }

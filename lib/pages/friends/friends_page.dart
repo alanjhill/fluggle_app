@@ -21,11 +21,14 @@ final friendsStreamProvider = StreamProvider.autoDispose<List<AppUserFriend>>(
 /// <<< end Providers
 
 class FriendsPage extends ConsumerWidget {
+  const FriendsPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.friendsPage);
+    final PreferredSizeWidget appBar =
+        CustomAppBar(titleText: Strings.friendsPage);
     final friendsListAsyncValue = ref.watch(friendsStreamProvider);
 
     void _addFriend() {
@@ -34,14 +37,14 @@ class FriendsPage extends ConsumerWidget {
 
     final buttonsWidget = Container(
       //height: remainingHeight * 0.2,
-      padding: EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           //SizedBox(height: 8.0),
           CustomRaisedButton(
-            child: Text('Add Friend'),
+            child: const Text('Add Friend'),
             onPressed: () => _addFriend(),
           ),
           //SizedBox(height: 8.0),
@@ -54,7 +57,7 @@ class FriendsPage extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -64,7 +67,7 @@ class FriendsPage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   buttonsWidget,
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   FriendsList(data: friendsListAsyncValue),
                 ],
               ),

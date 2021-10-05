@@ -1,11 +1,16 @@
 import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:fluggle_app/widgets/letter_cube.dart';
 import 'package:fluggle_app/constants/constants.dart';
-import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:flutter/material.dart';
 
 class WordCubes extends StatefulWidget {
-  const WordCubes({Key? key, required this.word, required this.width, required this.spacing, this.wordStatus}) : super(key: key);
+  const WordCubes(
+      {Key? key,
+      required this.word,
+      required this.width,
+      required this.spacing,
+      this.wordStatus})
+      : super(key: key);
   final String word;
   final double width;
   final double spacing;
@@ -15,7 +20,8 @@ class WordCubes extends StatefulWidget {
   _WordCubesState createState() => _WordCubesState();
 }
 
-class _WordCubesState extends State<WordCubes> with SingleTickerProviderStateMixin {
+class _WordCubesState extends State<WordCubes>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   late Animation<Color?> _animationValid;
   late Animation<Color?> _animationDuplicate;
@@ -25,17 +31,19 @@ class _WordCubesState extends State<WordCubes> with SingleTickerProviderStateMix
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
     );
     _animationValid = ColorTween(
       begin: Colors.lightGreenAccent,
       end: kFluggleLetterColor,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    ).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
 
     _animationDuplicate = ColorTween(
       begin: Colors.red,
       end: kFluggleLetterColor,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    ).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
   }
 
   @override
@@ -90,7 +98,6 @@ class _WordCubesState extends State<WordCubes> with SingleTickerProviderStateMix
       var s = size * (1 - _animationController.value);
       return s;
     } else {
-      var s = size;
       return size;
     }
   }

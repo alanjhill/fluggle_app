@@ -10,13 +10,16 @@ import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
+final userStreamProvider =
+    StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
   final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
 });
 
 class HomePage extends ConsumerWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final firebaseAuth = ref.read(firebaseAuthProvider);
@@ -34,49 +37,56 @@ class HomePage extends ConsumerWidget {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.all(kPagePadding),
+              padding: const EdgeInsets.all(kPagePadding),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: WordCubes(word: 'FLUGGLE', width: MediaQuery.of(context).size.width - 32, spacing: 1.0),
+                    child: WordCubes(
+                        word: 'FLUGGLE',
+                        width: MediaQuery.of(context).size.width - 32,
+                        spacing: 1.0),
                   ),
-                  SizedBox(height: 16.0),
-                  Text(
+                  const SizedBox(height: 16.0),
+                  const Text(
                     'A BOGGLE like word game\nwritten using Flutter',
                     style: TextStyle(),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   CustomRaisedButton(
-                    child: Text('Play'),
+                    child: const Text('Play'),
                     onPressed: isSignedIn ? () => playGame(context) : null,
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   CustomRaisedButton(
-                    child: Text('Friends'),
-                    onPressed: isSignedIn && !isAnonymous ? () => friendsList(context) : null,
+                    child: const Text('Friends'),
+                    onPressed: isSignedIn && !isAnonymous
+                        ? () => friendsList(context)
+                        : null,
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   CustomRaisedButton(
-                    child: Text('Previous Games'),
-                    onPressed: isSignedIn && !isAnonymous ? () => previousGames(context) : null,
+                    child: const Text('Previous Games'),
+                    onPressed: isSignedIn && !isAnonymous
+                        ? () => previousGames(context)
+                        : null,
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   !isSignedIn
                       ? CustomRaisedButton(
-                          child: Text('Sign In'),
+                          child: const Text('Sign In'),
                           onPressed: () => signIn(context),
                         )
                       : CustomRaisedButton(
-                          child: Text(Strings.accountPage),
+                          child: const Text(Strings.accountPage),
                           onPressed: () => accountPage(context),
                         ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   CustomRaisedButton(
-                    child: Text('Help'),
+                    child: const Text('Help'),
                     onPressed: () => help(context),
                   ),
 /*                SizedBox(height: 8.0),
@@ -123,7 +133,8 @@ class HomePage extends ConsumerWidget {
   }
 
   Future<void> onboardingIncomplete(BuildContext context, WidgetRef ref) async {
-    final OnboardingViewModel onboardingViewModel = ref.read(onboardingViewModelProvider.notifier);
+    final OnboardingViewModel onboardingViewModel =
+        ref.read(onboardingViewModelProvider.notifier);
     await onboardingViewModel.setCompleteOnboardingFalse();
   }
 }

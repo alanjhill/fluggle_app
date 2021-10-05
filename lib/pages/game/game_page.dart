@@ -24,11 +24,10 @@ import 'package:fluggle_app/widgets/countdown_timer.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/scheduler.dart';
 
 class GamePage extends ConsumerStatefulWidget {
   final GameArguments gameArguments;
-  GamePage({Key? key, required this.gameArguments}) : super(key: key);
+  const GamePage({Key? key, required this.gameArguments}) : super(key: key);
 
   @override
   _GamePageState createState() => _GamePageState();
@@ -73,7 +72,8 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     final appBarHeight = appBar.preferredSize.height;
     final gameBoardHeight = screenWidth - kGameBoardPadding;
-    final remainingHeight = screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
+    final remainingHeight =
+        screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
     final topPanelHeight = remainingHeight / 3 * 2;
 
     // Top Panel for entered words, number of words, timer etc
@@ -114,7 +114,8 @@ class _GamePageState extends ConsumerState<GamePage> {
     Player player = players.firstWhere((p) => p.playerId == user!.uid);
 
     // This player has finished, save their data and update other finished players
-    await gameService.playerFinished(ref, game: game, player: player, uid: user!.uid);
+    await gameService.playerFinished(ref,
+        game: game, player: player, uid: user!.uid);
 
     // Pop this page off the stack
     Navigator.of(context).pop(null);
@@ -153,11 +154,12 @@ class _GamePageState extends ConsumerState<GamePage> {
     }
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref, Function quitGame) {
-    final gameState = ref.read(gameStateProvider);
+  PreferredSizeWidget _buildAppBar(
+      BuildContext context, WidgetRef ref, Function quitGame) {
+    final gameState = ref.watch(gameStateProvider);
     return CustomAppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
         onPressed: () {
           if (gameState.gameStarted) {
             _showQuitGameDialog(context, ref);
@@ -183,14 +185,14 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   Widget _buildGameTopPanel(double topPanelHeight) {
-    return Container(
+    return SizedBox(
       height: topPanelHeight,
-      child: GameTopPanel(),
+      child: const GameTopPanel(),
     );
   }
 
   Widget _buildGameBoard(double height) {
-    return Container(
+    return SizedBox(
         height: height,
         child: GameBoard(
           dictionary: dictionary,
@@ -246,24 +248,22 @@ class _GamePageState extends ConsumerState<GamePage> {
       barrierDismissible: false,
       barrierLabel: 'x',
       context: context,
-      transitionDuration: Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return Container(
-          child: Center(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: CustomRaisedButton(
-                child: Text('Resume'),
-                onPressed: () {
-                  final gameStateNotifier = ref.watch(gameStateProvider.notifier);
-                  setState(
-                    () {
-                      gameStateNotifier.toggleGamePaused(); //.gamePaused = false;
-                    },
-                  );
-                  Navigator.pop(context);
-                },
-              ),
+        return Center(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: CustomRaisedButton(
+              child: const Text('Resume'),
+              onPressed: () {
+                final gameStateNotifier = ref.watch(gameStateProvider.notifier);
+                setState(
+                  () {
+                    gameStateNotifier.toggleGamePaused(); //.gamePaused = false;
+                  },
+                );
+                Navigator.pop(context);
+              },
             ),
           ),
         );
@@ -272,9 +272,14 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
-  Widget _buildSlideTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  Widget _buildSlideTransition(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
     return SlideTransition(
-      position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(animation),
+      position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
+          .animate(animation),
       child: child,
     );
   }
@@ -290,7 +295,8 @@ class _GamePageState extends ConsumerState<GamePage> {
     final user = firebaseAuth.currentUser;
 
     // Save the game
-    await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
+    await gameService.saveGame(ref,
+        game: game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
 
     // Navigate to the Play Game Page
     Navigator.of(context).pushReplacementNamed(AppRoutes.playGamePage);

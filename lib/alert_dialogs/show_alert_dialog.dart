@@ -11,8 +11,8 @@ Future<bool?> showAlertDialog({
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        contentTextStyle: TextStyle(color: Colors.white),
-        title: Text(title, style: TextStyle(color: Colors.white)),
+        contentTextStyle: const TextStyle(color: Colors.white),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
         content: Text(content),
         actions: <Widget>[
           if (cancelActionText != null)

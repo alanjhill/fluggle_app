@@ -1,7 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
@@ -10,8 +8,12 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   final Widget? leading;
   final List<Widget> actions;
 
-  CustomAppBar({Key? key, required this.titleText, this.leading, this.actions = const []})
-      : preferredSize = Size.fromHeight(80.0),
+  CustomAppBar(
+      {Key? key,
+      required this.titleText,
+      this.leading,
+      this.actions = const []})
+      : preferredSize = const Size.fromHeight(80.0),
         super(key: key);
 
   @override

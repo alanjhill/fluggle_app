@@ -7,7 +7,7 @@ class ScoresItem extends StatefulWidget {
   final PlayerWord playerWord;
   final bool switched;
 
-  ScoresItem({required this.playerWord, this.switched = false});
+  const ScoresItem({Key? key, required this.playerWord, this.switched = false}) : super(key: key);
 
   @override
   _ScoresItemState createState() => _ScoresItemState();
@@ -17,8 +17,8 @@ class _ScoresItemState extends State<ScoresItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 2.0, right: 2.0),
-      padding: EdgeInsets.only(left: 2.0, right: 2.0),
+      margin: const EdgeInsets.only(left: 2.0, right: 2.0),
+      padding: const EdgeInsets.only(left: 2.0, right: 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -62,7 +62,7 @@ class _ScoresItemState extends State<ScoresItem> {
         playerWord.gameWord.word,
         wrapWords: false,
         textAlign: textAlign,
-        style: TextStyle(
+        style: const TextStyle(
           fontWeight: FontWeight.bold,
           color: kFluggleLightColor,
         ),
@@ -96,7 +96,7 @@ class _ScoresItemState extends State<ScoresItem> {
       return Text(
         '${widget.playerWord.gameWord.score}',
         textAlign: textAlign,
-        style: TextStyle(
+        style: const TextStyle(
           color: kFluggleLightColor,
           fontWeight: FontWeight.bold,
         ),

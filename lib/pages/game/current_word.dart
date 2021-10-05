@@ -1,7 +1,6 @@
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/models/game/game_state.dart';
 import 'package:fluggle_app/models/game_board/grid_item.dart';
-import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/widgets/word_cubes.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +9,12 @@ class CurrentWord extends StatelessWidget {
   final String? currentWord;
   final WordStatus currentWordStatus;
 
-  CurrentWord({this.swipedGridItems = const [], this.currentWord, required this.currentWordStatus});
+  const CurrentWord(
+      {Key? key,
+      this.swipedGridItems = const [],
+      this.currentWord,
+      required this.currentWordStatus})
+      : super(key: key);
 
   String _getWord() {
     String? word;
@@ -32,13 +36,18 @@ class CurrentWord extends StatelessWidget {
     debugPrint('screen size: ${mediaQuery.size}');
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        final width = (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
+        final width =
+            (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Column(
               children: [
-                WordCubes(word: _getWord(), width: width, spacing: kCurrentWordCubeSpacing, wordStatus: currentWordStatus),
+                WordCubes(
+                    word: _getWord(),
+                    width: width,
+                    spacing: kCurrentWordCubeSpacing,
+                    wordStatus: currentWordStatus),
                 //Text('$currentWordStatus'),
                 //WordFeedback(word: _getWord(), width: width, spacing: kCurrentWordCubeSpacing),
               ],

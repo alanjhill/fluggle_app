@@ -9,13 +9,14 @@ import 'package:fluggle_app/pages/scores/scroll_utils.dart';
 
 class ScoresData extends StatefulWidget {
   const ScoresData({
+    Key? key,
     required this.game,
     required this.players,
     required this.uid,
     required this.wordTally,
     required this.height,
     required this.width,
-  });
+  }) : super(key: key);
 
   final Game game;
   final List<Player> players;
@@ -36,7 +37,8 @@ class _ScoresDataState extends State<ScoresData> {
   late ScrollController _firstColumnController;
   late ScrollController _otherColumnController;
 
-  static final LinkedScrollControllerGroup? _verticalControllersGroup = LinkedScrollControllerGroup();
+  static final LinkedScrollControllerGroup? _verticalControllersGroup =
+      LinkedScrollControllerGroup();
   static List<ScrollController> _verticalScrollControllers = [];
 
   @override
@@ -64,7 +66,8 @@ class _ScoresDataState extends State<ScoresData> {
 
   @override
   Widget build(BuildContext context) {
-    int thisPlayerIndex = widget.players.indexWhere((player) => widget.uid == player.playerId);
+    int thisPlayerIndex =
+        widget.players.indexWhere((player) => widget.uid == player.playerId);
     Player thisPlayer = widget.players.elementAt(thisPlayerIndex);
 
     List<Player> otherPlayers = [];
@@ -77,8 +80,9 @@ class _ScoresDataState extends State<ScoresData> {
     }
 
     // For single player practice, scores is full width, otherwise, half width
-    final scoresWidgetWidth = otherPlayers.isEmpty ? widget.width : widget.width / 2;
-    return Container(
+    final scoresWidgetWidth =
+        otherPlayers.isEmpty ? widget.width : widget.width / 2;
+    return SizedBox(
         height: widget.height,
         width: widget.width,
         child: Row(children: <Widget>[
@@ -114,7 +118,7 @@ class _ScoresDataState extends State<ScoresData> {
             ),
           ]),
           otherPlayers.isNotEmpty
-              ? Container(
+              ? SizedBox(
                   height: widget.height,
                   width: widget.width / 2,
                   child: NotificationListener<ScrollEndNotification>(
@@ -140,9 +144,11 @@ class _ScoresDataState extends State<ScoresData> {
                                 game: widget.game,
                                 player: otherPlayers[index],
                                 wordTally: widget.wordTally,
-                                height: widget.height - headerHeight - footerHeight,
+                                height:
+                                    widget.height - headerHeight - footerHeight,
                                 width: scoresWidgetWidth,
-                                verticalScrollController: _verticalScrollControllers[index + 1],
+                                verticalScrollController:
+                                    _verticalScrollControllers[index + 1],
                                 index: index,
                                 first: false,
                               ),

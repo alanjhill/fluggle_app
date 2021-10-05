@@ -1,6 +1,5 @@
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timer_controller/timer_controller.dart';
 
 class CountdownTimer extends StatefulWidget {
@@ -9,7 +8,13 @@ class CountdownTimer extends StatefulWidget {
   final bool timerPaused;
   final Function? timerEndedCallback;
 
-  CountdownTimer({required this.duration, required this.timerStarted, required this.timerPaused, this.timerEndedCallback});
+  const CountdownTimer(
+      {Key? key,
+      required this.duration,
+      required this.timerStarted,
+      required this.timerPaused,
+      this.timerEndedCallback})
+      : super(key: key);
 
   @override
   _CountdownTimerState createState() => _CountdownTimerState();
@@ -52,7 +57,8 @@ class _CountdownTimerState extends State<CountdownTimer> {
   Widget build(BuildContext context) {
     return TimerControllerListener(
       controller: _controller,
-      listenWhen: (previousValue, currentValue) => previousValue.status != currentValue.status,
+      listenWhen: (previousValue, currentValue) =>
+          previousValue.status != currentValue.status,
       listener: (context, timerValue) {
         debugPrint('Remaining: ${timerValue.remaining}');
         if (timerValue.remaining == 0) {

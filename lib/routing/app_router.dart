@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/pages/account/account_page.dart';
 import 'package:fluggle_app/pages/friends/friends_page.dart';
 import 'package:fluggle_app/pages/friends_search/friends_search_page.dart';
@@ -32,7 +31,8 @@ class AppRoutes {
 }
 
 class AppRouter {
-  static Route<dynamic>? onGenerateRoute(BuildContext context, RouteSettings settings, FirebaseAuth auth) {
+  static Route<dynamic>? onGenerateRoute(
+      BuildContext context, RouteSettings settings, FirebaseAuth auth) {
     final args = settings.arguments;
     debugPrint('args: $args');
     switch (settings.name) {
@@ -54,12 +54,12 @@ class AppRouter {
       case AppRoutes.signInPage:
         return pageTransition(
           context,
-          page: SignInPage(),
+          page: const SignInPage(),
         );
       case AppRoutes.homePage:
         return pageTransition(
           context,
-          page: HomePage(),
+          page: const HomePage(),
         );
       case AppRoutes.gamePage:
         return pageTransition(
@@ -69,7 +69,7 @@ class AppRouter {
       case AppRoutes.friendsPage:
         return pageTransition(
           context,
-          page: FriendsPage(),
+          page: const FriendsPage(),
         );
       case AppRoutes.friendsSearchPage:
         return pageTransition(
@@ -79,7 +79,7 @@ class AppRouter {
       case AppRoutes.playGamePage:
         return pageTransition(
           context,
-          page: PlayGamePage(),
+          page: const PlayGamePage(),
         );
       case AppRoutes.startGamePage:
         return pageTransition(
@@ -94,12 +94,12 @@ class AppRouter {
       case AppRoutes.previousGamesPage:
         return pageTransition(
           context,
-          page: PreviousGamesPage(),
+          page: const PreviousGamesPage(),
         );
       case AppRoutes.accountPage:
         return pageTransition(
           context,
-          page: AccountPage(),
+          page: const AccountPage(),
         );
       case AppRoutes.helpPage:
         return pageTransition(

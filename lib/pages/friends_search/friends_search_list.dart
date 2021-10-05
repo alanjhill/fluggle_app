@@ -5,7 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FriendsSearchList extends StatelessWidget {
-  FriendsSearchList({Key? key, required this.data, required this.addFriend}) : super(key: key);
+  const FriendsSearchList(
+      {Key? key, required this.data, required this.addFriend})
+      : super(key: key);
 
   final Function addFriend;
   final AsyncValue<List<AppUser>> data;

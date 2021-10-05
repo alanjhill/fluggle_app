@@ -6,7 +6,9 @@ class SwipeLines extends StatefulWidget {
   final List<GridItem> swipedGridItems;
   final double gridSize;
 
-  const SwipeLines({Key? key, this.swipedGridItems = const [], this.gridSize = 0}) : super(key: key);
+  const SwipeLines(
+      {Key? key, this.swipedGridItems = const [], this.gridSize = 0})
+      : super(key: key);
 
   @override
   createState() => _SwipeLinesState();
@@ -23,18 +25,27 @@ class _SwipeLinesState extends State<SwipeLines> {
 
     if (widget.swipedGridItems.length > 1) {
       for (var swipedGridItem in widget.swipedGridItems) {
-        double offsetX = (swipedGridItem.col * 2 + 1) * ((widget.gridSize - (kGameBoardPadding / 2) - kFluggleBoardBorderWidth * 2) / 8);
-        double offsetY = (swipedGridItem.row * 2 + 1) * ((widget.gridSize - (kGameBoardPadding / 2) - kFluggleBoardBorderWidth * 2) / 8);
+        double offsetX = (swipedGridItem.col * 2 + 1) *
+            ((widget.gridSize -
+                    (kGameBoardPadding / 2) -
+                    kFluggleBoardBorderWidth * 2) /
+                8);
+        double offsetY = (swipedGridItem.row * 2 + 1) *
+            ((widget.gridSize -
+                    (kGameBoardPadding / 2) -
+                    kFluggleBoardBorderWidth * 2) /
+                8);
         offsets.add(Offset(offsetX, offsetY));
       }
     }
 
     for (int i = 0; i < offsets.length - 1; i++) {
-      LinePainter linePainter = LinePainter(start: offsets[i], end: offsets[i + 1]);
+      LinePainter linePainter =
+          LinePainter(start: offsets[i], end: offsets[i + 1]);
       linePainters.add(
         AnimatedContainer(
           child: CustomPaint(size: Size.infinite, painter: linePainter),
-          duration: Duration(milliseconds: 5000),
+          duration: const Duration(milliseconds: 5000),
           curve: Curves.easeIn,
         ),
       );

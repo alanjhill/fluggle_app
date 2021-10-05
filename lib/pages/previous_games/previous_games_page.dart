@@ -20,7 +20,8 @@ final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
   },
 );
 
-final previousGamesPlayerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
+final previousGamesPlayerStreamProvider = StreamProvider.autoDispose
+    .family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
   final vm = GameViewModel(database: database!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
@@ -29,6 +30,8 @@ final previousGamesPlayerStreamProvider = StreamProvider.autoDispose.family<List
 /// <<< end Providers
 
 class PreviousGamesPage extends ConsumerWidget {
+  const PreviousGamesPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
@@ -36,7 +39,8 @@ class PreviousGamesPage extends ConsumerWidget {
     //final firebaseAuth = context.read(firebaseAuthProvider);
     //final user = firebaseAuth.currentUser;
     //final bool isSignedIn = user != null;
-    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.previousGamesPage);
+    final PreferredSizeWidget appBar =
+        CustomAppBar(titleText: Strings.previousGamesPage);
 
     // Previous Games Data
     final previousGamesAsyncValue = ref.watch(gameViewModelStreamProvider);
@@ -47,8 +51,9 @@ class PreviousGamesPage extends ConsumerWidget {
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.only(top: kPagePadding, left: kPagePadding, right: kPagePadding),
+            physics: const ClampingScrollPhysics(),
+            padding: const EdgeInsets.only(
+                top: kPagePadding, left: kPagePadding, right: kPagePadding),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -70,9 +75,11 @@ class PreviousGamesPage extends ConsumerWidget {
     );
   }
 
-  void _previousGameOnTap(BuildContext context, {required GameArguments gameArguments}) {
+  void _previousGameOnTap(BuildContext context,
+      {required GameArguments gameArguments}) {
     debugPrint('>>> _previousGameOnTap');
 
-    Navigator.of(context).pushNamed(AppRoutes.scoresPage, arguments: gameArguments);
+    Navigator.of(context)
+        .pushNamed(AppRoutes.scoresPage, arguments: gameArguments);
   }
 }

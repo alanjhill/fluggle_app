@@ -24,13 +24,15 @@ final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
   },
 );
 
-final playerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
+final playerStreamProvider = StreamProvider.autoDispose
+    .family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
   final vm = GameViewModel(database: database!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
-final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
+final userStreamProvider =
+    StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
   final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
@@ -39,13 +41,15 @@ final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((r
 /// <<< end Providers
 
 class PlayGamePage extends ConsumerWidget {
+  const PlayGamePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final PreferredSizeWidget appBar = CustomAppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
         onPressed: () {
           Navigator.of(context).pushNamed(AppRoutes.homePage);
         },
@@ -64,22 +68,23 @@ class PlayGamePage extends ConsumerWidget {
 
     final buttonsWidget = Container(
       //height: remainingHeight * 0.2,
-      padding: EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           //SizedBox(height: 8.0),
           CustomRaisedButton(
-            child: Text(Strings.playFriend),
-            onPressed: isSignedIn && !isAnonymous ? () => playFriend(context) : null,
+            child: const Text(Strings.playFriend),
+            onPressed:
+                isSignedIn && !isAnonymous ? () => playFriend(context) : null,
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           CustomRaisedButton(
-            child: Text(Strings.practice),
+            child: const Text(Strings.practice),
             onPressed: isSignedIn ? () => practice(context) : null,
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
         ],
       ),
     );
@@ -88,15 +93,12 @@ class PlayGamePage extends ConsumerWidget {
     final playGamesAsyncValue = ref.watch(gameViewModelStreamProvider);
 
     Widget _buildPlayGameListWidget(BuildContext context) {
-      return Container(
-        //padding: EdgeInsets.only(top: 8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            PlayGameList(data: playGamesAsyncValue, leftSwipeGame: leftSwipeGame),
-          ],
-        ),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PlayGameList(data: playGamesAsyncValue, leftSwipeGame: leftSwipeGame),
+        ],
       );
     }
 
@@ -105,7 +107,8 @@ class PlayGamePage extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: kPagePadding, left: kPagePadding, right: kPagePadding),
+            padding: const EdgeInsets.only(
+                top: kPagePadding, left: kPagePadding, right: kPagePadding),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -116,7 +119,7 @@ class PlayGamePage extends ConsumerWidget {
                 children: <Widget>[
                   buttonsWidget,
                   if (isSignedIn) _buildPlayGameListWidget(context),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                 ],
               ),
             ),
@@ -139,12 +142,14 @@ class PlayGamePage extends ConsumerWidget {
     );
   }
 
-  void leftSwipeGame(WidgetRef ref, {required Game game, required String uid}) async {
+  void leftSwipeGame(WidgetRef ref,
+      {required Game game, required String uid}) async {
     final gameService = ref.read(gameServiceProvider);
     if (game.creatorId == uid) {
       await gameService.deleteGame(ref, game: game);
     } else {
-      await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.declined, uid: uid);
+      await gameService.saveGame(ref,
+          game: game, playerStatus: PlayerStatus.declined, uid: uid);
     }
   }
 }

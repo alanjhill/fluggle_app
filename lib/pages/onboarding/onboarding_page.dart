@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingPage extends ConsumerWidget {
+  const OnboardingPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -16,20 +18,26 @@ class OnboardingPage extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: WordCubes(word: 'FLUGGLE', width: MediaQuery.of(context).size.width - 32, spacing: 1.0),
+              child: WordCubes(
+                  word: 'FLUGGLE',
+                  width: MediaQuery.of(context).size.width - 32,
+                  spacing: 1.0),
             ),
-            SizedBox(height: 16.0),
-            Text(
+            const SizedBox(height: 16.0),
+            const Text(
               'A BOGGLE like word game\nwritten using Flutter',
               style: TextStyle(),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             CustomRaisedButton(
               onPressed: () => onGetStarted(ref),
               child: Text(
                 'Get Started',
-                style: Theme.of(context).textTheme.headline5!.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline5!
+                    .copyWith(color: Colors.white),
               ),
             ),
           ],
@@ -39,7 +47,8 @@ class OnboardingPage extends ConsumerWidget {
   }
 
   Future<void> onGetStarted(WidgetRef ref) async {
-    final OnboardingViewModel onboardingViewModel = ref.read(onboardingViewModelProvider.notifier);
+    final OnboardingViewModel onboardingViewModel =
+        ref.read(onboardingViewModelProvider.notifier);
     await onboardingViewModel.completeOnboarding();
   }
 }

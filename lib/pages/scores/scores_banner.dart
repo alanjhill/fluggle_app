@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ScoresBanner extends ConsumerWidget {
-  ScoresBanner({
+  const ScoresBanner({
+    Key? key,
     required this.game,
     required this.players,
     required this.height,
-  });
+  }) : super(key: key);
 
   final Game game;
   final List<Player> players;
@@ -40,17 +41,23 @@ class ScoresBanner extends ConsumerWidget {
       }
 
       if (game.gameStatus != GameStatus.finished) {
-        return Text('Game in progress', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
+        return const Text('Game in progress',
+            textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
       } else {}
       if (winningPlayers.length == 1) {
         // Winner
-        return Text('${winningPlayers[0].user!.displayName} WON!', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
-      } else if (winningPlayers.length == gameService.getNumPlayersFinished(game: game)) {
+        return Text('${winningPlayers[0].user!.displayName} WON!',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 24.0));
+      } else if (winningPlayers.length ==
+          gameService.getNumPlayersFinished(game: game)) {
         // Draw
-        return Text('It\'s a DRAW!', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
+        return const Text('It\'s a DRAW!',
+            textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
       } else {
         // Draw but not a draw between all players...do we need to identify which players?  Probably!
-        return Text('It\'s a DRAW!', textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
+        return const Text('It\'s a DRAW!',
+            textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0));
       }
     }
   }

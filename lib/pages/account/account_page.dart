@@ -18,6 +18,8 @@ final appUserProvider = StreamProvider.autoDispose.family<AppUser, String>((ref,
 });
 
 class AccountPage extends ConsumerWidget {
+  const AccountPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final firebaseAuth = ref.watch(firebaseAuthProvider);
@@ -45,17 +47,17 @@ class AccountPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   user.isAnonymous ? _buildAnonymousUserInfo() : _buildUserInfo(user, appUserAsyncValue),
                   !user.isAnonymous
                       ? CustomRaisedButton(
-                          child: Text(Strings.update),
+                          child: const Text(Strings.update),
                           onPressed: () => _updateUser(context, firebaseAuth),
                         )
                       : Container(),
-                  !user.isAnonymous ? SizedBox(height: 8.0) : Container(),
+                  !user.isAnonymous ? const SizedBox(height: 8.0) : Container(),
                   CustomRaisedButton(
-                    child: Text(Strings.logout),
+                    child: const Text(Strings.logout),
                     onPressed: () => _confirmSignOut(context, firebaseAuth),
                   ),
                 ],
@@ -113,18 +115,16 @@ class AccountPage extends ConsumerWidget {
   }
 
   Widget _userWidget({required String displayName}) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Text('Logged in as'),
-          SizedBox(height: 8.0),
-          Text(
-            displayName,
-            style: TextStyle(fontSize: 24.0),
-          ),
-          SizedBox(height: 8.0),
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        const Text('Logged in as'),
+        const SizedBox(height: 8.0),
+        Text(
+          displayName,
+          style: const TextStyle(fontSize: 24.0),
+        ),
+        const SizedBox(height: 8.0),
+      ],
     );
   }
 }

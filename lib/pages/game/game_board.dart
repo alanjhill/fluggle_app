@@ -14,13 +14,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class GameBoard extends ConsumerStatefulWidget {
   final List<String> letters;
   final List<List<GridItem>> gridItems;
-  Dictionary? dictionary;
+  final Dictionary? dictionary;
 
-  GameBoard({
+  const GameBoard({
+    Key? key,
     required this.letters,
     required this.gridItems,
-    this.dictionary,
-  });
+    required this.dictionary,
+  }) : super(key: key);
 
   @override
   _GameBoardState createState() => _GameBoardState();
@@ -33,12 +34,12 @@ class _GameBoardState extends ConsumerState<GameBoard> {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
-    print('kToolbarHeight: $kToolbarHeight');
+    debugPrint('kToolbarHeight: $kToolbarHeight');
     double gridSize = mediaQuery.size.width - kGameBoardPadding / 2;
 
     // Grid Lines - first item in the stack
     final gridLines = GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: kGridCount,
       ),
       itemBuilder: _buildGridLines,
@@ -47,15 +48,17 @@ class _GameBoardState extends ConsumerState<GameBoard> {
     );
 
     // Swipe Lines - second item in the stack
-    final gameStateNotifier = ref.watch(gameStateProvider.notifier);
-    final swipedGridItems = gameStateNotifier.getSwipedGridItems();
-    final swipeLines = SwipeLines(swipedGridItems: swipedGridItems, gridSize: gridSize);
+    final gameState = ref.watch(gameStateProvider);
+    final swipedGridItems =
+        ref.read(gameStateProvider.notifier).getSwipedGridItems();
+    final swipeLines =
+        SwipeLines(swipedGridItems: swipedGridItems, gridSize: gridSize);
 
     // Grid Cells containing grid
     final gameCubes = GridView.builder(
       key: gridKey,
       shrinkWrap: false,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: kGridCount,
       ),
       itemBuilder: _buildGameCubes,
@@ -64,7 +67,7 @@ class _GameBoardState extends ConsumerState<GameBoard> {
     );
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2),
+      margin: const EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
@@ -82,18 +85,18 @@ class _GameBoardState extends ConsumerState<GameBoard> {
         ),
         onPointerDown: (PointerEvent event) {
           debugPrint('onPointerDown');
-          if (!gameStateNotifier.timerEnded) {
+          if (!gameState.timerEnded) {
             _selectItem(ref, event);
           }
         },
         onPointerMove: (event) {
           debugPrint('onPointerMove');
-          if (!gameStateNotifier.timerEnded) {
+          if (!gameState.timerEnded) {
             _selectItem(ref, event);
           }
         },
         onPointerUp: (PointerEvent event) {
-          if (!gameStateNotifier.timerEnded) {
+          if (!gameState.timerEnded) {
             _endSelectItem(ref, event);
           }
         },
@@ -103,7 +106,10 @@ class _GameBoardState extends ConsumerState<GameBoard> {
 
   BoxDecoration _getGridItemBoxDecoration(RowCol rowCol) {
     BoxDecoration boxDecoration = BoxDecoration(
-      border: Border.all(color: kFluggleBoardBorderColor, width: kFluggleBoardBorderWidth / 2.0, style: BorderStyle.solid),
+      border: Border.all(
+          color: kFluggleBoardBorderColor,
+          width: kFluggleBoardBorderWidth / 2.0,
+          style: BorderStyle.solid),
       borderRadius: _getGridItemBorderRadius(rowCol),
     );
 
@@ -115,17 +121,17 @@ class _GameBoardState extends ConsumerState<GameBoard> {
 
     if (rowCol.row == 0) {
       if (rowCol.col == 0) {
-        borderRadius = BorderRadius.only(topLeft: Radius.circular(9));
+        borderRadius = const BorderRadius.only(topLeft: Radius.circular(9));
       } else if (rowCol.col == 3) {
-        borderRadius = BorderRadius.only(topRight: Radius.circular(9));
+        borderRadius = const BorderRadius.only(topRight: Radius.circular(9));
       }
     }
 
     if (rowCol.row == 3) {
       if (rowCol.col == 0) {
-        borderRadius = BorderRadius.only(bottomLeft: Radius.circular(9));
+        borderRadius = const BorderRadius.only(bottomLeft: Radius.circular(9));
       } else if (rowCol.col == 3) {
-        borderRadius = BorderRadius.only(bottomRight: Radius.circular(9));
+        borderRadius = const BorderRadius.only(bottomRight: Radius.circular(9));
       }
     }
 
@@ -156,8 +162,8 @@ class _GameBoardState extends ConsumerState<GameBoard> {
   }
 
   void _selectItem(WidgetRef ref, PointerEvent event) {
-    final gameStateNotifier = ref.read(gameStateProvider.notifier);
-    if (gameStateNotifier.state.gameStarted) {
+    final gameState = ref.read(gameStateProvider);
+    if (gameState.gameStarted) {
       RenderBox box = gridKey!.currentContext!.findRenderObject() as RenderBox;
       BoxHitTestResult result = BoxHitTestResult();
       Offset? local = box.globalToLocal(event.position);
@@ -168,13 +174,15 @@ class _GameBoardState extends ConsumerState<GameBoard> {
             RowCol rowCol = target.rowCol;
             GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
             setState(() {
-              if (gameStateNotifier.addSwipedGridItem(gridItem)) {
+              if (ref
+                  .read(gameStateProvider.notifier)
+                  .addSwipedGridItem(gridItem)) {
                 gridItem.swiped = true;
                 currentGridItem = gridItem;
               } else {
                 currentGridItem = null;
               }
-              gameStateNotifier.updateCurrentWord();
+              ref.read(gameStateProvider.notifier).updateCurrentWord();
             });
           }
         }
@@ -183,12 +191,12 @@ class _GameBoardState extends ConsumerState<GameBoard> {
   }
 
   void _endSelectItem(WidgetRef ref, PointerEvent event) {
-    final gameStateNotifier = ref.read(gameStateProvider.notifier);
-    if (gameStateNotifier.state.gameStarted) {
+    final gameState = ref.read(gameStateProvider);
+    if (gameState.gameStarted) {
       setState(() {
         currentGridItem = null;
-        gameStateNotifier.addWord(widget.dictionary!);
-        gameStateNotifier.resetSwipedItems();
+        ref.read(gameStateProvider.notifier).addWord(widget.dictionary!);
+        ref.read(gameStateProvider.notifier).resetSwipedItems();
       });
     }
   }

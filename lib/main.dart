@@ -67,6 +67,8 @@ Future<void> main() async {
 class MyApp extends ConsumerWidget {
   final AppTheme appTheme = AppTheme();
 
+  MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final firebaseAuth = ref.read(firebaseAuthProvider);
@@ -75,7 +77,8 @@ class MyApp extends ConsumerWidget {
       statusBarIconBrightness: Brightness.light,
     ));*/
     // TODO: This doesn't work
-    final shortcuts = Map.of(WidgetsApp.defaultShortcuts)..remove(LogicalKeySet(LogicalKeyboardKey.escape));
+    final shortcuts = Map.of(WidgetsApp.defaultShortcuts)
+      ..remove(LogicalKeySet(LogicalKeyboardKey.escape));
     return MaterialApp(
       shortcuts: shortcuts,
       theme: appTheme.getThemeData(context),
@@ -83,12 +86,15 @@ class MyApp extends ConsumerWidget {
       home: AuthWidget(
         nonSignedInBuilder: (_) => Consumer(
           builder: (context, ref, _) {
-            final didCompleteOnboarding = ref.watch(onboardingViewModelProvider);
+            final didCompleteOnboarding =
+                ref.watch(onboardingViewModelProvider);
             debugPrint('didCompleteOnboarding: $didCompleteOnboarding');
-            return didCompleteOnboarding ? HomePage() : OnboardingPage();
+            return didCompleteOnboarding
+                ? const HomePage()
+                : const OnboardingPage();
           },
         ),
-        signedInBuilder: (_) => HomePage(),
+        signedInBuilder: (_) => const HomePage(),
       ),
       onGenerateRoute: (settings) => AppRouter.onGenerateRoute(
         context,

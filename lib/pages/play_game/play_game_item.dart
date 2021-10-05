@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluggle_app/pages/game/game_page.dart';
-import 'package:fluggle_app/widgets/empty_content.dart';
 import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
@@ -16,13 +15,15 @@ class PlayGameItem extends ConsumerWidget {
   final Game game;
   final String? uid;
   final Function leftSwipeGame;
-  PlayGameItem({
+  const PlayGameItem({
+    Key? key,
     required this.game,
     this.uid,
     required this.leftSwipeGame,
-  });
+  }) : super(key: key);
 
-  void _playGameButtonPressed(BuildContext context, {required Game game, required List<Player> players}) {
+  void _playGameButtonPressed(BuildContext context,
+      {required Game game, required List<Player> players}) {
     GameArguments gameArgs = GameArguments(game: game, players: players);
     Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: gameArgs);
   }
@@ -33,34 +34,31 @@ class PlayGameItem extends ConsumerWidget {
 
     return Slidable(
       key: Key(game.gameId!),
-      actionPane: SlidableBehindActionPane(),
-      child: Container(
-        child: GestureDetector(
-          child: ReusableCard(
-            key: Key(game.gameId!),
-            cardChild: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  _getHeadingText(game: game, uid: uid!),
-                  _buildPlayers(context, uid: uid!, game: game, playerData: playersAsyncValue),
-                  _buildGameDuration(context, game: game),
-                  Text(game.gameId!),
-                ],
-              ),
-            ),
+      actionPane: const SlidableBehindActionPane(),
+      child: GestureDetector(
+        child: ReusableCard(
+          key: Key(game.gameId!),
+          cardChild: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              _getHeadingText(game: game, uid: uid!),
+              _buildPlayers(context,
+                  uid: uid!, game: game, playerData: playersAsyncValue),
+              _buildGameDuration(context, game: game),
+              Text(game.gameId!),
+            ],
           ),
-          onTap: () {
-            List<Player> players = [];
-            playersAsyncValue.whenData((playersData) {
-              players.addAll(playersData);
-            });
-            _playGameButtonPressed(context, game: game, players: players);
-          },
         ),
+        onTap: () {
+          List<Player> players = [];
+          playersAsyncValue.whenData((playersData) {
+            players.addAll(playersData);
+          });
+          _playGameButtonPressed(context, game: game, players: players);
+        },
       ),
-      movementDuration: Duration(milliseconds: 500),
+      movementDuration: const Duration(milliseconds: 500),
       secondaryActions: [
         IconSlideAction(
           icon: game.creatorId == uid ? Icons.delete : Icons.close,
@@ -77,42 +75,41 @@ class PlayGameItem extends ConsumerWidget {
   Text _getHeadingText({required Game game, required String uid}) {
     if (game.gameStatus == GameStatus.created) {
       if (uid == game.creatorId) {
-        return Text('You invited:', textAlign: TextAlign.left);
+        return const Text('You invited:', textAlign: TextAlign.left);
       } else {
-        return Text('Game invite', textAlign: TextAlign.left);
+        return const Text('Game invite', textAlign: TextAlign.left);
       }
     } else if (game.gameStatus == GameStatus.abandoned) {
-      return Text('Game abandoned', textAlign: TextAlign.left);
+      return const Text('Game abandoned', textAlign: TextAlign.left);
     } else {
-      return Text('Game complete', textAlign: TextAlign.left);
+      return const Text('Game complete', textAlign: TextAlign.left);
     }
   }
 
-  Widget _buildPlayerItem(BuildContext context, {required Game game, required Player player}) {
+  Widget _buildPlayerItem(BuildContext context,
+      {required Game game, required Player player}) {
     return Container(
       //color: kFluggleBoardBackgroundColor,
       //height: 128.0,
-      padding: EdgeInsets.all(0.0),
-      margin: EdgeInsets.all(0.0),
+      padding: const EdgeInsets.all(0.0),
+      margin: const EdgeInsets.all(0.0),
       child: Row(
         children: <Widget>[
-          Container(
+          SizedBox(
             width: 16.0,
-            child: game.creatorId == player.playerId ? Text('*') : null,
+            child: game.creatorId == player.playerId ? const Text('*') : null,
           ),
           Container(
-            child: Container(
-              padding: EdgeInsets.only(
-                left: 0.0,
-                top: 4.0,
-                bottom: 4.0,
-              ),
-              child: AutoSizeText(player.user!.displayName!),
+            padding: const EdgeInsets.only(
+              left: 0.0,
+              top: 4.0,
+              bottom: 4.0,
             ),
+            child: AutoSizeText(player.user!.displayName!),
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.only(left: 8.0),
+              padding: const EdgeInsets.only(left: 8.0),
               child: _buildPlayerStatus(game: game, player: player),
             ),
           )
@@ -122,25 +119,27 @@ class PlayGameItem extends ConsumerWidget {
   }
 
   Widget _buildPlayerStatus({required Game game, required Player player}) {
-    PlayerStatus playerStatus = game.playerUids[player.playerId] as PlayerStatus;
+    PlayerStatus playerStatus =
+        game.playerUids[player.playerId] as PlayerStatus;
     switch (playerStatus) {
       case PlayerStatus.invited:
       case PlayerStatus.accepted:
-        return Text('');
+        return const Text('');
       case PlayerStatus.declined:
-        return AutoSizeText('Declined', textAlign: TextAlign.right);
+        return const AutoSizeText('Declined', textAlign: TextAlign.right);
       case PlayerStatus.resigned:
-        return AutoSizeText('Resigned', textAlign: TextAlign.right);
+        return const AutoSizeText('Resigned', textAlign: TextAlign.right);
       case PlayerStatus.finished:
-        return AutoSizeText('Finished');
+        return const AutoSizeText('Finished');
     }
   }
 
-  Widget _buildPlayers(BuildContext context, {required Game game, required playerData, required String uid}) {
+  Widget _buildPlayers(BuildContext context,
+      {required Game game, required playerData, required String uid}) {
     return Column(
       children: <Widget>[
         ListItemsBuilder<Player>(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 8.0,
             ),
             data: playerData,

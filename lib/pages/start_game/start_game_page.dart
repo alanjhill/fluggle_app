@@ -17,7 +17,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class StartGamePage extends ConsumerStatefulWidget {
   final StartGameArguments startGameArguments;
-  StartGamePage({required this.startGameArguments});
+  const StartGamePage({Key? key, required this.startGameArguments})
+      : super(key: key);
 
   @override
   _StartGamePageState createState() => _StartGamePageState();
@@ -43,7 +44,9 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
   @override
   Widget build(BuildContext context) {
     final PreferredSizeWidget appBar = CustomAppBar(
-      titleText: players != null && players!.isNotEmpty ? Strings.newGame : Strings.practiceGame,
+      titleText: players != null && players!.isNotEmpty
+          ? Strings.newGame
+          : Strings.practiceGame,
     );
     //final List<AppUser> players = widget.startGameArguments.players;
 
@@ -52,19 +55,20 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
         body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints viewportConstraints) {
             return SingleChildScrollView(
-              padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+              padding:
+                  const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
               child: Column(children: <Widget>[
                 ReusableCard(
-                  key: Key(''),
+                  key: const Key(''),
                   cardChild: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       _buildTitle(players),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       ..._buildPlayerList(players),
                       _buildGameDuration(context),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       _buildPlayButton(context, ref),
                       //_getHeadingText(),
                       //..._buildPlayerList(players),
@@ -79,9 +83,9 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
 
   Widget _buildTitle(List<AppUser>? players) {
     if (players != null && players.isNotEmpty) {
-      return Text('Play a game with:');
+      return const Text('Play a game with:');
     } else {
-      return Text('Practice Game');
+      return const Text('Practice Game');
     }
   }
 
@@ -98,13 +102,13 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
 
   Widget _buildPlayerItem({required AppUser player}) {
     return Container(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       //color: Colors.red,
       child: Padding(
         key: ValueKey(player.uid),
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
         child: ListTile(
-          contentPadding: EdgeInsets.all(0),
+          contentPadding: const EdgeInsets.all(0),
           visualDensity: VisualDensity.compact,
           title: Text(player.displayName!),
           //subtitle: Text('id: ${player.uid}'),
@@ -117,14 +121,19 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     final gameService = ref.read(gameServiceProvider);
     // Create game and wait for other players to join...
     if (players!.isNotEmpty) {
-      List<Player> gamePlayers = gameService.createPlayersFromAppUsers(ref, appUsers: players!);
+      List<Player> gamePlayers =
+          gameService.createPlayersFromAppUsers(ref, appUsers: players!);
       Map<String, PlayerStatus> playerUids = {};
 
       for (var gamePlayer in gamePlayers) {
         playerUids[gamePlayer.playerId] = PlayerStatus.invited;
       }
 
-      Game game = await gameService.createGame(ref, gameStatus: GameStatus.created, players: gamePlayers, playerUids: playerUids, gameTime: _currentValue);
+      Game game = await gameService.createGame(ref,
+          gameStatus: GameStatus.created,
+          players: gamePlayers,
+          playerUids: playerUids,
+          gameTime: _currentValue);
       debugPrint('game: $game');
 
       GameArguments gameArgs = GameArguments(game: game, players: gamePlayers);
@@ -132,10 +141,12 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     } else {
       // Game
       List<Player> players = [];
-      Game game = gameService.createPracticeGame(ref, players: players, gameTime: _currentValue);
+      Game game = gameService.createPracticeGame(ref,
+          players: players, gameTime: _currentValue);
 
       // Game Page
-      Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: GameArguments(game: game, players: players));
+      Navigator.of(context).pushNamed(AppRoutes.gamePage,
+          arguments: GameArguments(game: game, players: players));
     }
   }
 
@@ -147,7 +158,7 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
           children: <Widget>[
             Container(
               padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
+              child: const Text(
                 'Time:',
                 textAlign: TextAlign.left,
               ),
@@ -201,11 +212,14 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     );
   }
 
-  Widget _buildTimeSelection({required String text, required bool selected, required double maxWidth}) {
+  Widget _buildTimeSelection(
+      {required String text,
+      required bool selected,
+      required double maxWidth}) {
     return Container(
       width: maxWidth - 16,
-      padding: EdgeInsets.all(0),
-      margin: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(0),
+      margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
         color: Colors.transparent,
@@ -236,16 +250,10 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     }
   }
 
-  String _getGameTimeLabel(int sec) {
-    var minutes = sec / 60;
-    var seconds = sec % 60;
-    return '${minutes.toInt().toString().padLeft(1, "0")}:${seconds.toInt().toString().padLeft(2, "0")}';
-  }
-
   Widget _buildPlayButton(BuildContext context, WidgetRef ref) {
     return CustomRaisedButton(
       onPressed: () => _createGame(context, ref),
-      child: Text('Play'),
+      child: const Text('Play'),
     );
   }
 }

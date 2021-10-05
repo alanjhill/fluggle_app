@@ -3,11 +3,12 @@ import 'package:flutter/rendering.dart';
 
 class Avatar extends StatelessWidget {
   const Avatar({
+    Key? key,
     this.photoUrl,
     required this.radius,
     this.borderColor,
     this.borderWidth,
-  });
+  }) : super(key: key);
   final String? photoUrl;
   final double radius;
   final Color? borderColor;

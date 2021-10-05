@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class Constants {
   // TODO: Replace this with your firebase project URL
-  static const String firebaseProjectURL = 'https://fir-auth-demo-flutter.firebaseapp.com/';
+  static const String firebaseProjectURL =
+      'https://fir-auth-demo-flutter.firebaseapp.com/';
 }
 
 const double kGameBoardPadding = 40.0;
@@ -43,7 +44,7 @@ const kTimerTextStyle = TextStyle(
 var kElevatedButtonStyle = ElevatedButton.styleFrom(
   elevation: 10,
   primary: kFluggleLightColor,
-  padding: EdgeInsets.all(10.0),
+  padding: const EdgeInsets.all(10.0),
 );
 
 const kTextFieldDecoration = InputDecoration(

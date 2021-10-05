@@ -11,7 +11,7 @@ class WordCount extends StatelessWidget {
     debugPrint('screen size: ${mediaQuery.size}');
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
       return Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 0,
           horizontal: 0,
         ),
@@ -21,7 +21,7 @@ class WordCount extends StatelessWidget {
             AutoSizeText(
               'WORDS: $count',
               maxLines: 1,
-              style: TextStyle(fontSize: 36),
+              style: const TextStyle(fontSize: 36),
             ),
           ],
         ),

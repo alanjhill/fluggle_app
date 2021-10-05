@@ -11,7 +11,9 @@ class FriendsSearchItem extends ConsumerWidget {
   final AppUser appUser;
   final Function addFriend;
 
-  FriendsSearchItem({required this.appUser, required this.addFriend});
+  const FriendsSearchItem(
+      {Key? key, required this.appUser, required this.addFriend})
+      : super(key: key);
 
   @override
   build(BuildContext context, WidgetRef ref) {
@@ -20,34 +22,32 @@ class FriendsSearchItem extends ConsumerWidget {
       child: GestureDetector(
         child: ReusableCard(
           key: Key('cart-${appUser.uid}'),
-          cardChild: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                ListTile(
-                  title: AutoSizeText(
-                    appUser.email!,
-                    wrapWords: false,
-                  ),
-                  subtitle: AutoSizeText(
-                    appUser.displayName!,
-                    wrapWords: false,
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      Icons.add_circle_outline,
-                      size: 32.0,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      debugPrint('Add Friend');
-                      await addFriend(ref, friendId: appUser.uid);
-                    },
-                  ),
+          cardChild: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              ListTile(
+                title: AutoSizeText(
+                  appUser.email!,
+                  wrapWords: false,
                 ),
-              ],
-            ),
+                subtitle: AutoSizeText(
+                  appUser.displayName!,
+                  wrapWords: false,
+                ),
+                trailing: IconButton(
+                  icon: const Icon(
+                    Icons.add_circle_outline,
+                    size: 32.0,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    debugPrint('Add Friend');
+                    await addFriend(ref, friendId: appUser.uid);
+                  },
+                ),
+              ),
+            ],
           ),
         ),
         onTap: () {
@@ -56,7 +56,7 @@ class FriendsSearchItem extends ConsumerWidget {
       ),
       //normalAnimationDuration: 500,
       //deleteAnimationDuration: 400,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actions: [
         IconSlideAction(
           icon: Icons.more_horiz,

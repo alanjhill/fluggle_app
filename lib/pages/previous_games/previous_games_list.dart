@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PreviousGamesList extends ConsumerWidget {
-  PreviousGamesList({Key? key, required this.data, required this.previousGameOnTap}) : super(key: key);
+  const PreviousGamesList(
+      {Key? key, required this.data, required this.previousGameOnTap})
+      : super(key: key);
 
   final AsyncValue<List<Game>> data;
   final Function previousGameOnTap;
@@ -17,7 +19,7 @@ class PreviousGamesList extends ConsumerWidget {
     final user = firebaseAuth.currentUser!;
 
     return ListItemsBuilder<Game>(
-      physics: ScrollPhysics(),
+      physics: const ScrollPhysics(),
       data: data,
       itemBuilder: (context, game) => PreviousGamesItem(
         game: game,

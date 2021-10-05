@@ -10,7 +10,12 @@ class GameCube extends StatefulWidget {
   final List<List<GridItem>> gridItems;
   final String letter;
 
-  const GameCube({required this.rowCol, required this.letter, required this.gridItems});
+  const GameCube(
+      {Key? key,
+      required this.rowCol,
+      required this.letter,
+      required this.gridItems})
+      : super(key: key);
 
   @override
   _GameCubeState createState() => _GameCubeState();
@@ -19,30 +24,28 @@ class GameCube extends StatefulWidget {
 class _GameCubeState extends State<GameCube> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: AnimatedContainer(
-        padding: EdgeInsets.all(
-          _getPadding(
-            widget.rowCol.row,
-            widget.rowCol.col,
-          ),
+    return AnimatedContainer(
+      padding: EdgeInsets.all(
+        _getPadding(
+          widget.rowCol.row,
+          widget.rowCol.col,
         ),
-        child: Card(
-          color: Colors.transparent,
-          elevation: 4,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6.0),
-              color: kFluggleCubeColor,
-            ),
-            child: _buildGameCube(
-              widget.rowCol,
-            ),
-          ),
-        ),
-        duration: Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
       ),
+      child: Card(
+        color: Colors.transparent,
+        elevation: 4,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6.0),
+            color: kFluggleCubeColor,
+          ),
+          child: _buildGameCube(
+            widget.rowCol,
+          ),
+        ),
+      ),
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
     );
   }
 
@@ -57,13 +60,13 @@ class _GameCubeState extends State<GameCube> {
     debugPrint('>>> building game cube >>>');
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.all(kLetterPadding),
+      padding: const EdgeInsets.all(kLetterPadding),
       child: GridCell(
         child: Container(
           alignment: Alignment.center,
           color: kFluggleCubeColor,
           child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 50),
+            duration: const Duration(milliseconds: 50),
             switchInCurve: Curves.easeInOutCubic,
             switchOutCurve: Curves.easeInOutCubic,
             child: AutoSizeText(
@@ -72,7 +75,9 @@ class _GameCubeState extends State<GameCube> {
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
-                color: gridItem.swiped ? kFluggleLetterHighlightColor : kFluggleLetterColor,
+                color: gridItem.swiped
+                    ? kFluggleLetterHighlightColor
+                    : kFluggleLetterColor,
               ),
             ),
           ),

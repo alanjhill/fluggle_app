@@ -5,6 +5,7 @@ import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/models/user/friend.dart';
 import 'package:fluggle_app/services/firestore/firestore_path.dart';
 import 'package:fluggle_app/services/firestore/firestore_service.dart';
+import 'package:flutter/material.dart';
 
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
 
@@ -42,7 +43,8 @@ class FirestoreDatabase {
       );
 
   /// Get user from uid
-  Stream<List<AppUser>> userStream(String uid) => _service.collectionStream<AppUser>(
+  Stream<List<AppUser>> userStream(String uid) =>
+      _service.collectionStream<AppUser>(
         path: FirestorePath.user(uid),
         builder: (data, documentId) => AppUser.fromMap(data!, documentId),
       );
@@ -54,7 +56,8 @@ class FirestoreDatabase {
       );
 
   /// Search users
-  Stream<List<AppUser>> findUsersByEmailStream({required String email}) => _service.collectionStream<AppUser>(
+  Stream<List<AppUser>> findUsersByEmailStream({required String email}) =>
+      _service.collectionStream<AppUser>(
         path: FirestorePath.users(),
         builder: (data, documentId) => AppUser.fromMap(data!, documentId),
         queryBuilder: (query) => query.where('email', isEqualTo: email),
@@ -105,7 +108,7 @@ class FirestoreDatabase {
   doSomething(QuerySnapshot snapshot) async {
     var docs = snapshot.docs;
     for (var doc in docs) {
-      print('doc: $doc');
+      debugPrint('doc: $doc');
     }
   }
 
@@ -114,10 +117,14 @@ class FirestoreDatabase {
         builder: (data, documentId) => Player.fromMap(data!, documentId),
       );*/
 
-  Stream<List<Player>> gamePlayerStream({required String gameId, required bool includeSelf}) => _service.collectionStream<Player>(
+  Stream<List<Player>> gamePlayerStream(
+          {required String gameId, required bool includeSelf}) =>
+      _service.collectionStream<Player>(
         path: FirestorePath.gamePlayers(gameId),
         builder: (data, documentId) => Player.fromMap(data!, documentId),
-        queryBuilder: !includeSelf ? (query) => query.where(FieldPath.documentId, whereNotIn: [uid]) : null,
+        queryBuilder: !includeSelf
+            ? (query) => query.where(FieldPath.documentId, whereNotIn: [uid])
+            : null,
       );
 
   Future<Game> getGame({required String gameId}) => _service.getData<Game>(
@@ -163,11 +170,12 @@ class FirestoreDatabase {
 
     await batch.commit();
 
-    print('returning invitedFriend...');
+    debugPrint('returning invitedFriend...');
     return friend;
   }
 
-  Stream<AppUser> appUserStream({required String uid}) => _service.documentStream<AppUser>(
+  Stream<AppUser> appUserStream({required String uid}) =>
+      _service.documentStream<AppUser>(
         path: FirestorePath.user(uid),
         builder: (data, documentId) => AppUser.fromMap(data!, documentId),
       );
@@ -195,7 +203,8 @@ class FirestoreDatabase {
         builder: (data, documentId) => Player.fromMap(data, documentId),
       );
 
-  Future<void> saveGamePlayer({required Game game, required Player player}) async {
+  Future<void> saveGamePlayer(
+      {required Game game, required Player player}) async {
     var playerToMap = player.toMap();
     await _service.setData(
       path: FirestorePath.gamePlayer(game.gameId!, player.playerId),
@@ -204,7 +213,8 @@ class FirestoreDatabase {
     );
   }
 
-  Future<void> saveGameAndPlayer({required Game game, required Player player}) async {
+  Future<void> saveGameAndPlayer(
+      {required Game game, required Player player}) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     await _service.setDataWithBatch(
@@ -228,10 +238,11 @@ class FirestoreDatabase {
     await batch.commit();
   }
 
-  Future<void> saveGameAndPlayers({required Game game, required List<Player> players}) async {
-    print('>>> saveGameAndPlayers 1');
+  Future<void> saveGameAndPlayers(
+      {required Game game, required List<Player> players}) async {
+    debugPrint('>>> saveGameAndPlayers 1');
     WriteBatch batch = FirebaseFirestore.instance.batch();
-    print('>>> saveGameAndPlayers 2');
+    debugPrint('>>> saveGameAndPlayers 2');
 
     await _service.setDataWithBatch(
       batch: batch,
@@ -239,7 +250,7 @@ class FirestoreDatabase {
       data: game.toMap(),
       merge: true,
     );
-    print('>>> saveGameAndPlayers 3');
+    debugPrint('>>> saveGameAndPlayers 3');
 
     for (Player player in players) {
       await _service.setDataWithBatch(
@@ -249,18 +260,19 @@ class FirestoreDatabase {
         merge: true,
       );
     }
-    print('>>> saveGameAndPlayers 4');
+    debugPrint('>>> saveGameAndPlayers 4');
 
 /*    batch.commit().whenComplete(() {
       print('Complete');
     });*/
 
-    print('>>> saveGameAndPlayers 5');
-    print('>>> batch.commit()');
+    debugPrint('>>> saveGameAndPlayers 5');
+    debugPrint('>>> batch.commit()');
     return await batch.commit();
   }
 
-  Future<void> createGame({required Game game, required List<Player> players}) async {
+  Future<void> createGame(
+      {required Game game, required List<Player> players}) async {
     String? gameId;
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -286,7 +298,7 @@ class FirestoreDatabase {
       );
     }
 
-    print('>>> about to commit');
+    debugPrint('>>> about to commit');
     return batch.commit();
   }
 

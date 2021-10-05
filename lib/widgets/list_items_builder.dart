@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
 class ListItemsBuilder<T> extends StatelessWidget {
-  ListItemsBuilder({
+  const ListItemsBuilder({
     Key? key,
     required this.data,
     required this.itemBuilder,
@@ -24,7 +24,8 @@ class ListItemsBuilder<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return data.when(
-      data: (items) => items.isNotEmpty ? _buildList(items) : const EmptyContent(),
+      data: (items) =>
+          items.isNotEmpty ? _buildList(items) : const EmptyContent(),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => EmptyContent(
         title: 'Something went wrong',
@@ -44,7 +45,8 @@ class ListItemsBuilder<T> extends StatelessWidget {
         if (separator != null) {
           return separator!;
         } else {
-          return Divider(height: 8.0, thickness: 0.0, color: Colors.transparent);
+          return const Divider(
+              height: 8.0, thickness: 0.0, color: Colors.transparent);
         }
       },
       itemBuilder: (context, index) {

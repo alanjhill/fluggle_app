@@ -19,13 +19,13 @@ class HelpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Help'),
+        title: const Text('Help'),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: SingleChildScrollView(
           child: ListView.separated(
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemCount: _helps.length,
@@ -38,13 +38,13 @@ class HelpPage extends StatelessWidget {
                   //leading: Icon(Icons.circle, size: 12.0, color: Colors.white),
                   title: Text(
                     _helps[index],
-                    style: TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                 ),
               );
             },
             separatorBuilder: (BuildContext context, index) {
-              return SizedBox(height: 8.0);
+              return const SizedBox(height: 8.0);
             },
           ),
         ),

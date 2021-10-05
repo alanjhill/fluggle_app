@@ -5,7 +5,8 @@ import 'package:fluggle_app/models/game/player.dart';
 import 'package:flutter/material.dart';
 
 class ScoresHeader extends StatelessWidget {
-  ScoresHeader({
+  const ScoresHeader({
+    Key? key,
     required this.context,
     required this.game,
     required this.player,
@@ -13,7 +14,7 @@ class ScoresHeader extends StatelessWidget {
     required this.width,
     required this.index,
     required this.scrollController,
-  });
+  }) : super(key: key);
 
   final BuildContext context;
   final Game game;
@@ -32,7 +33,7 @@ class ScoresHeader extends StatelessWidget {
         return Container(
           height: height,
           width: width,
-          padding: EdgeInsets.all(0),
+          padding: const EdgeInsets.all(0),
           child: _playerScoresHeaderContent(
             player: player,
             height: height,
@@ -44,7 +45,7 @@ class ScoresHeader extends StatelessWidget {
         return Container(
           height: height,
           width: width,
-          padding: EdgeInsets.all(0),
+          padding: const EdgeInsets.all(0),
           child: _playerScoresHeaderContent(
             player: player,
             height: height,
@@ -65,12 +66,14 @@ class ScoresHeader extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      margin: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
-      padding: EdgeInsets.only(left: kScoresColumnPadding, right: kScoresColumnPadding),
+      margin: const EdgeInsets.only(
+          left: kScoresColumnPadding, right: kScoresColumnPadding),
+      padding: const EdgeInsets.only(
+          left: kScoresColumnPadding, right: kScoresColumnPadding),
       child: AutoSizeText(
         player.user!.displayName!,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 18),
         maxLines: 1,
       ),
     );

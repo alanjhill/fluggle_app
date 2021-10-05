@@ -6,7 +6,7 @@ class GridCell extends SingleChildRenderObjectWidget {
   final RowCol rowCol;
   final String letter;
 
-  GridCell({
+  const GridCell({
     Widget? child,
     Key? key,
     required this.rowCol,
@@ -14,12 +14,14 @@ class GridCell extends SingleChildRenderObjectWidget {
   }) : super(child: child, key: key);
 
   @override
-  GridCellRenderObject createRenderObject(BuildContext context) => GridCellRenderObject()
-    ..rowCol = rowCol
-    ..letter = letter;
+  GridCellRenderObject createRenderObject(BuildContext context) =>
+      GridCellRenderObject()
+        ..rowCol = rowCol
+        ..letter = letter;
 
   @override
-  void updateRenderObject(BuildContext context, GridCellRenderObject renderObject) {
+  void updateRenderObject(
+      BuildContext context, GridCellRenderObject renderObject) {
     renderObject.rowCol = rowCol;
     renderObject.letter = letter;
   }

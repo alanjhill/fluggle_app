@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 
 class ReusableCard extends StatelessWidget {
   final Widget cardChild;
-  final Key key;
   final double padding;
 
-  ReusableCard({
+  const ReusableCard({
+    Key? key,
     required this.cardChild,
-    required this.key,
     this.padding = 16.0,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       key: ValueKey(key),
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
           Radius.circular(12),
         ),

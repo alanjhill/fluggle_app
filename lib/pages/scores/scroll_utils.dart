@@ -7,7 +7,7 @@ class ScrollUtils {
     required int itemCount,
     required ScrollController scrollController,
   }) async {
-    await Future.delayed(Duration(milliseconds: 0), () {
+    await Future.delayed(const Duration(milliseconds: 0), () {
       if (scrollMetrics.axisDirection == AxisDirection.left ||
           scrollMetrics.axisDirection == AxisDirection.right) {
         if (!scrollMetrics.atEdge && !scrollMetrics.outOfRange) {
@@ -17,7 +17,7 @@ class ScrollUtils {
               itemCount: itemCount);
           scrollController.animateTo(
             _position,
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             curve: Curves.easeOut,
           );
         }

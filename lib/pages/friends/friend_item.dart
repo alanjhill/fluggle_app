@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class FriendItem extends StatelessWidget {
-  FriendItem({
+  const FriendItem({
     Key? key,
     required this.appUserFriend,
   }) : super(key: key);
@@ -29,12 +29,12 @@ class FriendItem extends StatelessWidget {
           _playButtonPressed(context, friend: appUserFriend.appUser);
         },
       ),
-      movementDuration: Duration(milliseconds: 500),
+      movementDuration: const Duration(milliseconds: 500),
       //normalAnimationDuration: 500,
       //deleteAnimationDuration: 400,
       //performsFirstActionWithFullSwipe: true,
 
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actions: [
         IconSlideAction(
           icon: Icons.check_sharp,
@@ -65,52 +65,56 @@ class FriendItem extends StatelessWidget {
     List<AppUser> friends = [];
     friends.add(friend);
 
-    Navigator.of(context).pushNamed(AppRoutes.startGamePage, arguments: StartGameArguments(players: friends));
+    Navigator.of(context).pushNamed(AppRoutes.startGamePage,
+        arguments: StartGameArguments(players: friends));
   }
 
-  Widget _buildFriendItem(BuildContext context, {required AppUserFriend appUserFriend}) {
+  Widget _buildFriendItem(BuildContext context,
+      {required AppUserFriend appUserFriend}) {
     return ListTile(
       title: Text(appUserFriend.appUser.displayName!),
       trailing: Container(
-        margin: EdgeInsets.all(0.0),
-        padding: EdgeInsets.all(0.0),
+        margin: const EdgeInsets.all(0.0),
+        padding: const EdgeInsets.all(0.0),
         width: 50,
-        child: _getFriendStatusIcon(context, friendStatus: appUserFriend.friend.friendStatus),
+        child: _getFriendStatusIcon(context,
+            friendStatus: appUserFriend.friend.friendStatus),
       ),
     );
   }
 
-  Widget _getFriendStatusIcon(BuildContext context, {required FriendStatus friendStatus}) {
+  Widget _getFriendStatusIcon(BuildContext context,
+      {required FriendStatus friendStatus}) {
     if (friendStatus == FriendStatus.invited) {
       //return Text('invited');
-      return Icon(
+      return const Icon(
         Icons.hourglass_top_sharp,
         color: Colors.white,
         size: 28.0,
       );
     } else if (friendStatus == FriendStatus.requested) {
       //return Text('requested');
-      return Icon(
+      return const Icon(
         Icons.person_add_alt_sharp,
         color: Colors.white,
         size: 28.0,
       );
     } else if (friendStatus == FriendStatus.accepted) {
       //return Text('accepted');
-      return Icon(
+      return const Icon(
         Icons.done_sharp,
         color: Colors.white,
         size: 28.0,
       );
     } else if (friendStatus == FriendStatus.declined) {
       //return Text('declined');
-      return Icon(
+      return const Icon(
         Icons.person_add_disabled_sharp,
         color: Colors.white,
         size: 28.0,
       );
     } else {
-      return Text('');
+      return const Text('');
     }
   }
 }

@@ -18,10 +18,13 @@ final signInModelProvider = ChangeNotifierProvider<SignInViewModel>(
 );
 
 class SignInPage extends ConsumerWidget {
+  const SignInPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signInModel = ref.watch(signInModelProvider);
-    ref.listen<SignInViewModel>(signInModelProvider, (SignInViewModel model) async {
+    ref.listen<SignInViewModel>(signInModelProvider,
+        (SignInViewModel model) async {
       if (model.error != null) {
         if (model.error != null) {
           await showExceptionAlertDialog(
@@ -41,7 +44,9 @@ class SignInPage extends ConsumerWidget {
 }
 
 class SignInPageContents extends StatelessWidget {
-  const SignInPageContents({Key? key, required this.viewModel, this.title = Strings.signIn}) : super(key: key);
+  const SignInPageContents(
+      {Key? key, required this.viewModel, this.title = Strings.signIn})
+      : super(key: key);
   final SignInViewModel viewModel;
   final String title;
 
@@ -65,7 +70,7 @@ class SignInPageContents extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: _buildSignIn(context),
           ),
         ),
@@ -76,7 +81,7 @@ class SignInPageContents extends StatelessWidget {
   Widget _buildSignIn(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
+        return SizedBox(
           width: min(constraints.maxWidth, 600),
           //padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -85,9 +90,11 @@ class SignInPageContents extends StatelessWidget {
             children: <Widget>[
               CustomRaisedButton(
                 key: emailPasswordButtonKey,
-                child: AutoSizeText(Strings.signInWithEmailPassword),
+                child: const AutoSizeText(Strings.signInWithEmailPassword),
                 textColor: Colors.white,
-                onPressed: viewModel.isLoading ? null : () => _showEmailPasswordSignInPage(context),
+                onPressed: viewModel.isLoading
+                    ? null
+                    : () => _showEmailPasswordSignInPage(context),
               ),
               const SizedBox(height: 8),
               const AutoSizeText(
@@ -100,13 +107,14 @@ class SignInPageContents extends StatelessWidget {
               const SizedBox(height: 8),
               CustomRaisedButton(
                   key: anonymousButtonKey,
-                  child: Text(Strings.goAnonymous),
+                  child: const Text(Strings.goAnonymous),
                   textColor: Colors.white,
                   onPressed: viewModel.isLoading
                       ? null
                       : () async {
                           await viewModel.signInAnonymously();
-                          Navigator.of(context).pushReplacementNamed(AppRoutes.homePage);
+                          Navigator.of(context)
+                              .pushReplacementNamed(AppRoutes.homePage);
                         }),
             ],
           ),

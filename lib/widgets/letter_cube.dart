@@ -3,7 +3,13 @@ import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class LetterCube extends StatelessWidget {
-  const LetterCube({Key? key, required this.letter, required this.size, this.textColor = kFluggleLetterColor, this.cubeColor = kFluggleCubeColor}) : super(key: key);
+  const LetterCube(
+      {Key? key,
+      required this.letter,
+      required this.size,
+      this.textColor = kFluggleLetterColor,
+      this.cubeColor = kFluggleCubeColor})
+      : super(key: key);
   final String letter;
   final double size;
   final Color textColor;
@@ -12,7 +18,7 @@ class LetterCube extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 1.0),
+      margin: const EdgeInsets.symmetric(horizontal: 1.0),
       color: Colors.transparent,
       elevation: 4,
       child: Container(
@@ -26,8 +32,8 @@ class LetterCube extends StatelessWidget {
         ),
         child: Container(
           color: cubeColor,
-          padding: EdgeInsets.only(top: 2.0),
-          margin: EdgeInsets.all(0.0),
+          padding: const EdgeInsets.only(top: 2.0),
+          margin: const EdgeInsets.all(0.0),
           child: AutoSizeText(
             letter.toUpperCase(),
             maxLines: 1,

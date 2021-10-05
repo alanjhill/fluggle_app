@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum WordStatus { empty, valid, invalid, duplicate }
 
-final gameStateProvider = StateNotifierProvider<GameStateNotifier, GameState>((ref) => GameStateNotifier());
+final gameStateProvider = StateNotifierProvider<GameStateNotifier, GameState>(
+    (ref) => GameStateNotifier());
 
 class GameState {
   late List<GridItem> swipedGridItems;
@@ -38,8 +39,10 @@ class GameStateNotifier extends StateNotifier<GameState> {
     bool added = false;
     state.currentWord = "";
     state.currentWordStatus = WordStatus.empty;
-    GridItem? lastAddedGridItem = state.swipedGridItems.isNotEmpty ? state.swipedGridItems.last : null;
-    if (!state.swipedGridItems.contains(gridItem) && (gridItem.isAdjacent(lastAddedGridItem) || isFirstItem())) {
+    GridItem? lastAddedGridItem =
+        state.swipedGridItems.isNotEmpty ? state.swipedGridItems.last : null;
+    if (!state.swipedGridItems.contains(gridItem) &&
+        (gridItem.isAdjacent(lastAddedGridItem) || isFirstItem())) {
       state.swipedGridItems.add(gridItem);
       added = true;
     }
@@ -50,7 +53,9 @@ class GameStateNotifier extends StateNotifier<GameState> {
 
   LinkedHashMap<String, PlayerWord> get addedWords => state.addedWords;
 
-  bool get timerEnded => state.timerEnded;
+  //bool get gameStarted => state.gameStarted;
+
+  //bool get timerEnded => state.timerEnded;
 
   void addWord(Dictionary dictionary) {
     String word = "";
@@ -66,7 +71,8 @@ class GameStateNotifier extends StateNotifier<GameState> {
       // Check if word exists in dictionary
       if (dictionary.exists(state.currentWord)) {
         if (!state.addedWords.containsKey(word)) {
-          state.addedWords[word] = PlayerWord(gameWord: GameWord(word: word), gridItems: state.swipedGridItems);
+          state.addedWords[word] = PlayerWord(
+              gameWord: GameWord(word: word), gridItems: state.swipedGridItems);
           state.currentWordStatus = WordStatus.valid;
         } else {
           state.currentWordStatus = WordStatus.duplicate;
