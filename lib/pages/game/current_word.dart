@@ -9,12 +9,7 @@ class CurrentWord extends StatelessWidget {
   final String? currentWord;
   final WordStatus currentWordStatus;
 
-  const CurrentWord(
-      {Key? key,
-      this.swipedGridItems = const [],
-      this.currentWord,
-      required this.currentWordStatus})
-      : super(key: key);
+  const CurrentWord({Key? key, this.swipedGridItems = const [], this.currentWord, required this.currentWordStatus}) : super(key: key);
 
   String _getWord() {
     String? word;
@@ -36,18 +31,13 @@ class CurrentWord extends StatelessWidget {
     debugPrint('screen size: ${mediaQuery.size}');
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        final width =
-            (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
+        final width = (viewportConstraints.maxWidth - (kFluggleBoardBorderWidth * 2));
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Column(
               children: [
-                WordCubes(
-                    word: _getWord(),
-                    width: width,
-                    spacing: kCurrentWordCubeSpacing,
-                    wordStatus: currentWordStatus),
+                WordCubes(word: _getWord(), width: width, spacing: kCurrentWordCubeSpacing, wordStatus: currentWordStatus),
                 //Text('$currentWordStatus'),
                 //WordFeedback(word: _getWord(), width: width, spacing: kCurrentWordCubeSpacing),
               ],

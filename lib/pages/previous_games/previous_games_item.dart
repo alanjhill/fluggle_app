@@ -21,8 +21,7 @@ class PreviousGamesItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gamePlayersAsyncValue =
-        ref.watch(previousGamesPlayerStreamProvider(game.gameId!));
+    final gamePlayersAsyncValue = ref.watch(previousGamesPlayerStreamProvider(game.gameId!));
 
     List<Player> players = [];
     return gamePlayersAsyncValue.when(
@@ -30,21 +29,17 @@ class PreviousGamesItem extends ConsumerWidget {
         if (items.isNotEmpty) {
           players.addAll(items);
         }
-        return _buildPreviousGameCard(context,
-            game: game, players: players, uid: uid);
+        return _buildPreviousGameCard(context, game: game, players: players, uid: uid);
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => EmptyContent(
+      loading: (_) => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace, previousValue) => EmptyContent(
         title: 'Something went wrong',
         message: 'Can\'t load items right now: $error, $stackTrace',
       ),
     );
   }
 
-  Widget _buildPreviousGameCard(BuildContext context,
-      {required Game game,
-      required List<Player> players,
-      required String uid}) {
+  Widget _buildPreviousGameCard(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
     return Column(
       children: [
         Slidable(
@@ -57,17 +52,14 @@ class PreviousGamesItem extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   _getHeadingText(game: game, players: players, uid: uid),
-                  _buildPlayers(context,
-                      game: game, players: players, uid: uid),
-                  _buildFooterText(context,
-                      game: game, players: players, uid: uid),
+                  _buildPlayers(context, game: game, players: players, uid: uid),
+                  _buildFooterText(context, game: game, players: players, uid: uid),
                   Text(game.gameId!),
                 ],
               ),
             ),
             onTap: () {
-              GameArguments gameArgs =
-                  GameArguments(game: game, players: players);
+              GameArguments gameArgs = GameArguments(game: game, players: players);
               previousGameOnTap(context, gameArguments: gameArgs);
             },
           ),
@@ -98,10 +90,7 @@ class PreviousGamesItem extends ConsumerWidget {
     );
   }
 
-  Text _getHeadingText(
-      {required Game game,
-      required List<Player> players,
-      required String uid}) {
+  Text _getHeadingText({required Game game, required List<Player> players, required String uid}) {
     if (game.gameStatus == GameStatus.finished) {
       return const Text('Game with:', textAlign: TextAlign.left);
     } else if (game.gameStatus == GameStatus.abandoned) {
@@ -111,12 +100,8 @@ class PreviousGamesItem extends ConsumerWidget {
     }
   }
 
-  Widget _buildPlayers(BuildContext context,
-      {required Game game,
-      required List<Player> players,
-      required String uid}) {
-    List<Player> otherPlayers =
-        players.where((player) => player.playerId != uid).toList();
+  Widget _buildPlayers(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
+    List<Player> otherPlayers = players.where((player) => player.playerId != uid).toList();
     return Column(
       children: <Widget>[
         ListView.builder(
@@ -126,15 +111,13 @@ class PreviousGamesItem extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: otherPlayers.length,
-          itemBuilder: (context, index) => _buildPlayerItem(context,
-              game: game, player: otherPlayers[index]),
+          itemBuilder: (context, index) => _buildPlayerItem(context, game: game, player: otherPlayers[index]),
         ),
       ],
     );
   }
 
-  Widget _buildPlayerItem(BuildContext context,
-      {required Game game, required Player player}) {
+  Widget _buildPlayerItem(BuildContext context, {required Game game, required Player player}) {
     return Row(
       children: <Widget>[
         SizedBox(
@@ -159,8 +142,7 @@ class PreviousGamesItem extends ConsumerWidget {
   }
 
   Widget _buildPlayerScore({required Game game, required Player player}) {
-    PlayerStatus playerStatus =
-        game.playerUids[player.playerId] as PlayerStatus;
+    PlayerStatus playerStatus = game.playerUids[player.playerId] as PlayerStatus;
     switch (playerStatus) {
       case PlayerStatus.invited:
       case PlayerStatus.accepted:
@@ -174,10 +156,7 @@ class PreviousGamesItem extends ConsumerWidget {
     }
   }
 
-  Widget _buildFooterText(BuildContext context,
-      {required Game game,
-      required List<Player> players,
-      required String uid}) {
+  Widget _buildFooterText(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
     if (players.isNotEmpty) {
       Player me = players.firstWhere((player) => player.playerId == uid);
       int myScore = me.score;

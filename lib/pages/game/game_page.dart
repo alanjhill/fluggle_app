@@ -49,8 +49,11 @@ class _GamePageState extends ConsumerState<GamePage> {
     game = widget.gameArguments.game;
     players = widget.gameArguments.players;
 
-    final gameStateNotifier = ref.read(gameStateProvider.notifier);
-    gameStateNotifier.reset();
+    // 'Fix' to prevent exception
+    Future.delayed(Duration.zero, () {
+      final gameStateNotifier = ref.read(gameStateProvider.notifier);
+      gameStateNotifier.reset();
+    });
 
     letters = _getEmptyLetters();
     _setupGame(game);
@@ -59,8 +62,6 @@ class _GamePageState extends ConsumerState<GamePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    //final gameStateNotifier = ref.read(gameStateProvider.notifier);
-    //gameStateNotifier.reset();
   }
 
   @override
@@ -72,8 +73,7 @@ class _GamePageState extends ConsumerState<GamePage> {
 
     final appBarHeight = appBar.preferredSize.height;
     final gameBoardHeight = screenWidth - kGameBoardPadding;
-    final remainingHeight =
-        screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
+    final remainingHeight = screenHeight - appBarHeight - gameBoardHeight - mediaQuery.padding.top;
     final topPanelHeight = remainingHeight / 3 * 2;
 
     // Top Panel for entered words, number of words, timer etc
@@ -98,12 +98,6 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
-  void _resetWords(GameState gameState) {
-    setState(() {
-      gameState.addedWords.clear();
-    });
-  }
-
   Future<void> _timerEnded(BuildContext context, WidgetRef ref) async {
     debugPrint('>>> _timerEnded');
     final firebaseAuth = ref.read(firebaseAuthProvider);
@@ -114,8 +108,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     Player player = players.firstWhere((p) => p.playerId == user!.uid);
 
     // This player has finished, save their data and update other finished players
-    await gameService.playerFinished(ref,
-        game: game, player: player, uid: user!.uid);
+    await gameService.playerFinished(ref, game: game, player: player, uid: user!.uid);
 
     // Pop this page off the stack
     Navigator.of(context).pop(null);
@@ -154,8 +147,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     }
   }
 
-  PreferredSizeWidget _buildAppBar(
-      BuildContext context, WidgetRef ref, Function quitGame) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref, Function quitGame) {
     final gameState = ref.watch(gameStateProvider);
     return CustomAppBar(
       leading: IconButton(
@@ -222,24 +214,20 @@ class _GamePageState extends ConsumerState<GamePage> {
   }
 
   void _startGame(BuildContext context, WidgetRef ref) async {
-    final gameState = ref.read(gameStateProvider);
+    final gameState = ref.read(gameStateProvider.notifier);
     debugPrint('startGame');
-    await _animateLetters(gameState);
+    await _animateLetters();
     setState(() {
       letters = shuffledLetters;
     });
     _updateGridData();
-    _resetWords(gameState);
-    setState(() {
-      gameState.gameStarted = true;
-    });
+    gameState.resetWords();
+    gameState.startGame();
   }
 
   void _pauseGame(BuildContext context, WidgetRef ref) {
     final gameStateNotifier = ref.watch(gameStateProvider.notifier);
-    setState(() {
-      gameStateNotifier.toggleGamePaused();
-    });
+    gameStateNotifier.toggleGamePaused();
     _displayPopup(context, ref);
   }
 
@@ -257,11 +245,7 @@ class _GamePageState extends ConsumerState<GamePage> {
               child: const Text('Resume'),
               onPressed: () {
                 final gameStateNotifier = ref.watch(gameStateProvider.notifier);
-                setState(
-                  () {
-                    gameStateNotifier.toggleGamePaused(); //.gamePaused = false;
-                  },
-                );
+                gameStateNotifier.toggleGamePaused();
                 Navigator.pop(context);
               },
             ),
@@ -272,31 +256,24 @@ class _GamePageState extends ConsumerState<GamePage> {
     );
   }
 
-  Widget _buildSlideTransition(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child) {
+  Widget _buildSlideTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
     return SlideTransition(
-      position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-          .animate(animation),
+      position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0)).animate(animation),
       child: child,
     );
   }
 
   void _quitGame(BuildContext context, WidgetRef ref) async {
     final gameService = ref.read(gameServiceProvider);
-    final gameState = ref.read(gameStateProvider);
-    setState(() {
-      gameState.gameStarted = false;
-    });
+    final gameState = ref.read(gameStateProvider.notifier);
+
     // Update the PlayerStatus for this player
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
 
-    // Save the game
-    await gameService.saveGame(ref,
-        game: game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
+    // Quit and save the gate
+    gameState.quitGame();
+    await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
 
     // Navigate to the Play Game Page
     Navigator.of(context).pushReplacementNamed(AppRoutes.playGamePage);
@@ -310,7 +287,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     return emptyLetters;
   }
 
-  Future _animateLetters(GameState gameState) async {
+  Future _animateLetters() async {
     Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
     bool running = true;
 

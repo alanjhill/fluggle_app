@@ -11,18 +11,17 @@ class GameTopPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameState = ref.watch(gameStateProvider);
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
       return Container(
-        margin: const EdgeInsets.symmetric(
-            horizontal: kGameBoardPadding / 2, vertical: kGameBoardPadding / 2),
+        margin: const EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2, vertical: kGameBoardPadding / 2),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Expanded(
-                child: WordCount(
-              count: gameState.addedWords.length,
-            )),
+              child: WordCount(
+                count: gameState.addedWords.length,
+              ),
+            ),
             const SizedBox(height: kGameBoardPadding / 2),
             Expanded(
               child: CurrentWord(

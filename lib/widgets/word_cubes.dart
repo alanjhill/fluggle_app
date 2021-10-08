@@ -4,13 +4,7 @@ import 'package:fluggle_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class WordCubes extends StatefulWidget {
-  const WordCubes(
-      {Key? key,
-      required this.word,
-      required this.width,
-      required this.spacing,
-      this.wordStatus})
-      : super(key: key);
+  const WordCubes({Key? key, required this.word, required this.width, required this.spacing, this.wordStatus}) : super(key: key);
   final String word;
   final double width;
   final double spacing;
@@ -20,8 +14,7 @@ class WordCubes extends StatefulWidget {
   _WordCubesState createState() => _WordCubesState();
 }
 
-class _WordCubesState extends State<WordCubes>
-    with SingleTickerProviderStateMixin {
+class _WordCubesState extends State<WordCubes> with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   late Animation<Color?> _animationValid;
   late Animation<Color?> _animationDuplicate;
@@ -36,14 +29,12 @@ class _WordCubesState extends State<WordCubes>
     _animationValid = ColorTween(
       begin: Colors.lightGreenAccent,
       end: kFluggleLetterColor,
-    ).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
 
     _animationDuplicate = ColorTween(
       begin: Colors.red,
       end: kFluggleLetterColor,
-    ).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
   }
 
   @override
@@ -55,6 +46,7 @@ class _WordCubesState extends State<WordCubes>
   @override
   void didUpdateWidget(covariant WordCubes oldWidget) {
     super.didUpdateWidget(oldWidget);
+    debugPrint('!!! didUpdateWidget: ${oldWidget.wordStatus}');
     if (widget.wordStatus == WordStatus.invalid) {
       _animationController.forward();
     } else if (widget.wordStatus == WordStatus.valid) {
@@ -80,7 +72,7 @@ class _WordCubesState extends State<WordCubes>
             AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
-                debugPrint('${_animationController.value}');
+                debugPrint('>>> ANIMATION >>> ${_animationController.value}');
                 return LetterCube(
                   letter: letter,
                   size: _getCubeSize(size: cubeSize - widget.spacing),

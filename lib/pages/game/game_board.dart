@@ -49,10 +49,8 @@ class _GameBoardState extends ConsumerState<GameBoard> {
 
     // Swipe Lines - second item in the stack
     final gameState = ref.watch(gameStateProvider);
-    final swipedGridItems =
-        ref.read(gameStateProvider.notifier).getSwipedGridItems();
-    final swipeLines =
-        SwipeLines(swipedGridItems: swipedGridItems, gridSize: gridSize);
+    final swipedGridItems = ref.read(gameStateProvider.notifier).swipedGridItems;
+    final swipeLines = SwipeLines(swipedGridItems: swipedGridItems, gridSize: gridSize);
 
     // Grid Cells containing grid
     final gameCubes = GridView.builder(
@@ -107,9 +105,10 @@ class _GameBoardState extends ConsumerState<GameBoard> {
   BoxDecoration _getGridItemBoxDecoration(RowCol rowCol) {
     BoxDecoration boxDecoration = BoxDecoration(
       border: Border.all(
-          color: kFluggleBoardBorderColor,
-          width: kFluggleBoardBorderWidth / 2.0,
-          style: BorderStyle.solid),
+        color: kFluggleBoardBorderColor,
+        width: kFluggleBoardBorderWidth / 2.0,
+        style: BorderStyle.solid,
+      ),
       borderRadius: _getGridItemBorderRadius(rowCol),
     );
 
@@ -174,9 +173,7 @@ class _GameBoardState extends ConsumerState<GameBoard> {
             RowCol rowCol = target.rowCol;
             GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
             setState(() {
-              if (ref
-                  .read(gameStateProvider.notifier)
-                  .addSwipedGridItem(gridItem)) {
+              if (ref.read(gameStateProvider.notifier).addSwipedGridItem(gridItem)) {
                 gridItem.swiped = true;
                 currentGridItem = gridItem;
               } else {

@@ -44,8 +44,8 @@ class _ScoresListState extends ConsumerState<ScoresList> {
       data: (g) {
         game = g;
       },
-      loading: () => const CircularProgressIndicator(),
-      error: (_, __) => {},
+      loading: (_) => const CircularProgressIndicator(),
+      error: (_, __, ___) => {},
     );
 
     debugPrint('ScoresList.build, >>> game: $game');
@@ -67,7 +67,7 @@ class _ScoresListState extends ConsumerState<ScoresList> {
   Widget _buildSinglePlayerScores(WidgetRef ref, {required Game game}) {
     List<Player> players = [];
     widget.playerData.when(
-        loading: () => {},
+        loading: (_) => {},
         data: (playerList) {
           Iterator<Player> it = playerList!.iterator;
           int index = 0;
@@ -79,10 +79,9 @@ class _ScoresListState extends ConsumerState<ScoresList> {
             index++;
           }
         },
-        error: (_, __) => {});
+        error: (_, __, ___) => {});
 
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       return Container(
         height: constraints.maxHeight,
         decoration: BoxDecoration(
@@ -98,20 +97,18 @@ class _ScoresListState extends ConsumerState<ScoresList> {
     });
   }
 
-  Widget _buildMultiPlayerScores(WidgetRef ref,
-      {required Game game, required String uid}) {
+  Widget _buildMultiPlayerScores(WidgetRef ref, {required Game game, required String uid}) {
     List<Player> players = [];
 
     return widget.playerData.when(
-        loading: () => const CircularProgressIndicator(),
+        loading: (_) => const CircularProgressIndicator(),
         data: (playerList) {
           Iterator<Player> it = playerList!.iterator;
           while (it.moveNext()) {
             Player player = it.current;
             players.add(player);
           }
-          return LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
+          return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
             return Container(
               padding: const EdgeInsets.all(0.0),
               margin: const EdgeInsets.all(0.0),
@@ -125,7 +122,7 @@ class _ScoresListState extends ConsumerState<ScoresList> {
             );
           });
         },
-        error: (_, __) => const Text('Error Loading data'));
+        error: (_, __, ___) => const Text('Error Loading data'));
   }
 
   Widget _buildScores(
@@ -137,11 +134,9 @@ class _ScoresListState extends ConsumerState<ScoresList> {
     final gameService = ref.read(gameServiceProvider);
     // Process the scores/words
     //Map<String, int> wordTally = gameService.processWords(ref, game: game, players: players);
-    Map<String, int> wordTally =
-        gameService.getWordTally(game: game, players: players);
+    Map<String, int> wordTally = gameService.getWordTally(game: game, players: players);
 
-    LinkedHashMap<String, int> sortedWordTallyMap =
-        gameService.sortWordTally(wordTally);
+    LinkedHashMap<String, int> sortedWordTallyMap = gameService.sortWordTally(wordTally);
 
     const double bannerHeight = 48.0;
     return LayoutBuilder(

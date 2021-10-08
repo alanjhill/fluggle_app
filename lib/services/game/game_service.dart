@@ -61,7 +61,8 @@ class GameService {
   }
 
   /// Create a game and persist to the db
-  Future<Game> createGame(WidgetRef ref, {required GameStatus gameStatus, required List<Player> players, required Map<String, PlayerStatus> playerUids, required int gameTime}) async {
+  Future<Game> createGame(WidgetRef ref,
+      {required GameStatus gameStatus, required List<Player> players, required Map<String, PlayerStatus> playerUids, required int gameTime}) async {
     final firestoreDatabase = ref.read(databaseProvider);
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser!;
@@ -136,7 +137,7 @@ class GameService {
     // If practice mode, we don't save anything, just redirect to the scores page, passing the game object
     if (game.practice == true) {
       // Set the words for this player
-      player.words = gameState.addedWords;
+      player.words = LinkedHashMap.from(gameState.addedWords);
       game.playerUids[player.playerId] = PlayerStatus.finished;
 
       // Process the words
@@ -147,7 +148,7 @@ class GameService {
       final firestoreDatabase = ref.read(databaseProvider);
 
       // Set the words for this player
-      player.words = gameState.addedWords;
+      player.words = LinkedHashMap.from(gameState.addedWords);
 
       // Create a list of players
       List<Player> players = [];
