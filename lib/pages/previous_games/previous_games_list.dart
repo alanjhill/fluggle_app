@@ -6,12 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PreviousGamesList extends ConsumerWidget {
-  const PreviousGamesList(
-      {Key? key, required this.data, required this.previousGameOnTap})
-      : super(key: key);
+  const PreviousGamesList({
+    Key? key,
+    required this.data,
+    required this.previousGameOnTap,
+    required this.leftSwipeGame,
+  }) : super(key: key);
 
   final AsyncValue<List<Game>> data;
   final Function previousGameOnTap;
+  final Function leftSwipeGame;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,6 +29,7 @@ class PreviousGamesList extends ConsumerWidget {
         game: game,
         uid: user.uid,
         previousGameOnTap: previousGameOnTap,
+        leftSwipeGame: leftSwipeGame,
       ),
     );
   }

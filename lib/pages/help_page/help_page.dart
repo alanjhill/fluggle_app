@@ -1,10 +1,11 @@
+import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
 
 class HelpPage extends StatelessWidget {
-  HelpPage({Key? key}) : super(key: key);
+  const HelpPage({Key? key}) : super(key: key);
 
-  final List<String> _helps = [
+  final List<String> _helps = const [
     'You need to be registered and logged-in to play or you can login as a guest. ',
     'If you are not registered and logged-in, you can only play in practice mode.',
     'Scores are not saved if you are playing as a guest.',
@@ -18,8 +19,8 @@ class HelpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Help'),
+      appBar: CustomAppBar(
+        titleText: 'Help',
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

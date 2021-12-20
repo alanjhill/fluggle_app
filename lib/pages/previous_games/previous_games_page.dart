@@ -1,4 +1,5 @@
 import 'package:fluggle_app/pages/game/game_page.dart';
+import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
@@ -20,8 +21,7 @@ final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
   },
 );
 
-final previousGamesPlayerStreamProvider = StreamProvider.autoDispose
-    .family<List<Player>, String>((ref, String gameId) {
+final previousGamesPlayerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
   final vm = GameViewModel(database: database!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
@@ -39,8 +39,7 @@ class PreviousGamesPage extends ConsumerWidget {
     //final firebaseAuth = context.read(firebaseAuthProvider);
     //final user = firebaseAuth.currentUser;
     //final bool isSignedIn = user != null;
-    final PreferredSizeWidget appBar =
-        CustomAppBar(titleText: Strings.previousGamesPage);
+    final PreferredSizeWidget appBar = CustomAppBar(titleText: Strings.previousGamesPage);
 
     // Previous Games Data
     final previousGamesAsyncValue = ref.watch(gameViewModelStreamProvider);
@@ -52,8 +51,7 @@ class PreviousGamesPage extends ConsumerWidget {
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
             physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.only(
-                top: kPagePadding, left: kPagePadding, right: kPagePadding),
+            padding: const EdgeInsets.only(top: kPagePadding, left: kPagePadding, right: kPagePadding),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -65,6 +63,7 @@ class PreviousGamesPage extends ConsumerWidget {
                   PreviousGamesList(
                     data: previousGamesAsyncValue,
                     previousGameOnTap: _previousGameOnTap,
+                    leftSwipeGame: _leftSwipeGame,
                   ),
                 ],
               ),
@@ -75,11 +74,17 @@ class PreviousGamesPage extends ConsumerWidget {
     );
   }
 
-  void _previousGameOnTap(BuildContext context,
-      {required GameArguments gameArguments}) {
+  void _previousGameOnTap(BuildContext context, {required GameArguments gameArguments}) {
     debugPrint('>>> _previousGameOnTap');
+    Navigator.of(context).pushNamed(AppRoutes.scoresPage, arguments: gameArguments);
+  }
 
-    Navigator.of(context)
-        .pushNamed(AppRoutes.scoresPage, arguments: gameArguments);
+  void _leftSwipeGame(WidgetRef ref, {required Game game, required String uid}) async {
+    final gameService = ref.read(gameServiceProvider);
+    if (game.creatorId == uid) {
+      await gameService.deleteGame(ref, game: game);
+    } else {
+      await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.declined, uid: uid);
+    }
   }
 }

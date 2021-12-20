@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PlayGameList extends ConsumerWidget {
-  const PlayGameList({Key? key, required this.data, required this.leftSwipeGame})
-      : super(key: key);
+  const PlayGameList({
+    Key? key,
+    required this.data,
+    required this.leftSwipeGame,
+  }) : super(key: key);
 
   final AsyncValue<List<Game>> data;
   final Function leftSwipeGame;
@@ -23,7 +26,10 @@ class PlayGameList extends ConsumerWidget {
         physics: const ScrollPhysics(),
         data: data,
         itemBuilder: (context, game) => PlayGameItem(
-            game: game, uid: user.uid, leftSwipeGame: leftSwipeGame),
+          game: game,
+          uid: user.uid,
+          leftSwipeGame: leftSwipeGame,
+        ),
       ),
     );
   }

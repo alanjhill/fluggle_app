@@ -6,19 +6,17 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   final Size preferredSize;
   final String titleText;
   final Widget? leading;
+  final bool automaticallyImplyLeading;
   final List<Widget> actions;
 
-  CustomAppBar(
-      {Key? key,
-      required this.titleText,
-      this.leading,
-      this.actions = const []})
-      : preferredSize = const Size.fromHeight(80.0),
+  CustomAppBar({Key? key, required this.titleText, this.leading, this.automaticallyImplyLeading = false, this.actions = const []})
+      : preferredSize = const Size.fromHeight(40.0),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: automaticallyImplyLeading,
       leading: leading,
       leadingWidth: 48.0,
       centerTitle: true,

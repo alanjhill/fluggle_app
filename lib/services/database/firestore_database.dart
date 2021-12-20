@@ -43,8 +43,7 @@ class FirestoreDatabase {
       );
 
   /// Get user from uid
-  Stream<List<AppUser>> userStream(String uid) =>
-      _service.collectionStream<AppUser>(
+  Stream<List<AppUser>> userStream(String uid) => _service.collectionStream<AppUser>(
         path: FirestorePath.user(uid),
         builder: (data, documentId) => AppUser.fromMap(data!, documentId),
       );
@@ -56,8 +55,7 @@ class FirestoreDatabase {
       );
 
   /// Search users
-  Stream<List<AppUser>> findUsersByEmailStream({required String email}) =>
-      _service.collectionStream<AppUser>(
+  Stream<List<AppUser>> findUsersByEmailStream({required String email}) => _service.collectionStream<AppUser>(
         path: FirestorePath.users(),
         builder: (data, documentId) => AppUser.fromMap(data!, documentId),
         queryBuilder: (query) => query.where('email', isEqualTo: email),
@@ -117,14 +115,10 @@ class FirestoreDatabase {
         builder: (data, documentId) => Player.fromMap(data!, documentId),
       );*/
 
-  Stream<List<Player>> gamePlayerStream(
-          {required String gameId, required bool includeSelf}) =>
-      _service.collectionStream<Player>(
+  Stream<List<Player>> gamePlayerStream({required String gameId, required bool includeSelf}) => _service.collectionStream<Player>(
         path: FirestorePath.gamePlayers(gameId),
         builder: (data, documentId) => Player.fromMap(data!, documentId),
-        queryBuilder: !includeSelf
-            ? (query) => query.where(FieldPath.documentId, whereNotIn: [uid])
-            : null,
+        queryBuilder: !includeSelf ? (query) => query.where(FieldPath.documentId, whereNotIn: [uid]) : null,
       );
 
   Future<Game> getGame({required String gameId}) => _service.getData<Game>(
@@ -148,7 +142,7 @@ class FirestoreDatabase {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     // Add the friend to this user
-    await _service.setDataWithBatch(
+    final docRef1 = await _service.setDataWithBatch(
       batch: batch,
       path: FirestorePath.userFriend(uid, friend.friendId),
       data: friend.toMap(),
@@ -157,16 +151,12 @@ class FirestoreDatabase {
 
     // Add this user to the friend
     Friend inviter = Friend(friendId: uid, friendStatus: inviterStatus);
-    await _service.setDataWithBatch(
+    final docRef2 = await _service.setDataWithBatch(
       batch: batch,
       path: FirestorePath.userFriend(friend.friendId, uid),
       data: inviter.toMap(),
       merge: true,
     );
-
-/*    batch.commit().whenComplete(() {
-      print('Complete');
-    });*/
 
     await batch.commit();
 
@@ -174,8 +164,7 @@ class FirestoreDatabase {
     return friend;
   }
 
-  Stream<AppUser> appUserStream({required String uid}) =>
-      _service.documentStream<AppUser>(
+  Stream<AppUser> appUserStream({required String uid}) => _service.documentStream<AppUser>(
         path: FirestorePath.user(uid),
         builder: (data, documentId) => AppUser.fromMap(data!, documentId),
       );
@@ -203,8 +192,7 @@ class FirestoreDatabase {
         builder: (data, documentId) => Player.fromMap(data, documentId),
       );
 
-  Future<void> saveGamePlayer(
-      {required Game game, required Player player}) async {
+  Future<void> saveGamePlayer({required Game game, required Player player}) async {
     var playerToMap = player.toMap();
     await _service.setData(
       path: FirestorePath.gamePlayer(game.gameId!, player.playerId),
@@ -213,8 +201,7 @@ class FirestoreDatabase {
     );
   }
 
-  Future<void> saveGameAndPlayer(
-      {required Game game, required Player player}) async {
+  Future<void> saveGameAndPlayer({required Game game, required Player player}) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     await _service.setDataWithBatch(
@@ -238,8 +225,7 @@ class FirestoreDatabase {
     await batch.commit();
   }
 
-  Future<void> saveGameAndPlayers(
-      {required Game game, required List<Player> players}) async {
+  Future<void> saveGameAndPlayers({required Game game, required List<Player> players}) async {
     debugPrint('>>> saveGameAndPlayers 1');
     WriteBatch batch = FirebaseFirestore.instance.batch();
     debugPrint('>>> saveGameAndPlayers 2');
@@ -271,8 +257,7 @@ class FirestoreDatabase {
     return await batch.commit();
   }
 
-  Future<void> createGame(
-      {required Game game, required List<Player> players}) async {
+  Future<void> createGame({required Game game, required List<Player> players}) async {
     String? gameId;
 
     WriteBatch batch = FirebaseFirestore.instance.batch();

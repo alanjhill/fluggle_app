@@ -14,8 +14,7 @@ class FriendsList extends StatelessWidget {
     return SafeArea(
       child: ListItemsBuilder<AppUserFriend>(
         data: data,
-        itemBuilder: (context, appUserFriend) =>
-            FriendItem(appUserFriend: appUserFriend),
+        itemBuilder: (context, appUserFriend) => FriendItem(appUserFriend: appUserFriend),
       ),
     );
   }
@@ -29,7 +28,5 @@ class Record {
       : assert(map!['display_name'] != null),
         displayName = map!['display_name'];
 
-  Record.fromSnapshot(DocumentSnapshot? snapshot)
-      : this.fromMap(snapshot!.data() as Map<String, dynamic>?,
-            reference: snapshot.reference);
+  Record.fromSnapshot(DocumentSnapshot? snapshot) : this.fromMap(snapshot!.data() as Map<String, dynamic>?, reference: snapshot.reference);
 }

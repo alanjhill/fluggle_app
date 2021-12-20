@@ -11,7 +11,10 @@ class FriendListViewModel {
   final FirestoreDatabase database;
 
   Stream<List<AppUserFriend>> userFriendsStream() {
-    Stream<List<AppUserFriend>> userFriendsCombined = Rx.combineLatest2(database.friendsStream(), database.usersStream(), (List<Friend> friends, List<AppUser> users) {
+    Stream<List<AppUserFriend>> userFriendsCombined = Rx.combineLatest2(database.friendsStream(), database.usersStream(), (
+      List<Friend> friends,
+      List<AppUser> users,
+    ) {
       List<AppUserFriend> userFriends = [];
 
       for (var friend in friends) {

@@ -9,6 +9,6 @@ abstract class AuthService {
   Future<void> sendPasswordResetEmail({required String email});
   bool isSignedIn();
   Future<void> signOut();
-  Stream<AppUser> get onAuthStateChanged;
+  //Stream<AppUser> get onAuthStateChanged;
   void dispose();
 }

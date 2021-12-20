@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   // TODO: Replace this with your firebase project URL
-  static const String firebaseProjectURL =
-      'https://fir-auth-demo-flutter.firebaseapp.com/';
+  static const String firebaseProjectURL = 'https://fir-auth-demo-flutter.firebaseapp.com/';
 }
 
 const double kGameBoardPadding = 40.0;
@@ -30,9 +29,9 @@ const Color kFluggleBoardBorderColor = kFluggleLightColor;
 
 const Color kFluggleLetterColor = kFlugglePrimaryColor;
 const Color kFluggleLetterHighlightColor = kFluggleLightColor;
-const Color kFluggleSwipeLineColor = kFluggleLightColor;
+const Color kFluggleSwipeLineColor = Colors.white;
 
-const double kSwipeLineWidth = 8.0;
+const double kSwipeLineWidth = 10.0;
 
 const kTimerTextStyle = TextStyle(
   fontSize: 24.0,

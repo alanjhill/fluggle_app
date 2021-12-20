@@ -17,10 +17,10 @@ class FirebaseAuthService implements AuthService {
     );
   }
 
-  @override
+/*  @override
   Stream<AppUser> get onAuthStateChanged {
     return _firebaseAuth.authStateChanges().map(_userFromFirebase);
-  }
+  }*/
 
   //@override
   Future<AppUser> signInAnonymously() async {

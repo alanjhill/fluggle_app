@@ -21,15 +21,18 @@ final friendsStreamProvider = StreamProvider.autoDispose<List<AppUserFriend>>(
 /// <<< end Providers
 
 class FriendsPage extends ConsumerWidget {
-  const FriendsPage({Key? key}) : super(key: key);
+  final FriendsArguments? friendsArguments;
+  const FriendsPage({Key? key, this.friendsArguments}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
-    final PreferredSizeWidget appBar =
-        CustomAppBar(titleText: Strings.friendsPage);
-    final friendsListAsyncValue = ref.watch(friendsStreamProvider);
+    final PreferredSizeWidget appBar = CustomAppBar(
+      automaticallyImplyLeading: (friendsArguments != null) ? friendsArguments!.backEnabled : false,
+      titleText: Strings.friendsPage,
+    );
+    final AsyncValue<List<AppUserFriend>> friendsListAsyncValue = ref.watch(friendsStreamProvider);
 
     void _addFriend() {
       Navigator.of(context).pushNamed(AppRoutes.friendsSearchPage);
@@ -77,4 +80,9 @@ class FriendsPage extends ConsumerWidget {
       ),
     );
   }
+}
+
+class FriendsArguments {
+  final bool backEnabled;
+  FriendsArguments({required this.backEnabled});
 }

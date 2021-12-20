@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// >>> Providers
-final userViewModelStreamProvider =
-    StreamProvider.autoDispose.family<List<AppUser>, String>(
+final userViewModelStreamProvider = StreamProvider.autoDispose.family<List<AppUser>, String>(
   (ref, email) {
     final database = ref.watch(databaseProvider);
     final vm = UserViewModel(database: database!);
@@ -22,29 +21,30 @@ final userViewModelStreamProvider =
 
 // ignore: must_be_immutable
 class FriendsSearchPage extends ConsumerWidget {
+  FriendsSearchPage({Key? key}) : super(key: key);
+
   String email = '';
   final _emailController = TextEditingController();
-
-  FriendsSearchPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaQuery = MediaQuery.of(context);
-    final PreferredSizeWidget appBar =
-        CustomAppBar(titleText: Strings.addFriendPage);
-    final remainingHeight = mediaQuery.size.height -
-        appBar.preferredSize.height -
-        mediaQuery.padding.top;
+    final PreferredSizeWidget appBar = CustomAppBar(
+      automaticallyImplyLeading: true,
+      titleText: Strings.addFriendPage,
+    );
+    final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
 
-    final friendsSearchAsyncValue =
-        ref.watch(userViewModelStreamProvider(email));
+    final friendsSearchAsyncValue = ref.watch(userViewModelStreamProvider(email));
 
     Widget _buildFindFriendsListWidget(BuildContext context) {
       return Container(
         padding: const EdgeInsets.only(bottom: 16.0),
         height: remainingHeight * 0.8,
         child: FriendsSearchList(
-            data: friendsSearchAsyncValue, addFriend: _addFriend),
+          data: friendsSearchAsyncValue,
+          addFriend: _addFriend,
+        ),
       );
     }
 
@@ -81,7 +81,7 @@ class FriendsSearchPage extends ConsumerWidget {
     );
   }
 
-  void _addFriend(WidgetRef ref, {required String friendId}) async {
+  void _addFriend(BuildContext context, WidgetRef ref, {required String friendId}) async {
     final friendsService = ref.read(friendsServiceProvider);
     await friendsService.addFriend(ref, friendId: friendId);
   }

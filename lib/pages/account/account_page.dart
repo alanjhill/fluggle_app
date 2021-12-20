@@ -78,7 +78,7 @@ class AccountPage extends ConsumerWidget {
   Future<void> _signOut(BuildContext context, FirebaseAuth firebaseAuth) async {
     try {
       await firebaseAuth.signOut();
-      Navigator.of(context).pushNamed(AppRoutes.homePage);
+      Navigator.of(context).pushNamed(AppRoutes.landingPage);
     } catch (e) {
       unawaited(showExceptionAlertDialog(
         context: context,
@@ -106,11 +106,11 @@ class AccountPage extends ConsumerWidget {
     return _userWidget(displayName: 'Guest');
   }
 
-  Widget _buildUserInfo(user, appUserAsyncValue) {
+  Widget _buildUserInfo(user, AsyncValue<AppUser> appUserAsyncValue) {
     return appUserAsyncValue.when(
+      loading: (_) => const CircularProgressIndicator(),
       data: (appUser) => _userWidget(displayName: user.displayName),
-      loading: () => Container(),
-      error: (_, __) => Container(),
+      error: (error, stack, previousValue) => Container(),
     );
   }
 

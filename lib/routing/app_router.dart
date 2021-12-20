@@ -5,6 +5,7 @@ import 'package:fluggle_app/pages/friends_search/friends_search_page.dart';
 import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/pages/help_page/help_page.dart';
 import 'package:fluggle_app/pages/home/home_page.dart';
+import 'package:fluggle_app/pages/landing/landing_page.dart';
 import 'package:fluggle_app/pages/play_game/play_game_page.dart';
 import 'package:fluggle_app/pages/previous_games/previous_games_page.dart';
 import 'package:fluggle_app/pages/scores/scores_page.dart';
@@ -20,6 +21,7 @@ class AppRoutes {
   static const friendsSearchPage = '/friends/search';
   static const gamePage = '/game';
   static const homePage = '/home';
+  static const landingPage = '/landing';
   static const emailPasswordSignInPage = '/email-password-sign-in';
   static const updateUserPage = "/update-user";
   static const playGamePage = '/play-game';
@@ -31,8 +33,7 @@ class AppRoutes {
 }
 
 class AppRouter {
-  static Route<dynamic>? onGenerateRoute(
-      BuildContext context, RouteSettings settings, FirebaseAuth auth) {
+  static Route<dynamic>? onGenerateRoute(BuildContext context, RouteSettings settings, FirebaseAuth auth) {
     final args = settings.arguments;
     debugPrint('args: $args');
     switch (settings.name) {
@@ -69,12 +70,17 @@ class AppRouter {
       case AppRoutes.friendsPage:
         return pageTransition(
           context,
-          page: const FriendsPage(),
+          page: FriendsPage(friendsArguments: args as FriendsArguments),
         );
       case AppRoutes.friendsSearchPage:
         return pageTransition(
           context,
           page: FriendsSearchPage(),
+        );
+      case AppRoutes.landingPage:
+        return pageTransition(
+          context,
+          page: const LandingPage(),
         );
       case AppRoutes.playGamePage:
         return pageTransition(

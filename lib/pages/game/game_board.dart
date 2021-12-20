@@ -67,6 +67,7 @@ class _GameBoardState extends ConsumerState<GameBoard> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2),
       decoration: BoxDecoration(
+        color: kFluggleBoardBackgroundColor.withOpacity(0.9),
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
           color: kFluggleBoardBorderColor,

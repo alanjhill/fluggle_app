@@ -1,3 +1,4 @@
+import 'package:fluggle_app/pages/friends/friends_page.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:fluggle_app/constants/constants.dart';
 import 'package:fluggle_app/constants/strings.dart';
@@ -24,15 +25,13 @@ final gameViewModelStreamProvider = StreamProvider.autoDispose<List<Game>>(
   },
 );
 
-final playerStreamProvider = StreamProvider.autoDispose
-    .family<List<Player>, String>((ref, String gameId) {
+final playerStreamProvider = StreamProvider.autoDispose.family<List<Player>, String>((ref, String gameId) {
   final database = ref.watch(databaseProvider);
   final vm = GameViewModel(database: database!);
   return vm.gamePlayersStream(gameId: gameId, includeSelf: true);
 });
 
-final userStreamProvider =
-    StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
+final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, String uid) {
   final firestoreDatabase = ref.watch(databaseProvider);
   final vm = UserViewModel(database: firestoreDatabase!);
   return vm.findUserByUid(uid: uid);
@@ -48,12 +47,6 @@ class PlayGamePage extends ConsumerWidget {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final PreferredSizeWidget appBar = CustomAppBar(
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.homePage);
-        },
-      ),
       titleText: Strings.playGamePage,
     );
 
@@ -76,13 +69,12 @@ class PlayGamePage extends ConsumerWidget {
           //SizedBox(height: 8.0),
           CustomRaisedButton(
             child: const Text(Strings.playFriend),
-            onPressed:
-                isSignedIn && !isAnonymous ? () => playFriend(context) : null,
+            onPressed: isSignedIn && !isAnonymous ? () => _playFriend(context) : null,
           ),
           const SizedBox(height: 8.0),
           CustomRaisedButton(
             child: const Text(Strings.practice),
-            onPressed: isSignedIn ? () => practice(context) : null,
+            onPressed: isSignedIn ? () => _practice(context) : null,
           ),
           const SizedBox(height: 8.0),
         ],
@@ -97,7 +89,7 @@ class PlayGamePage extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PlayGameList(data: playGamesAsyncValue, leftSwipeGame: leftSwipeGame),
+          PlayGameList(data: playGamesAsyncValue, leftSwipeGame: _leftSwipeGame),
         ],
       );
     }
@@ -107,8 +99,7 @@ class PlayGamePage extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.only(
-                top: kPagePadding, left: kPagePadding, right: kPagePadding),
+            padding: const EdgeInsets.only(top: kPagePadding, left: kPagePadding, right: kPagePadding),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -129,11 +120,11 @@ class PlayGamePage extends ConsumerWidget {
     );
   }
 
-  void playFriend(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(AppRoutes.friendsPage);
+  void _playFriend(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(AppRoutes.friendsPage, arguments: FriendsArguments(backEnabled: true));
   }
 
-  void practice(BuildContext ctx) async {
+  void _practice(BuildContext ctx) async {
     Navigator.of(ctx).pushNamed(
       AppRoutes.startGamePage,
       arguments: StartGameArguments(
@@ -142,14 +133,12 @@ class PlayGamePage extends ConsumerWidget {
     );
   }
 
-  void leftSwipeGame(WidgetRef ref,
-      {required Game game, required String uid}) async {
+  void _leftSwipeGame(WidgetRef ref, {required Game game, required String uid}) async {
     final gameService = ref.read(gameServiceProvider);
     if (game.creatorId == uid) {
       await gameService.deleteGame(ref, game: game);
     } else {
-      await gameService.saveGame(ref,
-          game: game, playerStatus: PlayerStatus.declined, uid: uid);
+      await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.declined, uid: uid);
     }
   }
 }

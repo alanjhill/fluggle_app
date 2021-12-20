@@ -17,8 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class StartGamePage extends ConsumerStatefulWidget {
   final StartGameArguments startGameArguments;
-  const StartGamePage({Key? key, required this.startGameArguments})
-      : super(key: key);
+  const StartGamePage({Key? key, required this.startGameArguments}) : super(key: key);
 
   @override
   _StartGamePageState createState() => _StartGamePageState();
@@ -44,9 +43,8 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
   @override
   Widget build(BuildContext context) {
     final PreferredSizeWidget appBar = CustomAppBar(
-      titleText: players != null && players!.isNotEmpty
-          ? Strings.newGame
-          : Strings.practiceGame,
+      automaticallyImplyLeading: true,
+      titleText: players != null && players!.isNotEmpty ? Strings.newGame : Strings.practiceGame,
     );
     //final List<AppUser> players = widget.startGameArguments.players;
 
@@ -55,8 +53,7 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
         body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints viewportConstraints) {
             return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+              padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
               child: Column(children: <Widget>[
                 ReusableCard(
                   key: const Key(''),
@@ -121,19 +118,14 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     final gameService = ref.read(gameServiceProvider);
     // Create game and wait for other players to join...
     if (players!.isNotEmpty) {
-      List<Player> gamePlayers =
-          gameService.createPlayersFromAppUsers(ref, appUsers: players!);
+      List<Player> gamePlayers = gameService.createPlayersFromAppUsers(ref, appUsers: players!);
       Map<String, PlayerStatus> playerUids = {};
 
       for (var gamePlayer in gamePlayers) {
         playerUids[gamePlayer.playerId] = PlayerStatus.invited;
       }
 
-      Game game = await gameService.createGame(ref,
-          gameStatus: GameStatus.created,
-          players: gamePlayers,
-          playerUids: playerUids,
-          gameTime: _currentValue);
+      Game game = await gameService.createGame(ref, gameStatus: GameStatus.created, players: gamePlayers, playerUids: playerUids, gameTime: _currentValue);
       debugPrint('game: $game');
 
       GameArguments gameArgs = GameArguments(game: game, players: gamePlayers);
@@ -141,12 +133,10 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     } else {
       // Game
       List<Player> players = [];
-      Game game = gameService.createPracticeGame(ref,
-          players: players, gameTime: _currentValue);
+      Game game = gameService.createPracticeGame(ref, players: players, gameTime: _currentValue);
 
       // Game Page
-      Navigator.of(context).pushNamed(AppRoutes.gamePage,
-          arguments: GameArguments(game: game, players: players));
+      Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: GameArguments(game: game, players: players));
     }
   }
 
@@ -212,10 +202,7 @@ class _StartGamePageState extends ConsumerState<StartGamePage> {
     );
   }
 
-  Widget _buildTimeSelection(
-      {required String text,
-      required bool selected,
-      required double maxWidth}) {
+  Widget _buildTimeSelection({required String text, required bool selected, required double maxWidth}) {
     return Container(
       width: maxWidth - 16,
       padding: const EdgeInsets.all(0),

@@ -1,15 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:fluggle_app/pages/game/game_page.dart';
-import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/models/game/game.dart';
 import 'package:fluggle_app/models/game/player.dart';
+import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/pages/play_game/play_game_page.dart';
 import 'package:fluggle_app/routing/app_router.dart';
 import 'package:fluggle_app/utils/utils.dart';
+import 'package:fluggle_app/widgets/list_items_builder.dart';
 import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class PlayGameItem extends ConsumerWidget {
   final Game game;
@@ -22,8 +21,7 @@ class PlayGameItem extends ConsumerWidget {
     required this.leftSwipeGame,
   }) : super(key: key);
 
-  void _playGameButtonPressed(BuildContext context,
-      {required Game game, required List<Player> players}) {
+  void _playGameButtonPressed(BuildContext context, {required Game game, required List<Player> players}) {
     GameArguments gameArgs = GameArguments(game: game, players: players);
     Navigator.of(context).pushNamed(AppRoutes.gamePage, arguments: gameArgs);
   }
@@ -32,9 +30,46 @@ class PlayGameItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final playersAsyncValue = ref.watch(playerStreamProvider(game.gameId!));
 
-    return Slidable(
+    return Dismissible(
       key: Key(game.gameId!),
-      actionPane: const SlidableBehindActionPane(),
+      direction: DismissDirection.endToStart,
+      movementDuration: const Duration(milliseconds: 500),
+      background: Container(
+        child: const Icon(Icons.delete, color: Colors.white, size: 40),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(
+          right: 20,
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 4.0),
+      ),
+      confirmDismiss: (direction) async {
+        return showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Decline Game Invitation?'),
+            content: const Text('Are you sure you want to decline this game?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('No'),
+                onPressed: () async {
+                  Navigator.of(ctx).pop(false);
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  Navigator.of(ctx).pop(true);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+      onDismissed: (direction) async {
+        if (direction == DismissDirection.endToStart) {
+          await leftSwipeGame(context, game: game, uid: uid);
+        }
+      },
       child: GestureDetector(
         child: ReusableCard(
           key: Key(game.gameId!),
@@ -43,8 +78,7 @@ class PlayGameItem extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               _getHeadingText(game: game, uid: uid!),
-              _buildPlayers(context,
-                  uid: uid!, game: game, playerData: playersAsyncValue),
+              _buildPlayers(context, uid: uid!, game: game, playerData: playersAsyncValue),
               _buildGameDuration(context, game: game),
               Text(game.gameId!),
             ],
@@ -58,17 +92,6 @@ class PlayGameItem extends ConsumerWidget {
           _playGameButtonPressed(context, game: game, players: players);
         },
       ),
-      movementDuration: const Duration(milliseconds: 500),
-      secondaryActions: [
-        IconSlideAction(
-          icon: game.creatorId == uid ? Icons.delete : Icons.close,
-          onTap: () async {
-            debugPrint('SwipeAction -> onTap');
-            await leftSwipeGame(context, game: game, uid: uid);
-          },
-          color: Colors.transparent,
-        ),
-      ],
     );
   }
 
@@ -86,8 +109,7 @@ class PlayGameItem extends ConsumerWidget {
     }
   }
 
-  Widget _buildPlayerItem(BuildContext context,
-      {required Game game, required Player player}) {
+  Widget _buildPlayerItem(BuildContext context, {required Game game, required Player player}) {
     return Container(
       //color: kFluggleBoardBackgroundColor,
       //height: 128.0,
@@ -119,8 +141,7 @@ class PlayGameItem extends ConsumerWidget {
   }
 
   Widget _buildPlayerStatus({required Game game, required Player player}) {
-    PlayerStatus playerStatus =
-        game.playerUids[player.playerId] as PlayerStatus;
+    PlayerStatus playerStatus = game.playerUids[player.playerId] as PlayerStatus;
     switch (playerStatus) {
       case PlayerStatus.invited:
       case PlayerStatus.accepted:
@@ -134,8 +155,7 @@ class PlayGameItem extends ConsumerWidget {
     }
   }
 
-  Widget _buildPlayers(BuildContext context,
-      {required Game game, required playerData, required String uid}) {
+  Widget _buildPlayers(BuildContext context, {required Game game, required playerData, required String uid}) {
     return Column(
       children: <Widget>[
         ListItemsBuilder<Player>(

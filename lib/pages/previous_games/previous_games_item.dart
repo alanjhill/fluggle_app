@@ -6,7 +6,6 @@ import 'package:fluggle_app/pages/previous_games/previous_games_page.dart';
 import 'package:fluggle_app/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class PreviousGamesItem extends ConsumerWidget {
   const PreviousGamesItem({
@@ -14,10 +13,12 @@ class PreviousGamesItem extends ConsumerWidget {
     required this.game,
     required this.uid,
     required this.previousGameOnTap,
+    required this.leftSwipeGame,
   }) : super(key: key);
   final Game game;
   final String uid;
   final Function previousGameOnTap;
+  final Function leftSwipeGame;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,8 +43,44 @@ class PreviousGamesItem extends ConsumerWidget {
   Widget _buildPreviousGameCard(BuildContext context, {required Game game, required List<Player> players, required String uid}) {
     return Column(
       children: [
-        Slidable(
+        Dismissible(
           key: Key(game.gameId!),
+          direction: DismissDirection.endToStart,
+          movementDuration: const Duration(milliseconds: 300),
+          background: Container(
+            child: const Icon(Icons.delete, color: Colors.white, size: 40),
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(
+              right: 20,
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 4.0),
+          ),
+          confirmDismiss: (direction) {
+            return showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('Are you sure?'),
+                content: const Text('Do you want to remove the item from your cart?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('No'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop(false);
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Yes'),
+                    onPressed: () {
+                      Navigator.of(ctx).pop(true);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+          onDismissed: (_) async {
+            await leftSwipeGame(context, game: game, uid: uid);
+          },
           child: GestureDetector(
             child: ReusableCard(
               key: Key(game.gameId!),
@@ -63,27 +100,6 @@ class PreviousGamesItem extends ConsumerWidget {
               previousGameOnTap(context, gameArguments: gameArgs);
             },
           ),
-          movementDuration: const Duration(milliseconds: 500),
-          actionPane: const SlidableBehindActionPane(),
-          actions: [
-            IconSlideAction(
-              icon: Icons.more_horiz,
-              onTap: () async {
-                debugPrint('More');
-              },
-              //color: kFlugglePrimaryColor,
-              color: Colors.transparent,
-            )
-          ],
-          secondaryActions: [
-            IconSlideAction(
-              icon: Icons.more_horiz,
-              onTap: () async {
-                debugPrint('More');
-              },
-              color: Colors.transparent,
-            )
-          ],
         ),
         const SizedBox(height: 8.0),
       ],

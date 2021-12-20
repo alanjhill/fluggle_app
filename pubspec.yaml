@@ -32,14 +32,14 @@ dependencies:
   firebase_core: ^1.5.0
   google_fonts: ^2.0.0
   rxdart: ^0.27.1
-  flutter_riverpod: 1.0.0-dev.9
+  flutter_riverpod: 1.0.0-dev.10
   random_string: ^2.3.1
   logger: ^1.0.0-nullsafety.0
   linked_scroll_controller: ^0.2.0
   intl: ^0.17.0
   flutter_svg: ^0.22.0
   shared_preferences: ^2.0.5
-  flutter_slidable: 0.6.0
+  #flutter_slidable: 0.6.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

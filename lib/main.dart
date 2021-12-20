@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluggle_app/auth/auth_widget.dart';
+import 'package:fluggle_app/pages/landing/landing_page.dart';
+import 'package:fluggle_app/pages/sign_in/sign_in_page.dart';
 import 'package:fluggle_app/services/friends/friends_service.dart';
 import 'package:fluggle_app/services/game/game_service.dart';
 import 'package:fluggle_app/services/user/user_service.dart';
@@ -77,23 +79,13 @@ class MyApp extends ConsumerWidget {
       statusBarIconBrightness: Brightness.light,
     ));*/
     // TODO: This doesn't work
-    final shortcuts = Map.of(WidgetsApp.defaultShortcuts)
-      ..remove(LogicalKeySet(LogicalKeyboardKey.escape));
+    final shortcuts = Map.of(WidgetsApp.defaultShortcuts)..remove(LogicalKeySet(LogicalKeyboardKey.escape));
     return MaterialApp(
       shortcuts: shortcuts,
       theme: appTheme.getThemeData(context),
       debugShowCheckedModeBanner: false,
       home: AuthWidget(
-        nonSignedInBuilder: (_) => Consumer(
-          builder: (context, ref, _) {
-            final didCompleteOnboarding =
-                ref.watch(onboardingViewModelProvider);
-            debugPrint('didCompleteOnboarding: $didCompleteOnboarding');
-            return didCompleteOnboarding
-                ? const HomePage()
-                : const OnboardingPage();
-          },
-        ),
+        nonSignedInBuilder: (_) => const LandingPage(),
         signedInBuilder: (_) => const HomePage(),
       ),
       onGenerateRoute: (settings) => AppRouter.onGenerateRoute(

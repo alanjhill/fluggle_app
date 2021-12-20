@@ -23,8 +23,7 @@ class SignInPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signInModel = ref.watch(signInModelProvider);
-    ref.listen<SignInViewModel>(signInModelProvider,
-        (SignInViewModel model) async {
+    ref.listen<SignInViewModel>(signInModelProvider, (SignInViewModel model) async {
       if (model.error != null) {
         if (model.error != null) {
           await showExceptionAlertDialog(
@@ -44,27 +43,18 @@ class SignInPage extends ConsumerWidget {
 }
 
 class SignInPageContents extends StatelessWidget {
-  const SignInPageContents(
-      {Key? key, required this.viewModel, this.title = Strings.signIn})
-      : super(key: key);
+  const SignInPageContents({Key? key, required this.viewModel, this.title = Strings.signIn}) : super(key: key);
   final SignInViewModel viewModel;
   final String title;
 
   static const Key emailPasswordButtonKey = Key(Keys.emailPassword);
   static const Key anonymousButtonKey = Key(Keys.anonymous);
 
-  Future<void> _showEmailPasswordSignInPage(BuildContext context) async {
-    final navigator = Navigator.of(context);
-    await navigator.pushNamed(AppRoutes.emailPasswordSignInPage, arguments: () {
-      //navigator.pop();
-      navigator.pushReplacementNamed(AppRoutes.homePage);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        automaticallyImplyLeading: true,
         titleText: title,
       ),
       body: SafeArea(
@@ -92,9 +82,7 @@ class SignInPageContents extends StatelessWidget {
                 key: emailPasswordButtonKey,
                 child: const AutoSizeText(Strings.signInWithEmailPassword),
                 textColor: Colors.white,
-                onPressed: viewModel.isLoading
-                    ? null
-                    : () => _showEmailPasswordSignInPage(context),
+                onPressed: viewModel.isLoading ? null : () => _showEmailPasswordSignInPage(context),
               ),
               const SizedBox(height: 8),
               const AutoSizeText(
@@ -113,13 +101,20 @@ class SignInPageContents extends StatelessWidget {
                       ? null
                       : () async {
                           await viewModel.signInAnonymously();
-                          Navigator.of(context)
-                              .pushReplacementNamed(AppRoutes.homePage);
+                          Navigator.of(context).pushReplacementNamed(AppRoutes.homePage);
                         }),
             ],
           ),
         );
       },
+    );
+  }
+
+  Future<void> _showEmailPasswordSignInPage(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    await navigator.pushNamed(
+      AppRoutes.emailPasswordSignInPage,
+      arguments: () => navigator.pushReplacementNamed(AppRoutes.homePage),
     );
   }
 }

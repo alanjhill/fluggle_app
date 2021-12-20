@@ -27,6 +27,30 @@ class AppTheme {
         displayColor: Colors.white,
         bodyColor: Colors.white,
       ),*/
+      appBarTheme: const AppBarTheme(
+        elevation: 5,
+        centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: kFluggleCanvasColor, statusBarIconBrightness: Brightness.dark),
+        backgroundColor: kFluggleCanvasColor,
+/*        textTheme: GoogleFonts.varelaRoundTextTheme(
+          Theme.of(context).textTheme,
+        ).apply(
+          fontSizeFactor: 1.25,
+          displayColor: Colors.white,
+          bodyColor: Colors.white,
+        ),*/
+      ),
+      canvasColor: kFluggleCanvasColor,
+      bottomAppBarTheme: const BottomAppBarTheme(
+        elevation: 5,
+        color: kFluggleDarkColor,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        elevation: 5,
+        backgroundColor: kFluggleCanvasColor,
+        unselectedItemColor: kFluggleCanvasColor,
+        selectedItemColor: Colors.white,
+      ),
       dialogTheme: const DialogTheme(
         backgroundColor: kFluggleDarkColor,
         shape: RoundedRectangleBorder(
@@ -62,22 +86,6 @@ class AppTheme {
         color: Colors.white,
         size: 36.0,
       ),
-      appBarTheme: const AppBarTheme(
-        elevation: 0.0,
-        centerTitle: true,
-        systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: kFluggleCanvasColor,
-            statusBarIconBrightness: Brightness.light),
-        backgroundColor: kFluggleCanvasColor,
-/*        textTheme: GoogleFonts.varelaRoundTextTheme(
-          Theme.of(context).textTheme,
-        ).apply(
-          fontSizeFactor: 1.25,
-          displayColor: Colors.white,
-          bodyColor: Colors.white,
-        ),*/
-      ),
-      canvasColor: kFluggleCanvasColor,
       inputDecorationTheme: const InputDecorationTheme(
         labelStyle: TextStyle(color: Colors.white),
         helperStyle: TextStyle(color: Colors.white),
