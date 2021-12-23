@@ -53,11 +53,7 @@ class PlayGamePage extends ConsumerWidget {
     final firebaseAuth = ref.read(firebaseAuthProvider);
     final user = firebaseAuth.currentUser;
     final bool isSignedIn = user != null;
-    bool isAnonymous = true;
-    if (user != null) {
-      isAnonymous = user.isAnonymous;
-      //isAdmin = appUser.admin!;
-    }
+    final bool isAnonymous = user!.isAnonymous;
 
     final buttonsWidget = Container(
       //height: remainingHeight * 0.2,

@@ -6,6 +6,7 @@ import 'package:fluggle_app/models/user/app_user.dart';
 import 'package:fluggle_app/models/user/user_view_model.dart';
 import 'package:fluggle_app/pages/game/game_page.dart';
 import 'package:fluggle_app/pages/scores/scores_list.dart';
+import 'package:fluggle_app/routing/app_router.dart';
 import 'package:fluggle_app/top_level_providers.dart';
 import 'package:fluggle_app/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ final userStreamProvider = StreamProvider.autoDispose.family<AppUser, String>((r
 
 // Need to wait for other player to finish here before we can calculate scores
 class ScoresPage extends ConsumerWidget {
-  static const String routeName = "/scores";
+  //static const String routeName = "/scores";
 
 /*  final Game game;
   final List<Player> players;*/
@@ -74,7 +75,17 @@ class ScoresPage extends ConsumerWidget {
     final mediaQuery = MediaQuery.of(context);
     final PreferredSizeWidget appBar = CustomAppBar(
       titleText: Strings.scoresPage,
-      automaticallyImplyLeading: true,
+      //automaticallyImplyLeading: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          if (gameArguments.game.practice) {
+            Navigator.of(context).pushNamed(AppRoutes.homePage);
+          } else {
+            Navigator.of(context).pop();
+          }
+        },
+      ),
     );
     final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
     final firebaseAuth = ref.read(firebaseAuthProvider);

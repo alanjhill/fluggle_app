@@ -72,7 +72,7 @@ class _WordCubesState extends State<WordCubes> with SingleTickerProviderStateMix
             AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
-                debugPrint('>>> ANIMATION >>> ${_animationController.value}');
+                //debugPrint('>>> ANIMATION >>> ${_animationController.value}');
                 return LetterCube(
                   letter: letter,
                   size: _getCubeSize(size: cubeSize - widget.spacing),

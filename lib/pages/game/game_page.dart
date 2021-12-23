@@ -117,7 +117,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     GameArguments gameArgs = GameArguments(game: game, players: players);
 
     // Go to the scores page
-    Navigator.of(context).pushNamed(ScoresPage.routeName, arguments: gameArgs);
+    Navigator.of(context).pushNamed(AppRoutes.scoresPage, arguments: gameArgs);
     debugPrint('<<< _timerEnded');
   }
 
@@ -276,7 +276,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     await gameService.saveGame(ref, game: game, playerStatus: PlayerStatus.resigned, uid: user!.uid);
 
     // Navigate to the Play Game Page
-    Navigator.of(context).pushReplacementNamed(AppRoutes.playGamePage);
+    Navigator.of(context).pushReplacementNamed(AppRoutes.homePage);
   }
 
   List<String> _getEmptyLetters() {

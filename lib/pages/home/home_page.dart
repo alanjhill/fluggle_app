@@ -77,129 +77,56 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
               side: const BorderSide(width: 1.0, style: BorderStyle.solid),
             ),
           ),
-          child: BottomNavigationBar(
-            backgroundColor: Colors.transparent,
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                label: 'PLAY',
-                icon: Icon(Icons.play_arrow),
-              ),
-              BottomNavigationBarItem(
-                label: 'FRIENDS',
-                icon: Icon(
-                  Icons.people,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+                //splashColor: Colors.transparent,
+                //highlightColor: Colors.transparent,
                 ),
-              ),
-              BottomNavigationBarItem(
-                label: 'Games',
-                icon: Icon(
-                  Icons.history,
+            child: BottomNavigationBar(
+              backgroundColor: Colors.transparent,
+              type: BottomNavigationBarType.fixed,
+              elevation: 0,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  label: 'PLAY',
+                  icon: Icon(Icons.play_arrow),
                 ),
-              ),
-              BottomNavigationBarItem(
-                label: 'ACCOUNT',
-                icon: Icon(Icons.manage_accounts),
-              ),
-              BottomNavigationBarItem(
-                label: 'HELP',
-                icon: Icon(
-                  Icons.help_outline,
+                BottomNavigationBarItem(
+                  label: 'FRIENDS',
+                  icon: Icon(
+                    Icons.people,
+                  ),
                 ),
-              ),
-            ],
-            currentIndex: _selectedTab,
-            onTap: (tap) {
-              setState(() {
-                _selectedTab = tap;
-              });
-              //ref.read(appStateProvider.notifier).goToBottomTab
-            },
+                BottomNavigationBarItem(
+                  label: 'Games',
+                  icon: Icon(
+                    Icons.history,
+                  ),
+                ),
+                BottomNavigationBarItem(
+                  label: 'ACCOUNT',
+                  icon: Icon(Icons.manage_accounts),
+                ),
+                BottomNavigationBarItem(
+                  label: 'HELP',
+                  icon: Icon(
+                    Icons.help_outline,
+                  ),
+                ),
+              ],
+              currentIndex: _selectedTab,
+              onTap: _onTap,
+            ),
           ),
         ),
       );
     });
   }
 
-  @override
-  Widget _build(BuildContext context) {
-    final firebaseAuth = ref.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser;
-    debugPrint('user.displayName: ${user?.displayName}');
-    bool isSignedIn = user != null;
-    bool isAnonymous = true;
-    if (user != null) {
-      isAnonymous = user.isAnonymous;
-    }
-
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 50.0),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.all(kPagePadding),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: WordCubes(word: 'FLUGGLE', width: MediaQuery.of(context).size.width - 32, spacing: 1.0),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'A BOGGLE like word game\nwritten using Flutter',
-                    style: TextStyle(),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16.0),
-                  CustomRaisedButton(
-                    child: const Text('Play'),
-                    onPressed: isSignedIn ? () => playGame(context) : null,
-                  ),
-                  const SizedBox(height: 8.0),
-                  CustomRaisedButton(
-                    child: const Text('Friends'),
-                    onPressed: isSignedIn && !isAnonymous ? () => friendsList(context) : null,
-                  ),
-                  const SizedBox(height: 8.0),
-                  CustomRaisedButton(
-                    child: const Text('Previous Games'),
-                    onPressed: isSignedIn && !isAnonymous ? () => previousGames(context) : null,
-                  ),
-                  const SizedBox(height: 8.0),
-                  !isSignedIn
-                      ? CustomRaisedButton(
-                          child: const Text('Sign In'),
-                          onPressed: () => signIn(context),
-                        )
-                      : CustomRaisedButton(
-                          child: const Text(Strings.accountPage),
-                          onPressed: () => accountPage(context),
-                        ),
-                  const SizedBox(height: 8.0),
-                  CustomRaisedButton(
-                    child: const Text('Help'),
-                    onPressed: () => help(context),
-                  ),
-/*                SizedBox(height: 8.0),
-                  appUser?.admin == true
-                      ? CustomRaisedButton(
-                          child: Text('Onboarding Incomplete'),
-                          onPressed: () async {
-                            await onboardingIncomplete(context);
-                          },
-                        )
-                      : Container(),*/
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  void _onTap(int index) {
+    setState(() {
+      _selectedTab = index;
+    });
   }
 
   void accountPage(BuildContext ctx) {

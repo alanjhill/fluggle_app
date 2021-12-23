@@ -59,7 +59,7 @@ class _ScoresItemState extends State<ScoresItem> {
   AutoSizeText _getWordText({required PlayerWord playerWord, required TextAlign textAlign}) {
     if (playerWord.gameWord.unique == true) {
       return AutoSizeText(
-        playerWord.gameWord.word,
+        playerWord.gameWord.word.toUpperCase(),
         wrapWords: false,
         textAlign: textAlign,
         style: const TextStyle(
@@ -69,7 +69,7 @@ class _ScoresItemState extends State<ScoresItem> {
       );
     } else if (playerWord.gameWord.unique == false) {
       return AutoSizeText(
-        playerWord.gameWord.word,
+        playerWord.gameWord.word.toUpperCase(),
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(
@@ -79,7 +79,7 @@ class _ScoresItemState extends State<ScoresItem> {
       );
     } else {
       return AutoSizeText(
-        playerWord.gameWord.word,
+        playerWord.gameWord.word.toUpperCase(),
         wrapWords: false,
         textAlign: textAlign,
         style: TextStyle(

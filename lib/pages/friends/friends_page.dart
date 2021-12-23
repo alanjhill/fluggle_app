@@ -28,6 +28,12 @@ class FriendsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     //final mediaQuery = MediaQuery.of(context);
     //final remainingHeight = mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top;
+
+    final firebaseAuth = ref.read(firebaseAuthProvider);
+    final user = firebaseAuth.currentUser;
+    final bool isSignedIn = user != null;
+    final bool isAnonymous = user!.isAnonymous;
+
     final PreferredSizeWidget appBar = CustomAppBar(
       automaticallyImplyLeading: (friendsArguments != null) ? friendsArguments!.backEnabled : false,
       titleText: Strings.friendsPage,
@@ -48,7 +54,7 @@ class FriendsPage extends ConsumerWidget {
           //SizedBox(height: 8.0),
           CustomRaisedButton(
             child: const Text('Add Friend'),
-            onPressed: () => _addFriend(),
+            onPressed: isSignedIn && !isAnonymous ? () => _addFriend() : null,
           ),
           //SizedBox(height: 8.0),
         ],

@@ -31,7 +31,7 @@ class LandingPage extends ConsumerWidget {
             CustomRaisedButton(
               onPressed: () => onGetStarted(context),
               child: Text(
-                'Sign-In / Register',
+                'Sign-In',
                 style: Theme.of(context).textTheme.headline5!.copyWith(color: Colors.white),
               ),
             ),

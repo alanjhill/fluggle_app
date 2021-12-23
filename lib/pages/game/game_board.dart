@@ -67,7 +67,7 @@ class _GameBoardState extends ConsumerState<GameBoard> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: kGameBoardPadding / 2),
       decoration: BoxDecoration(
-        color: kFluggleBoardBackgroundColor.withOpacity(0.9),
+        color: kFluggleBoardBackgroundColor.withOpacity(0.6),
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
           color: kFluggleBoardBorderColor,
@@ -173,6 +173,7 @@ class _GameBoardState extends ConsumerState<GameBoard> {
           if (target is GridCellRenderObject) {
             RowCol rowCol = target.rowCol;
             GridItem gridItem = widget.gridItems[rowCol.row][rowCol.col];
+            debugPrint('>>> letter: ${gridItem.letter}');
             setState(() {
               if (ref.read(gameStateProvider.notifier).addSwipedGridItem(gridItem)) {
                 gridItem.swiped = true;

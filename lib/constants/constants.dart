@@ -29,7 +29,7 @@ const Color kFluggleBoardBorderColor = kFluggleLightColor;
 
 const Color kFluggleLetterColor = kFlugglePrimaryColor;
 const Color kFluggleLetterHighlightColor = kFluggleLightColor;
-const Color kFluggleSwipeLineColor = Colors.white;
+const Color kFluggleSwipeLineColor = kFluggleLightColor;
 
 const double kSwipeLineWidth = 10.0;
 
