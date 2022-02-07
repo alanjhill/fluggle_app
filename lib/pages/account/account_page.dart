@@ -10,7 +10,6 @@ import 'package:fluggle_app/routing/app_router.dart';
 import 'package:fluggle_app/top_level_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pedantic/pedantic.dart';
 
 final appUserProvider = StreamProvider.autoDispose.family<AppUser, String>((ref, uid) {
   final database = ref.watch(databaseProvider);
